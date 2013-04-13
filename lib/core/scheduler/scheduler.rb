@@ -91,11 +91,15 @@ module Maadi
 
           run = 1
           @procedures.each do | procedure |
+            msg = "Executing Procedure: #{procedure.to_s}"
+            if procedure.key_id != -1
+              msg = "Executing Procedure: #{procedure.to_s}, ID: #{procedure.key_id}"
+            end
 
-            Maadi::post_message(:Info, "Executing Procedure #{procedure.to_s}")
+            Maadi::post_message(:Info, msg )
             applications.each do | application |
               collectors.each do |collector|
-                collector.log_message( :Info, "Executing Procedure #{procedure.to_s}" )
+                collector.log_message( :Info, msg )
               end
 
               if application.supports_procedure?( procedure )
