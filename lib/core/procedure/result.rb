@@ -15,7 +15,7 @@ module Maadi
       # data (String) which represents the actual result of the step
       # type (String) type of data which is being stored
       # status (String) the status of the result (SUCCESS, FAIL, EXCEPTION, UNKNOWN, etc.)
-      attr_accessor :step, :target, :data, :type, :status
+      attr_accessor :step, :target, :data, :type, :status, :key_id
 
       def initialize(step, target, data, type, status = 'UNKNOWN')
         @step = step

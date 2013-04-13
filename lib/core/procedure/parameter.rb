@@ -14,12 +14,14 @@ require_relative 'constraint'
 module Maadi
   module Procedure
     class Parameter
-      attr_accessor :label, :constraint, :value, :values, :quotes
+      attr_accessor :label, :constraint, :value, :values, :quotes, :key_id
 
       def initialize(label, constraint, quotes = '')
         @label = label
         @constraint = constraint
         @quotes = quotes
+
+        @key_id = -1
 
         reset_values
       end

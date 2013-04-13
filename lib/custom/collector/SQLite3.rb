@@ -157,6 +157,10 @@ module Maadi
             end
 
             if is_ok && prId != -1
+              if procedure.key_id == -1
+                procedure.key_id = prId
+              end
+
               # attempt to insert the procedure's steps into the tblSteps, since the tblProcedure INSERT was successful
               # CREATE TABLE tblSteps ( sID integer primary key, pID integer, sLabel varchar(255), sCommand TEXT, sFinal TEXT)
 
@@ -176,6 +180,10 @@ module Maadi
                 end
 
                 if is_ok && stId != -1
+                  if step.key_id == -1
+                    step.key_id = stId
+                  end
+
                   is_ok = false
 
                   # attempt to insert the step's parameters into the tblParameters, since the tblSteps INSERT was successful
@@ -188,6 +196,7 @@ module Maadi
                       stm = @db.prepare( 'INSERT INTO tblParameters (sID, pLabel, pValue, pConstraint) VALUES (?, ?, ?, ?)')
                       stm.bind_params( stId, parameter.label, parameter.value.to_s, parameter.constraint.to_s )
                       rs = stm.execute
+                      paId = @db.last_insert_row_id.to_s
                       stm.close
                       is_ok = true
                     rescue ::SQLite3::Exception => e
@@ -195,6 +204,10 @@ module Maadi
                     end
 
                     break if !is_ok
+
+                    if parameter.key_id == -1
+                      parameter.key_id = paId
+                    end
                   end
                 end
 
@@ -231,6 +244,9 @@ module Maadi
             end
 
             if is_ok && rId != -1
+              if results.key_id == -1
+                results.key_id == rId
+              end
               # attempt to insert the procedure's steps into the tblSteps, since the tblProcedure INSERT was successful
               # CREATE TABLE IF NOT EXISTS tblResultData ( dID integer primary key, rID integer, dStep varchar(255), dStatus varchar(255), dType varchar(255), dData TEXT)
 
@@ -251,6 +267,10 @@ module Maadi
 
                 # if we have encountered any INSERT errors, do not attempt to process any more INSERTs
                 break if !is_ok
+
+                if result.key_id == -1
+                  result.key_id = rdId
+                end
               end
             end
           end
