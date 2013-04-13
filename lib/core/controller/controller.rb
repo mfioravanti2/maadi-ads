@@ -52,7 +52,7 @@ module Maadi
         @ready = false
 
         if ( @applications != nil ) && ( @collectors != nil )
-          if @scheduler.is_a?(Maadi::Scheduler::Scheduler) && @generator.is_a?( Maadi::Generator::Generator) && @applications.is_a?(Array) && @collectors.is_a?(Array)
+          if Maadi::Scheduler::Scheduler::is_scheduler?( @scheduler ) && Maadi::Generator::Generator::is_generator?( @generator ) && @applications.is_a?(Array) && @collectors.is_a?(Array)
             if ( @applications.length > 0 ) && ( @collectors.length > 0 )
 
               Maadi::post_message(:Info, "Controller is setting the PRNG seed (#{@options['RANDSEED']})")
