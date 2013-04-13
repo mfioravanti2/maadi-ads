@@ -51,15 +51,15 @@ module Maadi
       def prepare
         @ready = false
 
-        if ( @scheduler != nil ) && ( @generator != nil )  && ( @applications != nil ) && ( @collectors != nil )
+        if ( @applications != nil ) && ( @collectors != nil )
           if @scheduler.is_a?(Maadi::Scheduler::Scheduler) && @generator.is_a?( Maadi::Generator::Generator) && @applications.is_a?(Array) && @collectors.is_a?(Array)
-            if (@applications.length > 0) && (@collectors.length > 0)
+            if ( @applications.length > 0 ) && ( @collectors.length > 0 )
 
               Maadi::post_message(:Info, "Controller is setting the PRNG seed (#{@options['RANDSEED']})")
               srand( @options['RANDSEED'] )
 
               # manager prepares the collectors, so the controller should not worry about it.
-              unless @generator.prepare_for_tests( @runs )
+              unless @generator.prepare_for_tests( @runs, @collectors )
                 return @ready
               end
 
@@ -73,8 +73,13 @@ module Maadi
 
                 unless application.is_ready?
                   application.prepare
+
                   unless application.is_ready?
                     return @ready
+                  end
+
+                  @collectors.each do |collector|
+                    collector.log_options( application )
                   end
                 end
               end
@@ -107,13 +112,22 @@ module Maadi
 
               unless @scheduler.is_ready?
                 @scheduler.prepare
+
                 unless @scheduler.is_ready?
                   return @ready
+                end
+
+                @collectors.each do |collector|
+                  collector.log_options( @scheduler )
                 end
               end
               Maadi::post_message(:Info, "Scheduler (#{@scheduler.type}) is logging the schedule")
               @scheduler.log( @collectors )
               Maadi::post_message(:Info, "Scheduler (#{@scheduler.type}) has completed logging the schedule")
+
+              @collectors.each do |collector|
+                collector.log_options( self )
+              end
 
               Maadi::post_message(:More, 'Controller is ready')
               @ready = true
