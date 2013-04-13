@@ -45,13 +45,13 @@ module Maadi
       # generic (Generic) object to have all of it's options recorded in the database
       # return N/A
       def log_options( generic )
-        if Maadi::Generic::is_generic?( generic )
+        if Maadi::Generic::Generic::is_generic?( generic )
           options = generic.options
           if options.length > 0
             t = Time.now
             File.open( @options['FILENAME'], 'a') do |f|
               options.each do |option|
-                f.puts "#{t.strftime('%Y%m%d%H%M%S')}\tOPTION\t#{option}\t#{generic.get_option(option)}"
+                f.puts "#{t.strftime('%Y%m%d%H%M%S')}\tOPTION\t#{generic.type}\t#{generic.instance_name}\t#{option}\t#{generic.get_option(option)}"
               end
             end
           end
