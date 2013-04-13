@@ -8,5 +8,6 @@
 /bin/*.cli
 # * Ignore any SQLite3 database created
 /bin/*.db
+/bin/*.db-journal
 # * Ignore any log files created
 /bin/*.log
