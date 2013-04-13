@@ -1,0 +1,12 @@
+# Using http://help.github.com/ignore-files/ as reference
+
+# Ignore RubyMine IDE config
+/.idea
+
+# Ignore the files created by running Maadi
+# * Ignore command line logs (*.cli)
+/bin/*.cli
+# * Ignore any SQLite3 database created
+/bin/*.db
+# * Ignore any log files created
+/bin/*.log
