@@ -45,40 +45,41 @@ module Maadi
       # prepare the organizer for the tests.
       # runs (Integer) is the number of runs that will be executed.
       # return (bool) true if all of the components are read.
-      def prepare_for_tests( runs )
-        if @expert != nil && @organizer != nil
-          if @expert.is_a?( Maadi::Expert::Expert ) && @organizer.is_a?( Maadi::Organizer::Organizer )
-            if @organizer.works_with?( @expert.domain )
-              Maadi::post_message(:Info, 'Expert and Organizer are compatible')
-            else
-              Maadi::post_message(:Warn, "Expert (#{@expert.domain}) is NOT compatible with Organizer (#{@organizer.supported_domains.join(', ')})")
-              return false
+      def prepare_for_tests( runs, collectors )
+        if Maadi::Expert::Expert::is_expert?( @expert ) and Maadi::Organizer::Organizer::is_organizer?( @organizer )
+          if @organizer.works_with?( @expert.domain )
+            Maadi::post_message(:Info, 'Expert and Organizer are compatible')
+          else
+            Maadi::post_message(:Warn, "Expert (#{@expert.domain}) is NOT compatible with Organizer (#{@organizer.supported_domains.join(', ')})")
+            return false
+          end
+
+          unless @expert.is_ready?
+            @expert.prepare
+          end
+
+          unless @organizer.is_ready?
+            @organizer.prepare
+          end
+
+          if @expert.is_ready? && @organizer.is_ready?
+            collectors.each do |collector|
+              collector.log_options( @expert )
+              collector.log_options( @organizer )
             end
 
-            if !@expert.is_ready?
-              @expert.prepare
-            end
+            parameters = @expert.parameters( 'all' )
+            ready = @organizer.available_parameters( parameters, runs )
 
-            if !@organizer.is_ready?
-              @organizer.prepare
-            end
-
-            if @expert.is_ready? && @organizer.is_ready?
-              parameters = @expert.parameters( 'all' )
-              ready = @organizer.available_parameters( parameters, runs )
-
-              if ready
-                Maadi::post_message(:More, 'Generator is ready')
-                return true
-              end
-            else
-              Maadi::post_message(:Warn, 'Expert or Organizer NOT ready')
+            if ready
+              Maadi::post_message(:More, 'Generator is ready')
+              return true
             end
           else
-            Maadi::post_message(:Warn, 'Expert or Organizer NOT of correct type')
+            Maadi::post_message(:Warn, 'Expert or Organizer NOT ready')
           end
         else
-          Maadi::post_message(:Warn, 'Expert or Organizer NOT initialized')
+          Maadi::post_message(:Warn, 'Expert or Organizer NOT correct type/initialized')
         end
 
         return false
