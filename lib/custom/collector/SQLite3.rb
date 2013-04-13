@@ -25,8 +25,7 @@ module Maadi
 
         @db = nil
 
-        t = Time.now
-        @options['DATABASE'] = "Maadi-#{t.strftime('%Y%m%d%H%M%S')}.db"
+        @options['DATABASE'] = "Maadi-#{time_stamp}.db"
 
         @notes['DATABASE'] = 'Name of the SQLite3 database'
       end
@@ -52,6 +51,19 @@ module Maadi
                          mStatus char(5),
                          mTime datetime,
                          mText varchar(255))
+                      )
+
+          @db.execute( tbl_def )
+        end
+
+        tables = @db.execute('SELECT name FROM sqlite_master WHERE type="table" AND name="tblOptions" ORDER BY name')
+        if tables.length == 0
+          tbl_def = %q( CREATE TABLE IF NOT EXISTS tblOptions (
+                         oID integer primary key,
+                         oType varchar(255),
+                         oInstance varchar(255),
+                         oOption varchar(255),
+                         oValue TEXT)
                       )
 
           @db.execute( tbl_def )
@@ -129,6 +141,31 @@ module Maadi
             stm.close
           rescue ::SQLite3::Exception => e
             Maadi::post_message(:Warn, "Repository (#{@type}:#{@instance_name}) encountered an error (#{e.message}).")
+          end
+        end
+      end
+
+      # log all of the options from a Maadi::Generic::Generic object
+      # generic (Generic) object to have all of it's options recorded in the database
+      # return N/A
+      def log_options( generic )
+        if Maadi::Generic::Generic::is_generic?( generic )
+          options = generic.options
+          if options.length > 0
+            if @db != nil
+              options.each do |option|
+                begin
+                  # CREATE TABLE IF NOT EXISTS tblOptions ( oID integer primary key, oType varchar(255), oInstance varchar(255), oOption varchar(255), oValue TEXT)
+                  stm = @db.prepare( 'INSERT INTO tblOptions (oType, oInstance, oOption, oValue) VALUES (?, ?, ?, ?)' )
+                  stm.bind_params(generic.type, generic.instance_name, option, generic.get_option(option))
+                  rs = stm.execute
+                  oId = @db.last_insert_row_id.to_s
+                  stm.close
+                rescue ::SQLite3::Exception => e
+                  Maadi::post_message(:Warn, "Repository (#{@type}:#{@instance_name}) encountered an error (#{e.message}).")
+                end
+              end
+            end
           end
         end
       end
