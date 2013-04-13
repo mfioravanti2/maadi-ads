@@ -11,6 +11,7 @@
 #          and loaded from the local directory.
 
 require_relative '../../core/collector/collector'
+require_relative '../../core/collector/repository'
 require_relative '../factory'
 
 module Maadi

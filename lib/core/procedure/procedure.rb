@@ -89,6 +89,16 @@ module Maadi
 
         return nil
       end
+
+      def self.is_procedure?( procedure )
+        if procedure != nil
+          if procedure.is_a?( Maadi::Procedure::Procedure )
+            return true
+          end
+        end
+
+        return false
+      end
     end
   end
 end

@@ -156,6 +156,16 @@ module Maadi
         Maadi::post_message(:Less, 'Controller is NO longer ready')
         super
       end
+
+      def self.is_controller?( controller )
+        if controller != nil
+          if controller.is_a?( Maadi::Controller::Controller )
+            return true
+          end
+        end
+
+        return false
+      end
     end
   end
 end

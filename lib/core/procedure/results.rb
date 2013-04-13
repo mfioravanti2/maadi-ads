@@ -43,6 +43,16 @@ module Maadi
           end
         end
       end
+
+      def self.is_results?( results )
+        if results != nil
+          if results.is_a?( Maadi::Procedure::Results )
+            return true
+          end
+        end
+
+        return false
+      end
     end
   end
 end

@@ -37,6 +37,16 @@ module Maadi
         return 'tasker'
       end
 
+      def self.is_tasker?( tasker )
+        if tasker != nil
+          if tasker.is_a?( Maadi::Tasker::Tasker )
+            return true
+          end
+        end
+
+        return false
+      end
+
       # use a desired amount of memory on the target system.
       # amount (Integer) amount of memory to consume (in MB)
       # return N/A

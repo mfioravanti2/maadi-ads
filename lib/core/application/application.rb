@@ -42,6 +42,16 @@ module Maadi
         Maadi::post_message(:Less, "Application (#{@type}:#{@instance_name}) is NO longer ready")
         super
       end
+
+      def self.is_application?( application )
+        if application != nil
+          if application.is_a?( Maadi::Application::Application )
+            return true
+          end
+        end
+
+        return false
+      end
      end
   end
 end

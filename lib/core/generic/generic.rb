@@ -75,6 +75,21 @@ module Maadi
       def are_options_valid?
         return true
       end
+
+      def time_stamp
+        t = Time.now
+        return "#{t.strftime('%Y%m%d%H%M%S')}"
+      end
+
+      def self.is_generic?( generic )
+        if generic != nil
+          if generic.is_a?( Maadi::Generic::Generic )
+            return true
+          end
+        end
+
+        return false
+      end
      end
   end
 end

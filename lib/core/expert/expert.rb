@@ -75,6 +75,16 @@ module Maadi
         Maadi::post_message(:Less, "Expert (#{@type}) is NO longer ready")
         super
       end
+
+      def self.is_expert?( expert )
+        if expert != nil
+          if expert.is_a?( Maadi::Expert::Expert )
+            return true
+          end
+        end
+
+        return false
+      end
     end
   end
 end

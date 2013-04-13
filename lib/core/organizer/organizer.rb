@@ -63,6 +63,16 @@ module Maadi
         Maadi::post_message(:Less, "Organizer (#{@type}) is NO longer ready")
         super
       end
+
+      def self.is_organizer?( organizer )
+        if organizer != nil
+          if organizer.is_a?( Maadi::Organizer::Organizer )
+            return true
+          end
+        end
+
+        return false
+      end
     end
   end
 end

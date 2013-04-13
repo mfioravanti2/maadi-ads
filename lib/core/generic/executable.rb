@@ -76,6 +76,16 @@ module Maadi
 
         return false
       end
+
+      def self.is_executable?( executable )
+        if executable != nil
+          if executable.is_a?( Maadi::Generic::Executable )
+            return true
+          end
+        end
+
+        return false
+      end
      end
   end
 end

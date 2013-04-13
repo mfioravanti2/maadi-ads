@@ -127,6 +127,16 @@ module Maadi
         @organizer.teardown
         Maadi::post_message(:Less, 'Generator is NO longer ready')
       end
+
+      def self.is_generator?( generator )
+        if generator != nil
+          if generator.is_a?( Maadi::Generator::Generator )
+            return true
+          end
+        end
+
+        return false
+      end
     end
   end
 end

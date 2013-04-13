@@ -9,6 +9,7 @@
 #          test results and generate a test report.
 
 require_relative '../generic/generic'
+require_relative '../collector/repository'
 
 module Maadi
   module Analyzer
@@ -16,6 +17,8 @@ module Maadi
       # type (String) is a convenient human readable label.
       def initialize(type)
         super(type)
+
+        @repositories = Array.new
       end
 
       # prepare will setup the execution environment.  No tests will be executed but all required
@@ -29,7 +32,15 @@ module Maadi
       # access the defined collector and generate a report
       # collector (Collector) repository for results analysis
       def report( collectors )
-        @collectors = collectors
+        if collectors != nil
+          if collectors.instance_of?( Array )
+            collectors.each do |collector|
+              if Maadi::Collector::is_repository?( collector )
+                @repositories.push collector
+              end
+            end
+          end
+        end
       end
 
       # return the name of the report that was generated.
@@ -41,6 +52,16 @@ module Maadi
       def teardown
         Maadi::post_message(:Less, "Analyzer (#{@type}) is NO longer ready")
         super
+      end
+
+      def self.is_analyzer?( analyzer )
+        if analyzer != nil
+          if analyzer.is_a?( Maadi::Analyzer::Analyzer )
+            return true
+          end
+        end
+
+        return false
       end
     end
   end

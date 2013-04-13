@@ -119,6 +119,16 @@ module Maadi
           end
         end
       end
+
+      def self.is_step?( step )
+        if step != nil
+          if step.is_a?( Maadi::Procedure::Step )
+            return true
+          end
+        end
+
+        return false
+      end
     end
   end
 end

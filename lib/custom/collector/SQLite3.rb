@@ -17,7 +17,7 @@ require_relative '../../core/helpers'
 
 module Maadi
   module Collector
-    class SQLite3 < Collector
+    class SQLite3 < Repository
 
       def initialize
         super('SQLite3')
@@ -128,7 +128,7 @@ module Maadi
             mId = @db.last_insert_row_id.to_s
             stm.close
           rescue ::SQLite3::Exception => e
-            Maadi::post_message(:Warn, "Collector (#{@type}:#{@instance_name}) encountered an error (#{e.message}).")
+            Maadi::post_message(:Warn, "Repository (#{@type}:#{@instance_name}) encountered an error (#{e.message}).")
           end
         end
       end
@@ -138,70 +138,68 @@ module Maadi
       def log_procedure( procedure )
         prId = -1
 
-        if procedure != nil
-          if procedure.is_a?( Maadi::Procedure::Procedure )
-            t = Time.now
-            log_time = "#{t.strftime('%Y/%m/%d %H:%M:%S')}"
+        if Maadi::Procedure::is_procedure?( procedure )
+          t = Time.now
+          log_time = "#{t.strftime('%Y/%m/%d %H:%M:%S')}"
 
-            if @db != nil
-              is_ok = false
+          if @db != nil
+            is_ok = false
 
-              begin
-                stm = @db.prepare( 'INSERT INTO tblProcedures (pTime, pProc) VALUES (?, ?)')
-                stm.bind_params( log_time, procedure.to_s )
-                rs = stm.execute
-                prId = @db.last_insert_row_id.to_s
-                stm.close
-                is_ok = true
-              rescue ::SQLite3::Exception => e
-                Maadi::post_message(:Warn, "Collector (#{@type}:#{@instance_name}) encountered an error (#{e.message}).")
-              end
+            begin
+              stm = @db.prepare( 'INSERT INTO tblProcedures (pTime, pProc) VALUES (?, ?)')
+              stm.bind_params( log_time, procedure.to_s )
+              rs = stm.execute
+              prId = @db.last_insert_row_id.to_s
+              stm.close
+              is_ok = true
+            rescue ::SQLite3::Exception => e
+              Maadi::post_message(:Warn, "Repository (#{@type}:#{@instance_name}) encountered an INSERT Procedure error (#{e.message}).")
+            end
 
-              if is_ok && prId != -1
-                # attempt to insert the procedure's steps into the tblSteps, since the tblProcedure INSERT was successful
-                # CREATE TABLE tblSteps ( sID integer primary key, pID integer, sLabel varchar(255), sCommand TEXT, sFinal TEXT)
+            if is_ok && prId != -1
+              # attempt to insert the procedure's steps into the tblSteps, since the tblProcedure INSERT was successful
+              # CREATE TABLE tblSteps ( sID integer primary key, pID integer, sLabel varchar(255), sCommand TEXT, sFinal TEXT)
 
-                procedure.steps.each do |step|
+              procedure.steps.each do |step|
+                is_ok = false
+                stId = -1
+
+                begin
+                  stm = @db.prepare( 'INSERT INTO tblSteps (pID, sLabel, sCommand, sFinal) VALUES (?, ?, ?, ?)')
+                  stm.bind_params( prId, step.id.to_s, step.command, step.execute )
+                  rs = stm.execute
+                  stId = @db.last_insert_row_id.to_s
+                  stm.close
+                  is_ok = true
+                rescue ::SQLite3::Exception => e
+                  Maadi::post_message(:Warn, "Repository (#{@type}:#{@instance_name}) encountered an INSERT Step error (#{e.message}).")
+                end
+
+                if is_ok && stId != -1
                   is_ok = false
-                  stId = -1
 
-                  begin
-                    stm = @db.prepare( 'INSERT INTO tblSteps (pID, sLabel, sCommand, sFinal) VALUES (?, ?, ?, ?)')
-                    stm.bind_params( prId, step.id.to_s, step.command, step.execute )
-                    rs = stm.execute
-                    stId = @db.last_insert_row_id.to_s
-                    stm.close
-                    is_ok = true
-                  rescue ::SQLite3::Exception => e
-                    Maadi::post_message(:Warn, "Collector (#{@type}:#{@instance_name}) encountered an error (#{e.message}).")
-                  end
+                  # attempt to insert the step's parameters into the tblParameters, since the tblSteps INSERT was successful
+                  # CREATE TABLE IF NOT EXISTS tblParameters ( pID integer primary key, sID integer, pLabel varchar(255), pValue varchar(255), pConstraint varchar(255))
 
-                  if is_ok && stId != -1
+                  step.parameters.each do |parameter|
                     is_ok = false
 
-                    # attempt to insert the step's parameters into the tblParameters, since the tblSteps INSERT was successful
-                    # CREATE TABLE IF NOT EXISTS tblParameters ( pID integer primary key, sID integer, pLabel varchar(255), pValue varchar(255), pConstraint varchar(255))
-
-                    step.parameters.each do |parameter|
-                      is_ok = false
-
-                      begin
-                        stm = @db.prepare( 'INSERT INTO tblParameters (sID, pLabel, pValue, pConstraint) VALUES (?, ?, ?, ?)')
-                        stm.bind_params( stId, parameter.label, parameter.value.to_s, parameter.constraint.to_s )
-                        rs = stm.execute
-                        stm.close
-                        is_ok = true
-                      rescue ::SQLite3::Exception => e
-                        Maadi::post_message(:Warn, "Collector (#{@type}:#{@instance_name}) encountered an error (#{e.message}).")
-                      end
-
-                      break if !is_ok
+                    begin
+                      stm = @db.prepare( 'INSERT INTO tblParameters (sID, pLabel, pValue, pConstraint) VALUES (?, ?, ?, ?)')
+                      stm.bind_params( stId, parameter.label, parameter.value.to_s, parameter.constraint.to_s )
+                      rs = stm.execute
+                      stm.close
+                      is_ok = true
+                    rescue ::SQLite3::Exception => e
+                      Maadi::post_message(:Warn, "Repository (#{@type}:#{@instance_name}) encountered an INSERT Parameter error (#{e.message}).")
                     end
-                  end
 
-                  # if we have encountered any INSERT errors, do not attempt to process any more INSERTs
-                  break if !is_ok
+                    break if !is_ok
+                  end
                 end
+
+                # if we have encountered any INSERT errors, do not attempt to process any more INSERTs
+                break if !is_ok
               end
             end
           end
@@ -213,48 +211,46 @@ module Maadi
       # procedure (Procedure) test procedure that was executed
       # results (Results) test results from executing the procedure against the application under test
       def log_results( application, procedure, results )
-        if (application != nil) && (procedure != nil) && (results != nil)
-          if (application.is_a?(Maadi::Application::Application)) && ( procedure.is_a?( Maadi::Procedure::Procedure ) ) && ( results.is_a?(Maadi::Procedure::Results) )
-            t = Time.now
-            log_time = "#{t.strftime('%Y/%m/%d %H:%M:%S')}"
+        if Maadi::Application::is_application?( application ) and Maadi::Procedure::is_procedure?( procedure ) and Maadi::Procedure::is_results?( results )
+          t = Time.now
+          log_time = "#{t.strftime('%Y/%m/%d %H:%M:%S')}"
 
-            if @db != nil
-              is_ok = false
-              rId = -1
+          if @db != nil
+            is_ok = false
+            rId = -1
 
-              begin
-                stm = @db.prepare( 'INSERT INTO tblResults (rTestId, rTime, rApp, rProc) VALUES (?, ?, ?, ?)')
-                stm.bind_params( procedure.key_id, log_time, application.to_s, procedure.to_s )
-                rs = stm.execute
-                rId = @db.last_insert_row_id.to_s
-                stm.close
-                is_ok = true
-              rescue ::SQLite3::Exception => e
-                Maadi::post_message(:Warn, "Collector (#{@type}:#{@instance_name}) encountered an error (#{e.message}).")
-              end
+            begin
+              stm = @db.prepare( 'INSERT INTO tblResults (rTestId, rTime, rApp, rProc) VALUES (?, ?, ?, ?)')
+              stm.bind_params( procedure.key_id, log_time, application.to_s, procedure.to_s )
+              rs = stm.execute
+              rId = @db.last_insert_row_id.to_s
+              stm.close
+              is_ok = true
+            rescue ::SQLite3::Exception => e
+              Maadi::post_message(:Warn, "Repository (#{@type}:#{@instance_name}) encountered an INSERT Results error (#{e.message}).")
+            end
 
-              if is_ok && rId != -1
-                # attempt to insert the procedure's steps into the tblSteps, since the tblProcedure INSERT was successful
-                # CREATE TABLE IF NOT EXISTS tblResultData ( dID integer primary key, rID integer, dStep varchar(255), dStatus varchar(255), dType varchar(255), dData TEXT)
+            if is_ok && rId != -1
+              # attempt to insert the procedure's steps into the tblSteps, since the tblProcedure INSERT was successful
+              # CREATE TABLE IF NOT EXISTS tblResultData ( dID integer primary key, rID integer, dStep varchar(255), dStatus varchar(255), dType varchar(255), dData TEXT)
 
-                results.results.each do |result|
-                  is_ok = false
-                  rdId = -1
+              results.results.each do |result|
+                is_ok = false
+                rdId = -1
 
-                  begin
-                    stm = @db.prepare( 'INSERT INTO tblResultData (rID, dStep, dStatus, dType, dData) VALUES (?, ?, ?, ?, ?)' )
-                    stm.bind_params( rId, result.step, result.status, result.type, result.data.to_s )
-                    rs = stm.execute
-                    rdId = @db.last_insert_row_id.to_s
-                    stm.close
-                    is_ok = true
-                  rescue ::SQLite3::Exception => e
-                    Maadi::post_message(:Warn, "Collector (#{@type}:#{@instance_name}) encountered an error (#{e.message}).")
-                  end
-
-                  # if we have encountered any INSERT errors, do not attempt to process any more INSERTs
-                  break if !is_ok
+                begin
+                  stm = @db.prepare( 'INSERT INTO tblResultData (rID, dStep, dStatus, dType, dData) VALUES (?, ?, ?, ?, ?)' )
+                  stm.bind_params( rId, result.step, result.status, result.type, result.data.to_s )
+                  rs = stm.execute
+                  rdId = @db.last_insert_row_id.to_s
+                  stm.close
+                  is_ok = true
+                rescue ::SQLite3::Exception => e
+                  Maadi::post_message(:Warn, "Repository (#{@type}:#{@instance_name}) encountered an INSERT Result error (#{e.message}).")
                 end
+
+                # if we have encountered any INSERT errors, do not attempt to process any more INSERTs
+                break if !is_ok
               end
             end
           end

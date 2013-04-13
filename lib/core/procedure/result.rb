@@ -28,6 +28,16 @@ module Maadi
       def to_s
         return @step.to_s
       end
+
+      def self.is_result?( result )
+        if result != nil
+          if result.is_a?( Maadi::Procedure::Result )
+            return true
+          end
+        end
+
+        return false
+      end
     end
   end
 end

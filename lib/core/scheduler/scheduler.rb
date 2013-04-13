@@ -128,6 +128,16 @@ module Maadi
         Maadi::post_message(:Less, "Scheduler (#{@type}) is NO longer ready")
         super
       end
+
+      def self.is_scheduler?( scheduler )
+        if scheduler != nil
+          if scheduler.is_a?( Maadi::Scheduler::Scheduler )
+            return true
+          end
+        end
+
+        return false
+      end
     end
   end
 end

@@ -88,6 +88,16 @@ module Maadi
       def report_name
 
       end
+
+      def self.is_manager?( manager )
+        if manager != nil
+          if manager.is_a?( Maadi::Manager::Manager )
+            return true
+          end
+        end
+
+        return false
+      end
     end
   end
 end

@@ -24,6 +24,16 @@ module Maadi
         return 'monitor'
       end
 
+      def self.is_monitor?( monitor )
+        if monitor != nil
+          if monitor.is_a?( Maadi::Monitor::Monitor )
+            return true
+          end
+        end
+
+        return false
+      end
+
       # query the monitor to determine if it is ready or has access to system data
       # return (bool) true if the monitor is ready with system information
       def is_ok?

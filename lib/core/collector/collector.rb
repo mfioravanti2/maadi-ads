@@ -10,8 +10,9 @@
 #          be queriable.  It could be implemented as a database or a simple log
 #          file.
 
+require_relative '../application/application'
 require_relative '../generic/generic'
-require_relative '../procedure/result'
+require_relative '../procedure/results'
 require_relative '../procedure/procedure'
 require_relative '../helpers'
 
@@ -51,10 +52,21 @@ module Maadi
 
       end
 
+      # log all of the options from a Maadi::Generic::Generic object
+      # generic (Generic) object to have all of it's options recorded in the database
+      # return N/A
+      def log_options( generic )
+        if Maadi::Generic::is_generic?( generic )
+
+        end
+      end
+
       # log a procedure to the database
       # procedure (Procedure) procedure to be recorded in the database
       def log_procedure( procedure )
+        if Maadi::Procedure::is_procedure?( procedure )
 
+        end
       end
 
       # log the results of a test procedure that was executed
@@ -62,13 +74,25 @@ module Maadi
       # procedure (Procedure) test procedure that was executed
       # results (Results) test results from executing the procedure against the application under test
       def log_results( application, procedure, results )
+        if Maadi::Application::is_application?( application ) and Maadi::Procedure::is_procedure?( procedure ) and Maadi::Procedure::is_results?( results )
 
+        end
       end
 
       # teardown will remove all of the resources and services that were created specifically for this test.
       def teardown
         Maadi::post_message(:Less, "Collector (#{@type}) is NO longer ready")
         super
+      end
+
+      def self.is_collector?( collector )
+        if collector != nil
+          if collector.is_a?( Maadi::Collector::Collector )
+            return true
+          end
+        end
+
+        return false
       end
     end
   end
