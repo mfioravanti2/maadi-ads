@@ -61,16 +61,16 @@ module Maadi
       # log a procedure to the database
       # procedure (Procedure) procedure to be recorded in the database
       def log_procedure( procedure )
-        if Maadi::Procedure::is_procedure?( procedure )
+        if Maadi::Procedure::Procedure::is_procedure?( procedure )
           t = Time.now
           File.open( @options['FILENAME'], 'a') do |f|
             f.puts "#{t.strftime('%Y%m%d%H%M%S')}\tPROCEDURE\t#{procedure.key_id}\t#{procedure.to_s}"
 
             procedure.steps.each do |step|
-              f.puts "\tSTEP\t#{step.id.to_s}\t#{step.command}\t#{step.execute}"
+              f.puts "\tSTEP\t#{step.key_id}\t#{step.id.to_s}\t#{step.command}\t#{step.execute}"
 
               step.parameters.each do |parameter|
-                f.puts "\tPARAMETER\t#{parameter.label}\t#{parameter.value.to_s}\t#{parameter.constraint.to_s}"
+                f.puts "\tPARAMETER\t#{parameter.key_id}\t#{parameter.label}\t#{parameter.value.to_s}\t#{parameter.constraint.to_s}"
               end
             end
           end
@@ -82,13 +82,13 @@ module Maadi
       # procedure (Procedure) test procedure that was executed
       # results (Results) test results from executing the procedure against the application under test
       def log_results( application, procedure, results )
-        if Maadi::Application::is_application?( application ) and Maadi::Procedure::is_procedure?( procedure ) and Maadi::Procedure::is_results?( results )
+        if Maadi::Application::Application::is_application?( application ) and Maadi::Procedure::Procedure::is_procedure?( procedure ) and Maadi::Procedure::Results::is_results?( results )
           t = Time.now
           File.open( @options['FILENAME'], 'a') do |f|
-            f.puts "#{t.strftime('%Y%m%d%H%M%S')}\tRESULTS\t#{results.source}\t#{application.to_s}\t#{procedure.to_s}\t#{results.to_s}"
+            f.puts "#{t.strftime('%Y%m%d%H%M%S')}\tRESULTS\t#{results.key_id}\t#{results.source}\t#{application.to_s}\t#{procedure.to_s}\t#{results.to_s}"
 
             results.results.each do |result|
-              f.puts "\tRESULT\t#{result.step}\t#{result.target}\t#{result.status}\t#{result.type}\t#{result.data.to_s}"
+              f.puts "\tRESULT\t#{result.key_id}\t#{result.step}\t#{result.target}\t#{result.status}\t#{result.type}\t#{result.data.to_s}"
             end
           end
         end

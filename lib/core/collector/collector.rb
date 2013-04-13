@@ -56,7 +56,7 @@ module Maadi
       # generic (Generic) object to have all of it's options recorded in the database
       # return N/A
       def log_options( generic )
-        if Maadi::Generic::is_generic?( generic )
+        if Maadi::Generic::Generic::is_generic?( generic )
 
         end
       end
@@ -64,7 +64,7 @@ module Maadi
       # log a procedure to the database
       # procedure (Procedure) procedure to be recorded in the database
       def log_procedure( procedure )
-        if Maadi::Procedure::is_procedure?( procedure )
+        if Maadi::Procedure::Procedure::is_procedure?( procedure )
 
         end
       end
@@ -74,7 +74,7 @@ module Maadi
       # procedure (Procedure) test procedure that was executed
       # results (Results) test results from executing the procedure against the application under test
       def log_results( application, procedure, results )
-        if Maadi::Application::is_application?( application ) and Maadi::Procedure::is_procedure?( procedure ) and Maadi::Procedure::is_results?( results )
+        if Maadi::Application::Application::is_application?( application ) and Maadi::Procedure::Procedure::is_procedure?( procedure ) and Maadi::Procedure::Results::is_results?( results )
 
         end
       end
