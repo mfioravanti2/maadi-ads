@@ -15,7 +15,7 @@ require_relative 'help'
 
 module Maadi
   module CLI
-    $logger = nil
+    $log_name = ''
 
     def self.save_profile( name )
       if File.exists?( name )
@@ -95,14 +95,15 @@ module Maadi
     end
 
     def self.process( commands )
-      unless $logger
+      if $log_name == ''
         t = Time.now
-        logger_name = "Maadi-#{t.strftime('%Y%m%d%H%M%S')}.cli"
-        $logger = File.open(logger_name, 'w')
+        $log_name = "Maadi-#{t.strftime('%Y%m%d%H%M%S')}.cli"
       end
 
-      if $logger
-        $logger.puts "#{commands.join(' ')}"
+      if $log_name != ''
+        File.open( $log_name, 'a' ) do |f|
+          f.puts "#{commands.join(' ')}"
+        end
       end
 
       case commands[0]
