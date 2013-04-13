@@ -8,6 +8,10 @@
 set collector SQLite3 SQLite3-Log
 set collector LogFile LogFile-Log
 set expert SQL SQL-Exp
+set expert option INSERT_RATIO 6
+set expert option SELECT_RATIO 6
+set expert option UPDATE_RATIO 4
+set expert option DELETE_RATIO 2
 set organizer RandomSelection RS-Organizer
 set monitor Example ExMon
 set application SQLite3 SQLite3-Oracle
