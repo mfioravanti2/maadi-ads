@@ -128,15 +128,15 @@ module Maadi
                     case step.look_for
                       when 'NORECORD'
                       when 'CHANGES'
-                        results.add_result( Maadi::Procedure::Result.new( step.id, step.target, @db.affected_rows, 'TEXT', 'SUCCESS' ))
+                        results.add_result( Maadi::Procedure::Result.new( step, @db.affected_rows, 'TEXT', 'SUCCESS' ))
                       when 'COMPLETED'
-                        results.add_result( Maadi::Procedure::Result.new( step.id, step.target, '', 'TEXT', 'SUCCESS' ))
+                        results.add_result( Maadi::Procedure::Result.new( step, '', 'TEXT', 'SUCCESS' ))
                       else
-                        results.add_result( Maadi::Procedure::Result.new( step.id, step.target, '', 'TEXT', 'UNKNOWN' ))
+                        results.add_result( Maadi::Procedure::Result.new( step, '', 'TEXT', 'UNKNOWN' ))
                     end
                   rescue => e
                     Maadi::post_message(:Warn, "Application (#{@type}:#{@instance_name}) encountered an error (#{e.message}).")
-                    results.add_result( Maadi::Procedure::Result.new( step.id, step.target, e.message, 'TEXT', 'EXCEPTION' ))
+                    results.add_result( Maadi::Procedure::Result.new( step, e.message, 'TEXT', 'EXCEPTION' ))
                   end
                 else
                   Maadi::post_message(:Warn, "Application (#{@type}:#{@instance_name}) encountered an unsupported step (#{procedure.id}, #{step.id}).")

@@ -10,23 +10,31 @@
 module Maadi
   module Procedure
     class Result
-      # step (String) which lists the name of the step that the result is associated with
-      # target (String) which lists the target of the step (either Monitor, Application or Tasker)
+      # step (Step) reference to a step object
       # data (String) which represents the actual result of the step
       # type (String) type of data which is being stored
       # status (String) the status of the result (SUCCESS, FAIL, EXCEPTION, UNKNOWN, etc.)
-      attr_accessor :step, :target, :data, :type, :status, :key_id
+      attr_accessor :step, :step_name, :step_key, :target, :data, :type, :status, :key_id
 
-      def initialize(step, target, data, type, status = 'UNKNOWN')
-        @step = step
-        @target = target
+      def initialize(step, data, type, status = 'UNKNOWN')
+        if step != nil
+          @step = step
+          @step_name = @step.to_s
+          @target = @step.target
+          @step_key = @step.key_id
+        else
+          @step_name = ''
+          @target = ''
+          @step_key = -1
+        end
+
         @data = data
         @type = type
         @status = status
       end
 
       def to_s
-        return @step.to_s
+        return @step_name
       end
 
       def self.is_result?( result )

@@ -107,6 +107,7 @@ module Maadi
                          rTime datetime,
                          rTestId integer,
                          rProc varchar(255),
+                         rProcId integer,
                          rApp varchar(255))
                       )
 
@@ -116,6 +117,7 @@ module Maadi
                          dID integer primary key,
                          rID integer,
                          dStep varchar(255),
+                         dStepId integer,
                          dStatus varchar(255),
                          dType varchar(255),
                          dData TEXT)
@@ -270,8 +272,8 @@ module Maadi
             rId = -1
 
             begin
-              stm = @db.prepare( 'INSERT INTO tblResults (rTestId, rTime, rApp, rProc) VALUES (?, ?, ?, ?)')
-              stm.bind_params( procedure.key_id, log_time, application.to_s, procedure.to_s )
+              stm = @db.prepare( 'INSERT INTO tblResults (rTestId, rTime, rApp, rProc, rProcId) VALUES (?, ?, ?, ?, ?)')
+              stm.bind_params( procedure.key_id, log_time, application.to_s, procedure.to_s, procedure.key_id )
               rs = stm.execute
               rId = @db.last_insert_row_id.to_s
               stm.close
@@ -292,8 +294,8 @@ module Maadi
                 rdId = -1
 
                 begin
-                  stm = @db.prepare( 'INSERT INTO tblResultData (rID, dStep, dStatus, dType, dData) VALUES (?, ?, ?, ?, ?)' )
-                  stm.bind_params( rId, result.step, result.status, result.type, result.data.to_s )
+                  stm = @db.prepare( 'INSERT INTO tblResultData (rID, dStep, dStepId, dStatus, dType, dData) VALUES (?, ?, ?, ?, ?, ?)' )
+                  stm.bind_params( rId, result.step_name, result.step_key, result.status, result.type, result.data.to_s )
                   rs = stm.execute
                   rdId = @db.last_insert_row_id.to_s
                   stm.close
