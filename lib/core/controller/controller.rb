@@ -65,9 +65,9 @@ module Maadi
 
               @applications.each do |application|
                 if application.works_with?( @generator.using_domain )
-                  Maadi::post_message(:Info, "Expert (#{@generator.using_domain}) and Application (#{application.type}) are compatible")
+                  Maadi::post_message(:Info, "Expert (#{@generator.using_domain}) and Application (#{application.type}:#{application.instance_name}) are compatible")
                 else
-                  Maadi::post_message(:Warn, "Expert (#{@generator.using_domain}) is NOT compatible with Application (#{application.type}) (#{application.supported_domains.join(', ')})")
+                  Maadi::post_message(:Warn, "Expert (#{@generator.using_domain}) is NOT compatible with Application (#{application.type}:#{application.instance_name}) (#{application.supported_domains.join(', ')})")
                   return @ready
                 end
 
@@ -93,7 +93,7 @@ module Maadi
                     failures += 1
 
                     if @options['SHOWFAILS'].downcase == 'true'
-                      puts "FAILED: #{procedure.id}"
+                      Maadi::post_message(:Warn, "Procedure FAILED: #{procedure.id}")
                     end
                   else
                     @scheduler.add_procedure( procedure )
