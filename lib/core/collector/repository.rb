@@ -69,17 +69,31 @@ module Maadi
         return Array.new
       end
 
-      # obtain a list of the procedures and their respective counts within the repository
-      # return (Array of Hashes) each hash contains :id is the procedure id, :count is the count
-      def procedure_counts
+      # obtain a list of the procedure names and their respective counts within the repository
+      # return (Array of Hashes) each hash contains :name is the procedure name, :count is the count
+      def procedure_name_counts
         return Array.new
       end
 
-      # obtain a list of the procedures and their respective counts within the repository,
+      # obtain a list of the procedure names and their respective counts within the repository,
+      # limited by a user specified status
+      # status (String) specifying the status to limit the counts
+      # return (Array of Hashes) each hash contains :name is the procedure name, :count is the count
+      def procedure_names_by_status( status )
+        return Array.new
+      end
+
+      # obtain a list of the procedures and their respective counts within the repository
+      # return (Array of Hashes) each hash contains :id is the procedure id, :count is the count
+      def procedure_id_counts
+        return Array.new
+      end
+
+      # obtain a list of the procedure ids and their respective counts within the repository,
       # limited by a user specified status
       # status (String) specifying the status to limit the counts
       # return (Array of Hashes) each hash contains :id is the procedure id, :count is the count
-      def procedures_by_status( status )
+      def procedure_ids_by_status( status )
         return Array.new
       end
 
