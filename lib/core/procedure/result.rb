@@ -19,7 +19,7 @@ module Maadi
       def initialize(step, data, type, status = 'UNKNOWN')
         if step != nil
           @step = step
-          @step_name = @step.to_s
+          @step_name = @step.id
           @target = @step.target
           @step_key = @step.key_id
         else
