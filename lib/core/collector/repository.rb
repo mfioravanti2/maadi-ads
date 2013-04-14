@@ -26,13 +26,13 @@ module Maadi
       # if it is a log file; open the file for write only/append
       def prepare
         Maadi::post_message(:More, "Repository (#{@type}) is ready")
-        super
+        super(false)
       end
 
       # teardown will remove all of the resources and services that were created specifically for this test.
       def teardown
         Maadi::post_message(:Less, "Repository (#{@type}) is NO longer ready")
-        super
+        super(false)
       end
 
       # return a procedure (Maadi::Procedure::Procedure) based on an id

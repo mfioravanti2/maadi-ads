@@ -36,12 +36,12 @@ module Maadi
         return @ready
       end
 
-      def prepare
+      def prepare( messaging = true )
         @ready = true
       end
 
       # teardown will remove all of the resources and services that were created specifically for this test.
-      def teardown
+      def teardown( messaging = true )
         @ready = false
       end
 
