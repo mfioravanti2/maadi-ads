@@ -130,7 +130,7 @@ module Maadi
         if tables.length == 0
           tbl_def = %q( CREATE VIEW IF NOT EXISTS qryResults AS
                          SELECT R.rTestId As qTestId, R.rProc As qProc, R.rProcId As qProcId, R.rApp As qApp,
-                                D.dStep As qStep, D.dStepId As qStepId, D.dStatus As qStatus, D.dData As qData
+                                D.dStep As qStep, D.dStepId As qStepId, D.dStatus As qStatus, D.dType As qType, D.dData As qData
                          FROM tblResults As R, tblResultData As D
                          WHERE D.rID = R.rID
                       )
@@ -643,6 +643,63 @@ module Maadi
             is_ok = true
           rescue ::SQLite3::Exception => e
             Maadi::post_message(:Warn, "Repository (#{@type}:#{@instance_name}) encountered an SELECT Procedure IDs by Mismatched Status Code error (#{e.message}).")
+          end
+        end
+
+        return procedures
+      end
+
+      # obtain a list of the procedures which have resultant numeric values which differ by epsilon value
+      # type (String) data types to compare, should be items such as INTEGER, FLOAT, etc.
+      #               TEXT should not be used with this function, procedure_ids_by_compare should be used.
+      # return (Array of String) contains a list of procedure ids which are different
+      def procedure_ids_by_delta( type, epsilon )
+        procedures = Array.new
+
+        if @db != nil
+          is_ok = false
+
+          begin
+            stm = @db.prepare( 'SELECT DISTINCT R1.qProcId FROM qryResults As R1, qryResults As R2 WHERE R1.qTestId = R2.qTestId AND R1.qType = ? AND R2.qType = ? AND ABS( R1.qData - R2.qData ) > ?')
+            stm.bind_params( type.to_s, type.to_s, epsilon )
+            rs = stm.execute
+
+            rs.each do |row|
+              procedures.push row['R1.qProcId']
+            end
+
+            stm.close
+            is_ok = true
+          rescue ::SQLite3::Exception => e
+            Maadi::post_message(:Warn, "Repository (#{@type}:#{@instance_name}) encountered an SELECT Procedure IDs by Data Difference (Epsilon Compare) error (#{e.message}).")
+          end
+        end
+
+        return procedures
+      end
+
+      # obtain a list of the procedures which have status codes that do not match within the repository
+      # type (String) data types to compare.
+      # return (Array of String) contains a list of procedure ids which are different
+      def procedure_ids_by_compare( type )
+        procedures = Array.new
+
+        if @db != nil
+          is_ok = false
+
+          begin
+            stm = @db.prepare( 'SELECT DISTINCT R1.qProcId FROM qryResults As R1, qryResults As R2 WHERE R1.qTestId = R2.qTestId AND R1.qType = ? AND R2.qType = ? AND R1.qData != R2.qData')
+            stm.bind_params( type.to_s, type.to_s )
+            rs = stm.execute
+
+            rs.each do |row|
+              procedures.push row['R1.qProcId']
+            end
+
+            stm.close
+            is_ok = true
+          rescue ::SQLite3::Exception => e
+            Maadi::post_message(:Warn, "Repository (#{@type}:#{@instance_name}) encountered an SELECT Procedure IDs by Dta Difference (Explicit Compare) error (#{e.message}).")
           end
         end
 
