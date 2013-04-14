@@ -453,12 +453,27 @@ module Maadi
       end
 
       # obtain a list of the procedures and their respective counts within the repository
-      # return (Array of Hashes) each hash contains :id is the procedure id, :count is the count
-      def procedure_counts
+      # return (Array of Hashes) each hash contains :name is the procedure name, :count is the count
+      def procedure_name_counts
         counts = Array.new
 
         if @db != nil
+          is_ok = false
 
+          begin
+            stm = @db.prepare( 'SELECT qProc, COUNT( qProc ) As qCount FROM qryResults GROUP BY qProc ORDER BY qProc')
+            rs = stm.execute
+
+            rs.each do |row|
+              result = { 'name' => row['qProc'], 'count' => row['qCount'] }
+              counts.push result
+            end
+
+            stm.close
+            is_ok = true
+          rescue ::SQLite3::Exception => e
+            Maadi::post_message(:Warn, "Repository (#{@type}:#{@instance_name}) encountered an SELECT statuses error (#{e.message}).")
+          end
         end
 
         return counts
@@ -468,7 +483,48 @@ module Maadi
       # limited by a user specified status
       # status (String) specifying the status to limit the counts
       # return (Array of Hashes) each hash contains :id is the procedure id, :count is the count
-      def procedures_by_status( status )
+      def procedure_names_by_status( status )
+        procedures = Array.new
+
+        if @db != nil
+
+        end
+
+        return procedures
+      end
+
+      # obtain a list of the procedures and their respective counts within the repository
+      # return (Array of Hashes) each hash contains :id is the procedure id, :count is the count
+      def procedure_id_counts
+        counts = Array.new
+
+        if @db != nil
+          is_ok = false
+
+          begin
+            stm = @db.prepare( 'SELECT qProcId, COUNT( qProcId ) As qCount FROM qryResults GROUP BY qProcId ORDER BY qProcId')
+            rs = stm.execute
+
+            rs.each do |row|
+              result = { 'id' => row['qProcId'], 'count' => row['qCount'] }
+              counts.push result
+            end
+
+            stm.close
+            is_ok = true
+          rescue ::SQLite3::Exception => e
+            Maadi::post_message(:Warn, "Repository (#{@type}:#{@instance_name}) encountered an SELECT Procedure Id Counts error (#{e.message}).")
+          end
+        end
+
+        return counts
+      end
+
+      # obtain a list of the procedure ids and their respective counts within the repository,
+      # limited by a user specified status
+      # status (String) specifying the status to limit the counts
+      # return (Array of Hashes) each hash contains :id is the procedure id, :count is the count
+      def procedure_ids_by_status( status )
         procedures = Array.new
 
         if @db != nil
