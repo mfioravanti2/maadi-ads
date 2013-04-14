@@ -567,12 +567,27 @@ module Maadi
       end
 
       # obtain a list of the steps and their respective counts within the repository
-      # return (Array of Hashes) each hash contains :id is the step id, :count is the count
+      # return (Array of Hashes) each hash contains :name is the step name, :count is the count
       def step_counts
         steps = Array.new
 
         if @db != nil
+          is_ok = false
 
+          begin
+            stm = @db.prepare( 'SELECT qStep, COUNT( qStep ) As qCount FROM qryResults GROUP BY qStep ORDER BY qStep')
+            rs = stm.execute
+
+            rs.each do |row|
+              result = { 'name' => row['qStep'], 'count' => row['qCount'] }
+              steps.push result
+            end
+
+            stm.close
+            is_ok = true
+          rescue ::SQLite3::Exception => e
+            Maadi::post_message(:Warn, "Repository (#{@type}:#{@instance_name}) encountered an SELECT Step Counts error (#{e.message}).")
+          end
         end
 
         return steps
@@ -581,12 +596,28 @@ module Maadi
       # obtain a list of the step and their respective counts within the repository,
       # limited by a user specified status
       # status (String) specifying the status to limit the counts
-      # return (Array of Hashes) each hash contains :id is the step id, :count is the count
+      # return (Array of Hashes) each hash contains :name is the step name :status is the status, :count is the count
       def steps_by_status( status )
         steps = Array.new
 
         if @db != nil
+          is_ok = false
 
+          begin
+            stm = @db.prepare( 'SELECT qStep, qStatus, COUNT( qStatus ) As qCount FROM qryResults WHERE qStatus = ? GROUP BY qStep, qStatus ORDER BY qStep, qStatus')
+            stm.bind_params( status.to_s )
+            rs = stm.execute
+
+            rs.each do |row|
+              result = { 'name' => row['qStep'], 'status' => row['qStatus'], 'count' => row['qCount'] }
+              steps.push result
+            end
+
+            stm.close
+            is_ok = true
+          rescue ::SQLite3::Exception => e
+            Maadi::post_message(:Warn, "Repository (#{@type}:#{@instance_name}) encountered an SELECT Step Counts by Status Code error (#{e.message}).")
+          end
         end
 
         return steps
