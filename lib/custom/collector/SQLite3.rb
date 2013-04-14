@@ -404,7 +404,22 @@ module Maadi
         counts = Array.new
 
         if @db != nil
+          is_ok = false
 
+          begin
+            stm = @db.prepare( 'SELECT qStatus, COUNT( qStatus ) As qCount FROM qryResults GROUP BY qStatus ORDER BY qStatus')
+            rs = stm.execute
+
+            rs.each do |row|
+              result = { 'status' => row['qStatus'], 'count' => row['qCount'] }
+              counts.push result
+            end
+
+            stm.close
+            is_ok = true
+          rescue ::SQLite3::Exception => e
+            Maadi::post_message(:Warn, "Repository (#{@type}:#{@instance_name}) encountered an SELECT statuses error (#{e.message}).")
+          end
         end
 
         return counts
