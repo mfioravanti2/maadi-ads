@@ -117,6 +117,21 @@ module Maadi
         return Array.new
       end
 
+      # obtain a list of the procedures which have resultant numeric values which differ by epsilon value
+      # type (String) data types to compare, should be items such as INTEGER, FLOAT, etc.
+      #               TEXT should not be used with this function, procedure_ids_by_compare should be used.
+      # return (Array of String) contains a list of procedure ids which are different
+      def procedure_ids_by_delta( type, epsilon )
+        return Array.new
+      end
+
+      # obtain a list of the procedures which have status codes that do not match within the repository
+      # type (String) data types to compare.
+      # return (Array of String) contains a list of procedure ids which are different
+      def procedure_ids_by_compare( type )
+        return Array.new
+      end
+
       def self.is_repository?( repository )
         if repository != nil
           if repository.is_a?( Maadi::Collector::Repository )
