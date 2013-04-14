@@ -316,6 +316,124 @@ module Maadi
         end
       end
 
+      # return a procedure (Maadi::Procedure::Procedure) based on an id
+      def procedure( id )
+        if @db != nil
+
+        end
+
+        return nil
+      end
+
+      # obtain a results (Maadi::Procedure::Results) based on an id
+      def results( id )
+        if @db != nil
+
+        end
+
+        return nil
+      end
+
+      # obtain a list of status found within the results of repository
+      # return (Array of String) each element represents a different status within the repository
+      def statuses
+        list = Array.new
+
+        if @db != nil
+
+        end
+
+        return list
+      end
+
+      # obtain a list of applications found within the results of repository
+      # return (Array of String) each element represents a different application within the repository
+      def applications
+        list = Array.new
+
+        if @db != nil
+
+        end
+
+        return list
+      end
+
+      # obtain a list of status and their respective counts found within the repository
+      # return (Array of Hashes) each hash contains :status is the status, :count is the count
+      def status_counts
+        counts = Array.new
+
+        if @db != nil
+
+        end
+
+        return counts
+      end
+
+      # obtain a list of status and their respective counts for each application found within the repository
+      # return (Array of Hashes) each hash contains :app is the application, :status is the status, :count is the count
+      def status_counts_by_application
+        counts = Array.new
+
+        if @db != nil
+
+        end
+
+        return counts
+      end
+
+      # obtain a list of the procedures and their respective counts within the repository
+      # return (Array of Hashes) each hash contains :id is the procedure id, :count is the count
+      def procedure_counts
+        counts = Array.new
+
+        if @db != nil
+
+        end
+
+        return counts
+      end
+
+      # obtain a list of the procedures and their respective counts within the repository,
+      # limited by a user specified status
+      # status (String) specifying the status to limit the counts
+      # return (Array of Hashes) each hash contains :id is the procedure id, :count is the count
+      def procedures_by_status( status )
+        procedures = Array.new
+
+        if @db != nil
+
+        end
+
+        return procedures
+      end
+
+      # obtain a list of the steps and their respective counts within the repository
+      # return (Array of Hashes) each hash contains :id is the step id, :count is the count
+      def step_counts
+        steps = Array.new
+
+        if @db != nil
+
+        end
+
+        return steps
+      end
+
+      # obtain a list of the step and their respective counts within the repository,
+      # limited by a user specified status
+      # status (String) specifying the status to limit the counts
+      # return (Array of Hashes) each hash contains :id is the step id, :count is the count
+      def steps_by_status( status )
+        steps = Hash.new
+
+        if @db != nil
+
+        end
+
+        return steps
+      end
+
       # teardown will remove all of the resources and services that were created specifically for this test.
       def teardown
         @db.close

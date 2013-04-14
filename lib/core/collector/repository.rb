@@ -58,43 +58,43 @@ module Maadi
       end
 
       # obtain a list of status and their respective counts found within the repository
-      # return (Hash) :status is the status, :count is the count
+      # return (Array of Hashes) each hash contains :status is the status, :count is the count
       def status_counts
-        return Hash.new
+        return Array.new
       end
 
-      # obtain a list of status and their respective counts found within the repository
-      # return (Hash) :status is the status, :count is the count
+      # obtain a list of status and their respective counts for each application found within the repository
+      # return (Array of Hashes) each hash contains :app is the application, :status is the status, :count is the count
       def status_counts_by_application
-        return Hash.new
+        return Array.new
       end
 
       # obtain a list of the procedures and their respective counts within the repository
-      # return (Hash) :id is the procedure id, :count is the count
+      # return (Array of Hashes) each hash contains :id is the procedure id, :count is the count
       def procedure_counts
-        return Hash.new
+        return Array.new
       end
 
       # obtain a list of the procedures and their respective counts within the repository,
       # limited by a user specified status
       # status (String) specifying the status to limit the counts
-      # return (Hash) :id is the procedure id, :count is the count
+      # return (Array of Hashes) each hash contains :id is the procedure id, :count is the count
       def procedures_by_status( status )
-        return Hash.new
+        return Array.new
       end
 
       # obtain a list of the steps and their respective counts within the repository
-      # return (Hash) :id is the step id, :count is the count
+      # return (Array of Hashes) each hash contains :id is the step id, :count is the count
       def step_counts
-        return Hash.new
+        return Array.new
       end
 
       # obtain a list of the step and their respective counts within the repository,
       # limited by a user specified status
       # status (String) specifying the status to limit the counts
-      # return (Hash) :id is the step id, :count is the count
+      # return (Array of Hashes) each hash contains :id is the step id, :count is the count
       def steps_by_status( status )
-        return Hash.new
+        return Array.new
       end
 
       def self.is_repository?( repository )
