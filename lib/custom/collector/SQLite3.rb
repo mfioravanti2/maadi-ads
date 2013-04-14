@@ -355,7 +355,7 @@ module Maadi
           is_ok = false
 
           begin
-            stm = @db.prepare( 'SELECT qStatus FROM qryResults GROUP BY qStatus ORDER BY qStatus;')
+            stm = @db.prepare( 'SELECT qStatus FROM qryResults GROUP BY qStatus ORDER BY qStatus')
             rs = stm.execute
 
             rs.each do |row|
@@ -378,7 +378,21 @@ module Maadi
         list = Array.new
 
         if @db != nil
+          is_ok = false
 
+          begin
+            stm = @db.prepare( 'SELECT qApp FROM qryResults GROUP BY qApp ORDER BY qApp')
+            rs = stm.execute
+
+            rs.each do |row|
+              list.push row['qApp']
+            end
+
+            stm.close
+            is_ok = true
+          rescue ::SQLite3::Exception => e
+            Maadi::post_message(:Warn, "Repository (#{@type}:#{@instance_name}) encountered an SELECT applications error (#{e.message}).")
+          end
         end
 
         return list
