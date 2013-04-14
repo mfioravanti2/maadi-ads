@@ -125,6 +125,18 @@ module Maadi
 
           @db.execute( tbl_def )
         end
+
+        tables = @db.execute('SELECT name FROM sqlite_master WHERE type="view" AND name="qryResults" ORDER BY name')
+        if tables.length == 0
+          tbl_def = %q( CREATE VIEW IF NOT EXISTS qryResults AS
+                         SELECT R.rTestId As qTestId, R.rProc As qProc, R.rProcId As qProcId, R.rApp As qApp,
+                                D.dStep As qStep, D.dStepId As qStepId, D.dStatus As qStatus, D.dData As qData
+                         FROM tblResults As R, tblResultData As D
+                         WHERE D.rID = R.rID
+                      )
+
+          @db.execute( tbl_def )
+        end
       end
 
       # log a message to the database
@@ -425,7 +437,7 @@ module Maadi
       # status (String) specifying the status to limit the counts
       # return (Array of Hashes) each hash contains :id is the step id, :count is the count
       def steps_by_status( status )
-        steps = Hash.new
+        steps = Array.new
 
         if @db != nil
 
