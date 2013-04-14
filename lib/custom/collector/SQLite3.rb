@@ -365,7 +365,7 @@ module Maadi
             stm.close
             is_ok = true
           rescue ::SQLite3::Exception => e
-            Maadi::post_message(:Warn, "Repository (#{@type}:#{@instance_name}) encountered an SELECT statuses error (#{e.message}).")
+            Maadi::post_message(:Warn, "Repository (#{@type}:#{@instance_name}) encountered an SELECT Status Codes error (#{e.message}).")
           end
         end
 
@@ -391,7 +391,7 @@ module Maadi
             stm.close
             is_ok = true
           rescue ::SQLite3::Exception => e
-            Maadi::post_message(:Warn, "Repository (#{@type}:#{@instance_name}) encountered an SELECT applications error (#{e.message}).")
+            Maadi::post_message(:Warn, "Repository (#{@type}:#{@instance_name}) encountered an SELECT Applications error (#{e.message}).")
           end
         end
 
@@ -418,7 +418,7 @@ module Maadi
             stm.close
             is_ok = true
           rescue ::SQLite3::Exception => e
-            Maadi::post_message(:Warn, "Repository (#{@type}:#{@instance_name}) encountered an SELECT statuses error (#{e.message}).")
+            Maadi::post_message(:Warn, "Repository (#{@type}:#{@instance_name}) encountered an SELECT Status Code Counts error (#{e.message}).")
           end
         end
 
@@ -445,7 +445,7 @@ module Maadi
             stm.close
             is_ok = true
           rescue ::SQLite3::Exception => e
-            Maadi::post_message(:Warn, "Repository (#{@type}:#{@instance_name}) encountered an SELECT statuses error (#{e.message}).")
+            Maadi::post_message(:Warn, "Repository (#{@type}:#{@instance_name}) encountered an SELECT Status Codes by Application error (#{e.message}).")
           end
         end
 
@@ -472,7 +472,7 @@ module Maadi
             stm.close
             is_ok = true
           rescue ::SQLite3::Exception => e
-            Maadi::post_message(:Warn, "Repository (#{@type}:#{@instance_name}) encountered an SELECT statuses error (#{e.message}).")
+            Maadi::post_message(:Warn, "Repository (#{@type}:#{@instance_name}) encountered an SELECT Procedure Name Counts error (#{e.message}).")
           end
         end
 
@@ -482,12 +482,28 @@ module Maadi
       # obtain a list of the procedures and their respective counts within the repository,
       # limited by a user specified status
       # status (String) specifying the status to limit the counts
-      # return (Array of Hashes) each hash contains :id is the procedure id, :count is the count
+      # return (Array of Hashes) each hash contains :name is the procedure name, :status is the status, :count is the count
       def procedure_names_by_status( status )
         procedures = Array.new
 
         if @db != nil
+          is_ok = false
 
+          begin
+            stm = @db.prepare( 'SELECT qProc, qStatus, COUNT( qStatus ) As qCount FROM qryResults WHERE qStatus = ? GROUP BY qProc, qStatus ORDER BY qProc, qStatus')
+            stm.bind_params( status.to_s )
+            rs = stm.execute
+
+            rs.each do |row|
+              result = { 'name' => row['qProc'], 'status' => row['qStatus'], 'count' => row['qCount'] }
+              procedures.push result
+            end
+
+            stm.close
+            is_ok = true
+          rescue ::SQLite3::Exception => e
+            Maadi::post_message(:Warn, "Repository (#{@type}:#{@instance_name}) encountered an SELECT Procedure Names by Status Code error (#{e.message}).")
+          end
         end
 
         return procedures
@@ -513,7 +529,7 @@ module Maadi
             stm.close
             is_ok = true
           rescue ::SQLite3::Exception => e
-            Maadi::post_message(:Warn, "Repository (#{@type}:#{@instance_name}) encountered an SELECT Procedure Id Counts error (#{e.message}).")
+            Maadi::post_message(:Warn, "Repository (#{@type}:#{@instance_name}) encountered an SELECT Procedure ID Counts error (#{e.message}).")
           end
         end
 
@@ -528,7 +544,23 @@ module Maadi
         procedures = Array.new
 
         if @db != nil
+          is_ok = false
 
+          begin
+            stm = @db.prepare( 'SELECT qProcId, qStatus, COUNT( qStatus ) As qCount FROM qryResults WHERE qStatus = ? GROUP BY qProcId, qStatus ORDER BY qProcId, qStatus')
+            stm.bind_params( status.to_s )
+            rs = stm.execute
+
+            rs.each do |row|
+              result = { 'id' => row['qProcId'], 'status' => row['qStatus'], 'count' => row['qCount'] }
+              procedures.push result
+            end
+
+            stm.close
+            is_ok = true
+          rescue ::SQLite3::Exception => e
+            Maadi::post_message(:Warn, "Repository (#{@type}:#{@instance_name}) encountered an SELECT Procedure IDs by Status Code error (#{e.message}).")
+          end
         end
 
         return procedures
