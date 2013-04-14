@@ -623,6 +623,33 @@ module Maadi
         return steps
       end
 
+      # obtain a list of the procedures which have status codes that do not match within the repository
+      # return (Array of String) contains a list of procedure ids which do not match
+      def procedure_ids_by_mismatch
+        procedures = Array.new
+
+        if @db != nil
+          is_ok = false
+
+          begin
+            stm = @db.prepare( 'SELECT DISTINCT R1.qProcId FROM qryResults As R1, qryResults As R2 WHERE R1.qTestId = R2.qTestId AND R1.qStatus != R2.qStatus')
+            rs = stm.execute
+
+            rs.each do |row|
+              procedures.push row['R1.qProcId']
+            end
+
+            stm.close
+            is_ok = true
+          rescue ::SQLite3::Exception => e
+            Maadi::post_message(:Warn, "Repository (#{@type}:#{@instance_name}) encountered an SELECT Procedure IDs by Mismatched Status Code error (#{e.message}).")
+          end
+        end
+
+        return procedures
+      end
+
+
       # teardown will remove all of the resources and services that were created specifically for this test.
       def teardown
         @db.close
