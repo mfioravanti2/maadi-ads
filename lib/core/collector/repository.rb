@@ -111,6 +111,12 @@ module Maadi
         return Array.new
       end
 
+      # obtain a list of the procedures which have status codes that do not match within the repository
+      # return (Array of String) contains a list of procedure ids which do not match
+      def procedure_ids_by_mismatch
+        return Array.new
+      end
+
       def self.is_repository?( repository )
         if repository != nil
           if repository.is_a?( Maadi::Collector::Repository )
