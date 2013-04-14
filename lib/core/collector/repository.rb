@@ -35,6 +35,68 @@ module Maadi
         super
       end
 
+      # return a procedure (Maadi::Procedure::Procedure) based on an id
+      def procedure( id )
+        return nil
+      end
+
+      # obtain a results (Maadi::Procedure::Results) based on an id
+      def results( id )
+        return nil
+      end
+
+      # obtain a list of status found within the results of repository
+      # return (Array of String) each element represents a different status within the repository
+      def statuses
+        return Array.new
+      end
+
+      # obtain a list of applications found within the results of repository
+      # return (Array of String) each element represents a different application within the repository
+      def applications
+        return Array.new
+      end
+
+      # obtain a list of status and their respective counts found within the repository
+      # return (Hash) :status is the status, :count is the count
+      def status_counts
+        return Hash.new
+      end
+
+      # obtain a list of status and their respective counts found within the repository
+      # return (Hash) :status is the status, :count is the count
+      def status_counts_by_application
+        return Hash.new
+      end
+
+      # obtain a list of the procedures and their respective counts within the repository
+      # return (Hash) :id is the procedure id, :count is the count
+      def procedure_counts
+        return Hash.new
+      end
+
+      # obtain a list of the procedures and their respective counts within the repository,
+      # limited by a user specified status
+      # status (String) specifying the status to limit the counts
+      # return (Hash) :id is the procedure id, :count is the count
+      def procedures_by_status( status )
+        return Hash.new
+      end
+
+      # obtain a list of the steps and their respective counts within the repository
+      # return (Hash) :id is the step id, :count is the count
+      def step_counts
+        return Hash.new
+      end
+
+      # obtain a list of the step and their respective counts within the repository,
+      # limited by a user specified status
+      # status (String) specifying the status to limit the counts
+      # return (Hash) :id is the step id, :count is the count
+      def steps_by_status( status )
+        return Hash.new
+      end
+
       def self.is_repository?( repository )
         if repository != nil
           if repository.is_a?( Maadi::Collector::Repository )
