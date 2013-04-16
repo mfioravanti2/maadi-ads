@@ -22,7 +22,7 @@ module Maadi
       def analyze
         if @repositories.length > 0
           @repositories.each do |repository|
-            Maadi::post_message(:Info, "Analyzer (#{repository.to_s}) Results")
+            Maadi::post_message(:Info, "Analyzer checking (#{repository.to_s}) for results")
 
             puts
             puts 'Procedures that have results which differ between applications'
