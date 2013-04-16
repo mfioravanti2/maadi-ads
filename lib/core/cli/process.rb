@@ -189,6 +189,15 @@ module Maadi
             Maadi::post_message(:Warn, "\tManager is not ready, use 'show' to determine what is not ready")
           end
         when 'report'
+          if $manager != nil
+            if $manager.is_prepared?
+              $manager.report
+            else
+              Maadi::post_message(:Warn, "\tManager is not ready, use 'prep' to prepare the environment")
+            end
+          else
+            Maadi::post_message(:Warn, "\tManager is not ready, use 'show' to determine what is not ready")
+          end
         when 'save'
           if commands.length > 1
             save_profile( commands[1] )

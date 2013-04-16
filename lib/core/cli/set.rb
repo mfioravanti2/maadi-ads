@@ -30,45 +30,59 @@ module Maadi
           $collectors.each do |collector|
             if collector.instance_name == instance_name
               collector.set_option( option, value )
+              Maadi::post_message(:Warn, "Collector (#{collector.to_s}) option #{option} set to #{value}")
             end
           end
         when 'controller'
           if $controller != nil
             $controller.set_option( option, value )
+            Maadi::post_message(:Warn, "Controller option #{option} set to #{value}")
           end
         when 'expert'
           if $expert != nil
             $expert.set_option( option, value )
+            Maadi::post_message(:Warn, "Expert (#{$expert.to_s}) option #{option} set to #{value}")
           end
         when 'organizer'
           if $organizer != nil
             $organizer.set_option( option, value )
+            Maadi::post_message(:Warn, "Organizer (#{$organizer.to_s}) option #{option} set to #{value}")
           end
         when 'scheduler'
           if $scheduler != nil
             $scheduler.set_option( option, value )
+            Maadi::post_message(:Warn, "Scheduler (#{$scheduler.to_s}) option #{option} set to #{value}")
           end
         when 'application'
           $applications.each do |application|
             if application.instance_name == instance_name
               application.set_option( option, value )
+              Maadi::post_message(:Warn, "Application (#{application.to_s}) option #{option} set to #{value}")
             end
           end
         when 'monitor'
           $monitors.each do |monitor|
             if monitor.instance_name == instance_name
               monitor.set_option( option, value )
+              Maadi::post_message(:Warn, "Monitor (#{monitor.to_s}) option #{option} set to #{value}")
             end
           end
         when 'tasker'
           $taskers.each do |tasker|
             if tasker.instance_name == instance_name
               tasker.set_option( option, value )
+              Maadi::post_message(:Warn, "Tasker (#{tasker.to_s}) option #{option} set to #{value}")
             end
           end
         when 'analyzer'
           if $analyzer != nil
             $analyzer.set_option( option, value )
+            Maadi::post_message(:Warn, "Analyzer (#{$analyzer.to_s}) option #{option} set to #{value}")
+          end
+        when 'manager'
+          if $manager != nil
+            $manager.set_option( option, value )
+            Maadi::post_message(:Warn, "Manager (#{$manager.to_s}) option #{option} set to #{value}")
           end
         else
       end
@@ -87,6 +101,7 @@ module Maadi
           if $runs < 1
             $runs = 1
           end
+          Maadi::post_message(:Warn, "Runs set to #{$runs}")
 
           if $controller != nil
             $controller.runs = $runs

@@ -18,6 +18,24 @@ module Maadi
       def initialize
         super('Comparison')
       end
+
+      def analyze
+        if @repositories.length > 0
+          @repositories.each do |repository|
+            Maadi::post_message(:Info, "Analyzer (#{repository.to_s}) Results")
+
+            puts
+            puts 'Procedures that have results which differ between applications'
+            list = repository.procedure_ids_by_mismatch
+
+            if list.length > 0
+              puts "\tIDs: #{list.join(', ')}"
+            else
+              puts "\tNo Procedural result differences found."
+            end
+          end
+        end
+      end
     end
   end
 end

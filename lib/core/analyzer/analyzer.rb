@@ -35,12 +35,20 @@ module Maadi
         if collectors != nil
           if collectors.instance_of?( Array )
             collectors.each do |collector|
-              if Maadi::Collector::is_repository?( collector )
+              if Maadi::Collector::Repository::is_repository?( collector )
                 @repositories.push collector
               end
             end
+
+            if @repositories.length > 0
+              analyze
+            end
           end
         end
+      end
+
+      def analyze
+
       end
 
       # return the name of the report that was generated.

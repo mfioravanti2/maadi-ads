@@ -151,6 +151,10 @@ module Maadi
           if $analyzer != nil
             show_options( 'Analyzer', $analyzer, $analyzer.options )
           end
+        when 'manager'
+          if $analyzer != nil
+            show_options( 'Manager', $manager, $manager.options )
+          end
         else
           Maadi::post_message(:Warn, "Incorrect usage, #{type} is an unrecognized option")
       end

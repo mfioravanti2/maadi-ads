@@ -14,12 +14,15 @@ require_relative '../helpers'
 
 module Maadi
   module Manager
-    class Manager
+    class Manager < Maadi::Generic::Generic
 
       # collector (Collector) is an object that will be used to store the test procedures and results
       # runs (Integer) is the number of runs that will be executed.
       # analyzer (Analyzer) is an object that analyze the results which are stored in the collector
       def initialize( collectors, controller, analyzer )
+        super('Manager')
+        @instance_name = 'Manager'
+
         @collectors = collectors
         @analyzer = analyzer
 
@@ -67,7 +70,7 @@ module Maadi
       def start
         if @is_prepared
           Maadi::post_message(:Info, 'Manager started')
-          done = @controller.start
+          @done = @controller.start
           Maadi::post_message(:Info, 'Manager stopped')
         end
       end
