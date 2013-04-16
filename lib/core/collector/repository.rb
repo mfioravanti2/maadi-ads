@@ -25,13 +25,13 @@ module Maadi
       # if it is a database; connect to the database, validate the schema
       # if it is a log file; open the file for write only/append
       def prepare
-        Maadi::post_message(:More, "Repository (#{@type}) is ready")
+        Maadi::post_message(:More, "Repository (#{@type}:#{@instance_name}) is ready")
         super(false)
       end
 
       # teardown will remove all of the resources and services that were created specifically for this test.
       def teardown
-        Maadi::post_message(:Less, "Repository (#{@type}) is NO longer ready")
+        Maadi::post_message(:Less, "Repository (#{@type}:#{@instance_name}) is NO longer ready")
         super(false)
       end
 

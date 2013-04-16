@@ -25,7 +25,7 @@ module Maadi
       # resources and services will be prepared to execution.
       # return (bool) true if all of the components are read.
       def prepare
-        Maadi::post_message(:More, "Analyzer (#{@type}) is ready")
+        Maadi::post_message(:More, "Analyzer (#{@type}:#{@instance_name}) is ready")
         super
       end
 
@@ -58,7 +58,7 @@ module Maadi
 
       # teardown will remove all of the resources and services that were created specifically for this test.
       def teardown
-        Maadi::post_message(:Less, "Analyzer (#{@type}) is NO longer ready")
+        Maadi::post_message(:Less, "Analyzer (#{@type}:#{@instance_name}) is NO longer ready")
         super
       end
 
