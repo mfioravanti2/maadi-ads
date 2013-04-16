@@ -47,6 +47,8 @@ module Maadi
         @options['DELETE_RATIO'] = 1
         @options['DROP_RATIO'] = 1
 
+        @options['AUTO_INC'] = 'AUTO_INCREMENT'
+
         @notes['MODELS'] = 'SINGLE - Use a single Database, MULTI - Use multiple databases (allow CREATE/DROP DATABASE)'
         @notes['DBASE_MINLEN'] = 'Minimum character length of a DATABASE\'S name'
         @notes['DBASE_MAXLEN'] = 'Maximum character length of a DATABASE\'S name'
@@ -63,6 +65,8 @@ module Maadi
         @notes['UPDATE_RATIO'] = 'Relative Ratio for UPDATE commands (0 or less, ignore command type)'
         @notes['DELETE_RATIO'] = 'Relative Ratio for DELETE commands (0 or less, ignore command type)'
         @notes['DROP_RATIO'] = 'Relative Ratio for DROP commands (0 or less, ignore command type)'
+
+        @notes['AUTO_INC'] = "Auto Increment keyword for database SQLite3 = 'AUTOINCREMENT', MySQL = 'AUTO_INCREMENT'"
       end
 
       # returns (String) which the the domain that this expert specializes in
@@ -411,9 +415,9 @@ module Maadi
 
         col_count = step.get_parameter_value('[TABLE-COLUMNS]')
         if col_count != ''
-          parameters = procedure.steps[0].parameters
+          parameters = step.parameters
           columns = Array.new
-          columns.push 'id INTEGER PRIMARY KEY'
+          columns.push "id INTEGER PRIMARY KEY #{@options['AUTO_INC']}"
 
           1.upto( col_count.to_i ) do |number|
             columns.push "[COLUMN#{number}-NAME] [COLUMN#{number}-TYPE]"
