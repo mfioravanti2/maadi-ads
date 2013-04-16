@@ -19,7 +19,7 @@ set application option SQLite3-Oracle DATABASE HiVAT-Oracle.db
 set application SQLite3 SQLite3-Under
 set application option SQLite3-Under DATABASE HiVAT-UnderLoad.db
 #set application MySQL MySQL-Oracle
-#set application option MySQL-Oracle HOSTNAME 192.168.237.129
+#set application option MySQL-Oracle HOSTNAME 192.168.237.134
 #set application option MySQL-Oracle USERNAME root
 #set application option MySQL-Oracle PASSWORD hivat123
 #set application option MySQL-Oracle DATABASE HiVAT
