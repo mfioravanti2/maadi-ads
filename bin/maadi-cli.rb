@@ -11,7 +11,7 @@
 require 'rubygems'
 
 # include the required libraries
-require_relative 'lib/core/cli/process'
+require_relative '../lib/core/cli/process'
 
 module Maadi
   module CLI
