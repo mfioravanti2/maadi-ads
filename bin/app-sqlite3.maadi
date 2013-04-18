@@ -1,0 +1,17 @@
+# This is the default profile, it is executed
+# every time the Maadi program is started.
+#
+# any Maadi command can be entered into this
+# profile.  Lines that start with # are not
+# executed (they are treated as comments).
+
+# update the SQL expert such that the AUTO INCREMENT statements support MySQL
+set expert option AUTO_INC AUTOINCREMENT
+
+# select and setup a SQLite3 application
+set application SQLite3 SQLite3-Oracle
+set application option SQLite3-Oracle DATABASE HiVAT-Oracle.db
+
+# select and setup a second SQLite3 application
+set application SQLite3 SQLite3-Under
+set application option SQLite3-Under DATABASE HiVAT-UnderLoad.db

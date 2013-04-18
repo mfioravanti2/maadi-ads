@@ -1,0 +1,23 @@
+# This is the default profile, it is executed
+# every time the Maadi program is started.
+#
+# any Maadi command can be entered into this
+# profile.  Lines that start with # are not
+# executed (they are treated as comments).
+
+# update the SQL expert such that the AUTO INCREMENT statements support MySQL
+set expert option AUTO_INC AUTO_INCREMENT
+
+# select the MySQL application (to be used as the Oracle)
+set application MySQL MySQL-Oracle
+set application option MySQL-Oracle HOSTNAME 192.168.237.134
+set application option MySQL-Oracle USERNAME root
+set application option MySQL-Oracle PASSWORD hivat123
+set application option MySQL-Oracle DATABASE HiVAT
+
+# select and configure the MySQL application (the one operating under reduced capacity)
+set application MySQL MySQL-Under
+set application option MySQL-Under HOSTNAME 192.168.237.129
+set application option MySQL-Under USERNAME root
+set application option MySQL-Under PASSWORD hivat123
+set application option MySQL-Under DATABASE HiVAT

@@ -7,29 +7,23 @@
 #set runs 100
 set collector SQLite3 SQLite3-Log
 set collector LogFile LogFile-Log
+# reduce the log level of the SQLite3 collector
+set collector option SQLite3-Log LOG_LEVEL PARTIAL
+
 set expert SQL SQL-Exp
 set expert option INSERT_RATIO 6
 set expert option SELECT_RATIO 6
 set expert option UPDATE_RATIO 4
 set expert option DELETE_RATIO 2
-#set expert option AUTO_INC AUTO_INCREMENT
-set expert option AUTO_INC AUTOINCREMENT
 set organizer RandomSelection RS-Organizer
 set monitor Example ExMon
-set application SQLite3 SQLite3-Oracle
-set application option SQLite3-Oracle DATABASE HiVAT-Oracle.db
-set application SQLite3 SQLite3-Under
-set application option SQLite3-Under DATABASE HiVAT-UnderLoad.db
-#set application MySQL MySQL-Oracle
-#set application option MySQL-Oracle HOSTNAME 192.168.237.134
-#set application option MySQL-Oracle USERNAME root
-#set application option MySQL-Oracle PASSWORD hivat123
-#set application option MySQL-Oracle DATABASE HiVAT
-#set application MySQL MySQL-Under
-#set application option MySQL-Under HOSTNAME 192.168.237.129
-#set application option MySQL-Under USERNAME root
-#set application option MySQL-Under PASSWORD hivat123
-#set application option MySQL-Under DATABASE HiVAT
+
+# Load the SQLite3 applications and configuration
+#load app-sqlite3.maadi
+
+# Load the MySQL applications and configuration
+load app-mysql.maadi
+
 set scheduler FIFO Queue
 set analyzer Comparison Comp
 
