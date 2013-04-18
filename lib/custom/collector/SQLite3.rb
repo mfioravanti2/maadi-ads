@@ -26,8 +26,10 @@ module Maadi
         @db = nil
 
         @options['DATABASE'] = "Maadi-#{time_stamp}.db"
+        @options['LOG_LEVEL'] = 'FULL'
 
         @notes['DATABASE'] = 'Name of the SQLite3 database'
+        @notes['LOG_LEVEL'] = 'Level of detail to be recorded: FULL = all data, PARTIAL = only important, NONE = disabled'
       end
 
       # prepare the collector;
@@ -211,7 +213,13 @@ module Maadi
               if procedure.key_id == -1
                 procedure.key_id = prId
               end
+            end
 
+            if @options['LOG_LEVEL'] != 'FULL'
+              is_ok = false
+            end
+
+            if is_ok && prId != -1
               # attempt to insert the procedure's steps into the tblSteps, since the tblProcedure INSERT was successful
               # CREATE TABLE tblSteps ( sID integer primary key, pID integer, sLabel varchar(255), sCommand TEXT, sFinal TEXT)
 
