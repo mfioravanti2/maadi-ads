@@ -1,0 +1,7 @@
+The Maadi High Volumne Automated Test (HiVAT) Architecture is a Ruby application,
+it has been tested with Ruby 1.9.3 and has the following requirements;
+
+sqlite3 gem (if the SQLite3 Application or Controller are utilized)
+mysql2 gem (if the MySQL Application is utilized)
+
+rspec gem (if the unit tests are to be exercised)
