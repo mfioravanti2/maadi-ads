@@ -3,7 +3,6 @@
 # Course : CSE5400 Special Topics - High Volume Automated Testing
 # Date   : 01/18/2013
 # File   : organizer.rb
-# License: Creative Commons Attribution
 #
 # Summary: The organizer will collect and population the test procedures
 #          according to it's plan.  An example organizer would be one that

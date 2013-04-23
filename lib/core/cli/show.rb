@@ -3,7 +3,6 @@
 # Course : CSE5400 Special Topics - High Volume Automated Testing
 # Date   : 01/18/2013
 # File   : show.rb
-# License: Creative Commons Attribution
 #
 # Summary: CLI commands to display the current configuration and list available options
 

@@ -3,7 +3,6 @@
 # Course : CSE5400 Special Topics - High Volume Automated Testing
 # Date   : 01/18/2013
 # File   : generator.rb
-# License: Creative Commons Attribution
 #
 # Summary: The generator utilizes a domain expert (Expert) and a test case
 #          organizer (Organizer) to assemble a suite of tests to be executed

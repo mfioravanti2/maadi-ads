@@ -3,7 +3,6 @@
 # Course : CSE5400 Special Topics - High Volume Automated Testing
 # Date   : 01/18/2013
 # File   : analyzer.rb
-# License: Creative Commons Attribution
 #
 # Summary: The Analyzer will interact with the Collector to analyze the
 #          test results and generate a test report.

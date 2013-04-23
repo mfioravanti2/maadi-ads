@@ -2,8 +2,7 @@
 #          Florida Institute of Technology
 # Course : CSE5400 Special Topics - High Volume Automated Testing
 # Date   : 01/18/2013
-# File   : Example.rb
-# License: Creative Commons Attribution
+# File   : document.rb
 #
 # Summary: This is a Document Expert which currently is not
 #          much more than a template

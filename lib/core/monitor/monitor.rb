@@ -3,7 +3,6 @@
 # Course : CSE5400 Special Topics - High Volume Automated Testing
 # Date   : 01/18/2013
 # File   : monitor.rb
-# License: Creative Commons Attribution
 #
 # Summary: The monitor is a way to determine the resources being consumed on
 #          a target system.

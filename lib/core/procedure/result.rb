@@ -3,7 +3,6 @@
 # Course : CSE5400 Special Topics - High Volume Automated Testing
 # Date   : 01/18/2013
 # File   : result.rb
-# License: Creative Commons Attribution
 #
 # Summary: The Result of Executing a specific step within a Test Procedure.
 

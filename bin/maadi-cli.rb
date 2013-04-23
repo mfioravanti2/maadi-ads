@@ -3,7 +3,6 @@
 # Course : CSE5400 Special Topics - High Volume Automated Testing
 # Date   : 01/18/2013
 # File   : maadi-cli.rb
-# License: Creative Commons Attribution
 #
 # Summary: This is the main Command Line Interface for the Maadi HiVAT program.
 

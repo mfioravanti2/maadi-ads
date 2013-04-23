@@ -3,7 +3,6 @@
 # Course : CSE5400 Special Topics - High Volume Automated Testing
 # Date   : 01/18/2013
 # File   : update.rb
-# License: Creative Commons Attribution
 #
 # Summary: CLI command to automatically assign objects which do not require user interaction
 

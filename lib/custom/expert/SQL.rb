@@ -2,8 +2,7 @@
 #          Florida Institute of Technology
 # Course : CSE5400 Special Topics - High Volume Automated Testing
 # Date   : 01/18/2013
-# File   : Example.rb
-# License: Creative Commons Attribution
+# File   : sql.rb
 #
 # Summary: This is a Structure Query Language Expert which can be use
 #          to build and test for the ability to process SQL statements.

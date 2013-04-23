@@ -3,7 +3,6 @@
 # Course : CSE5400 Special Topics - High Volume Automated Testing
 # Date   : 01/18/2013
 # File   : generic.rb
-# License: Creative Commons Attribution
 #
 # Summary: This is a general interface class which allows all of the
 #          Maadi objects to interact with specific behaviors and functionality.

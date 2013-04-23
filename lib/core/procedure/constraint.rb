@@ -3,7 +3,6 @@
 # Course : CSE5400 Special Topics - High Volume Automated Testing
 # Date   : 01/18/2013
 # File   : constraint.rb
-# License: Creative Commons Attribution
 #
 # Summary: Constraints serve as objects to limit and generate values
 #          within a set of constraints.  For example a constraint

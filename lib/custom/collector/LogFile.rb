@@ -2,8 +2,7 @@
 #          Florida Institute of Technology
 # Course : CSE5400 Special Topics - High Volume Automated Testing
 # Date   : 01/18/2013
-# File   : LogFile.rb
-# License: Creative Commons Attribution
+# File   : logfile.rb
 #
 # Summary: This is an Log File version of a Collector
 

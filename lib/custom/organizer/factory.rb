@@ -3,7 +3,6 @@
 # Course : CSE5400 Special Topics - High Volume Automated Testing
 # Date   : 01/18/2013
 # File   : factory.rb
-# License: Creative Commons Attribution
 #
 # Summary: This is an Extension to the Organizer class which acts
 #          as a factory for the Organizer class.  It manages and

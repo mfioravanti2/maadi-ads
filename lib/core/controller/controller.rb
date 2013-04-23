@@ -3,7 +3,6 @@
 # Course : CSE5400 Special Topics - High Volume Automated Testing
 # Date   : 01/18/2013
 # File   : controller.rb
-# License: Creative Commons Attribution
 #
 # Summary: The Controller class uses a generator to build test procedures and pass them along
 #          along to the individual applications under test.  The results are stored in the

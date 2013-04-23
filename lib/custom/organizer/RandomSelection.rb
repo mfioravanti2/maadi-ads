@@ -3,7 +3,6 @@
 # Course : CSE5400 Special Topics - High Volume Automated Testing
 # Date   : 01/18/2013
 # File   : RandomSelection.rb
-# License: Creative Commons Attribution
 #
 # Summary: This is a Random Sampler Organizer.  It simply picks a random
 #          element from the possible tests as it's choice and uses that

@@ -2,8 +2,7 @@
 #          Florida Institute of Technology
 # Course : CSE5400 Special Topics - High Volume Automated Testing
 # Date   : 01/18/2013
-# File   : maadi.rb
-# License: Creative Commons Attribution
+# File   : manager.rb
 #
 # Summary: The Manager class manages and drives the HiVAT test work flows.
 

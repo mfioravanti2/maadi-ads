@@ -3,7 +3,6 @@
 # Course : CSE5400 Special Topics - High Volume Automated Testing
 # Date   : 01/18/2013
 # File   : executable.rb
-# License: Creative Commons Attribution
 #
 # Summary: This is a general interface class which allows procedures to
 #          be executed and results to be returned.  This interface will allow

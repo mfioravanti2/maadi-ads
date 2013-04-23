@@ -3,7 +3,6 @@
 # Course : CSE5400 Special Topics - High Volume Automated Testing
 # Date   : 01/18/2013
 # File   : expert.rb
-# License: Creative Commons Attribution
 #
 # Summary: The expert represents a collection of knowledge about a specific
 #          domain.  This class is an abstract class and should be created

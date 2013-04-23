@@ -3,7 +3,6 @@
 # Course : CSE5400 Special Topics - High Volume Automated Testing
 # Date   : 01/18/2013
 # File   : test_ConstraintMultiPickList_rspec.rb
-# License: Creative Commons Attribution
 #
 # Summary: This is the rspec unit test for the ConstraintMultiPickList class
 

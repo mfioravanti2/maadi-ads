@@ -3,7 +3,6 @@
 # Course : CSE5400 Special Topics - High Volume Automated Testing
 # Date   : 01/18/2013
 # File   : collector.rb
-# License: Creative Commons Attribution
 #
 # Summary: The collector is a component which is able to record messages,
 #          procedures and results.  It is a data repository which may or may not

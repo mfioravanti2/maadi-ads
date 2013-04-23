@@ -2,8 +2,7 @@
 #          Florida Institute of Technology
 # Course : CSE5400 Special Topics - High Volume Automated Testing
 # Date   : 01/18/2013
-# File   : Example.rb
-# License: Creative Commons Attribution
+# File   : mysql.rb
 #
 # Summary: This is a MySQL DBMS Application interface.
 # Examples/tutorial for using the mysql2 gem can be found here:

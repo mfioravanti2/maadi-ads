@@ -3,7 +3,6 @@
 # Course : CSE5400 Special Topics - High Volume Automated Testing
 # Date   : 01/18/2013
 # File   : parameter.rb
-# License: Creative Commons Attribution
 #
 # Summary: A parameter represents a single component of a command that
 #          is variable.  The variable component is selected for the test

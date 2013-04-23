@@ -3,7 +3,6 @@
 # Course : CSE5400 Special Topics - High Volume Automated Testing
 # Date   : 01/18/2013
 # File   : step.rb
-# License: Creative Commons Attribution
 #
 # Summary: Test Procedure contains all of the steps that should be
 #          executed against an application under test.  It also contains

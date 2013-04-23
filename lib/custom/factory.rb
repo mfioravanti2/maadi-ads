@@ -3,7 +3,6 @@
 # Course : CSE5400 Special Topics - High Volume Automated Testing
 # Date   : 01/18/2013
 # File   : factory.rb
-# License: Creative Commons Attribution
 #
 # Summary: This is the general factory object which will provide
 #          a list of files from the local custom extensions directories

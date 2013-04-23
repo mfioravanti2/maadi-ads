@@ -3,7 +3,6 @@
 # Course : CSE5400 Special Topics - High Volume Automated Testing
 # Date   : 01/18/2013
 # File   : application.rb
-# License: Creative Commons Attribution
 #
 # Summary: The application is a general interface for real software under test,
 #          this class should be extended to implement the calls that would be expected
