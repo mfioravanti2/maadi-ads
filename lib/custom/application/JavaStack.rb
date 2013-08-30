@@ -13,7 +13,7 @@ module Maadi
         @options['WORKDIR'] = DIR.getwd();
 
         #Set up our paths
-        @options['BSHPATH'] = ''
+        @options['BSHPATH'] = nil
         @options['STACKCLASSPATH'] = 'stack'
         @options['STACKNAME'] = 'stack' + @instance_name
         @options['ISCONSTRUCTED'] = 'false'
@@ -24,8 +24,8 @@ module Maadi
 
       def prepare
         begin
-
-
+          #Create execute statement
+          executeStatement = 'java - jar'
         rescue => e
           Maadi::post_message(:Warn, "Application (#{@type}:#{@instance_name}) was unable to connect (#{e.message}).")
 
