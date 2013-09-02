@@ -10,15 +10,24 @@ module Maadi
         super('JavaStack')
 
         #Current user information
-        @options['WORKDIR'] = DIR.getwd();
+        @options['WORKDIR'] = Dir.pwd;
 
         #Set up our paths
-        @options['BSHPATH'] = nil
+        @options['BSHPATH'] = @options['WORKDIR'] + '/utils/java'
         @options['STACKCLASSPATH'] = 'stack'
         @options['STACKNAME'] = 'stack' + @instance_name
         @options['ISCONSTRUCTED'] = 'false'
         @options['CLASSNAME']  = 'MyStack'
         @options['DEFAULTCAPACITY'] = 10;
+        @db = nil;
+
+        #Confirm that bsh exists
+        if File.directory(@options['BSHPATH'] + 'bsh-2.0b4.jar') == true
+          @db = 1 #Make it not nil
+        end
+
+        #Start up bsh?
+
 
       end
 
@@ -116,6 +125,9 @@ module Maadi
 
                       else
                     end
+
+                    #run the program and execute
+
                     case step.look_for
                       when 'NORECORD'
                       when 'CHANGES'
