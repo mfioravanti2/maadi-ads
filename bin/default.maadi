@@ -10,7 +10,7 @@ set collector LogFile LogFile-Log
 # reduce the log level of the SQLite3 collector
 set collector option SQLite3-Log LOG_LEVEL PARTIAL
 
-set expert SQL SQL-Exp
+set expert ADSStack Stack-Exp
 set expert option INSERT_RATIO 6
 set expert option SELECT_RATIO 6
 set expert option UPDATE_RATIO 4
@@ -18,11 +18,8 @@ set expert option DELETE_RATIO 2
 set organizer RandomSelection RS-Organizer
 set monitor Example ExMon
 
-# Load the SQLite3 applications and configuration
-#load app-sqlite3.maadi
-
 # Load the MySQL applications and configuration
-load app-mysql.maadi
+load app-ads-stack.maadi
 
 set scheduler FIFO Queue
 set analyzer Comparison Comp

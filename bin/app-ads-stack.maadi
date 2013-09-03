@@ -1,0 +1,12 @@
+# This is the default profile, it is executed
+# every time the Maadi program is started.
+#
+# any Maadi command can be entered into this
+# profile.  Lines that start with # are not
+# executed (they are treated as comments).
+
+# select the MySQL application (to be used as the Oracle)
+set application RubyStack RubyStack
+
+# select and configure the MySQL application (the one operating under reduced capacity)
+set application JavaStack JavaStack
