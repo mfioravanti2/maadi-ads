@@ -61,7 +61,9 @@ module Maadi
             procedure.steps.each do |step|
               if step.target == execution_target
                 if supports_step?( step )
+                  # lValue is the item that is modified (usually the stack)
                   lValue = -1
+                  # rValue is the item that is not modified during an operation
                   rValue = -1
                   bSuccess = false
                   bError = false
@@ -70,32 +72,80 @@ module Maadi
                     case step.id
                       when 'PUSH'
                         rValue = step.get_parameter_value('[RVALUE]')
-                        if rValue != ''
+
+                        if @rStack != nil
+                          @rStack.push rValue
+                          lValue = @rStack.size
+
                           bSuccess = true
                           bError = false
+                        else
+                          lValue = rValue = 'PUSH Failed, RubyStack not instantiated'
+                          bSuccess = false
+                          bError = true
                         end
                       when 'POP'
-                        lValue = @rStack.pop
-                        if rValue != ''
-                          bSuccess = true
-                          bError = false
+                        if @rStack != nil
+                          if @rStack.size > 0
+                            lValue = @rStack.pop
+                            rValue = @rStack.size
+                          else
+                            lValue = rValue = 'POP Failed, RubyStack is empty'
+                            bSuccess = false
+                            bError = true
+                          end
+                        else
+                          lValue = rValue = 'POP Failed, RubyStack not instantiated'
+                          bSuccess = false
+                          bError = true
                         end
                       when 'SIZE'
-                        lValue = @rStack.count
+                        if @rStack != nil
+                          lValue = @rStack.size
 
+                          bSuccess = true
+                          bError = false
+                        else
+                          lValue = rValue = 'SIZE Failed, RubyStack not instantiated'
+                          bSuccess = false
+                          bError = true
+                        end
                       when 'ATINDEX'
+                        index = step.get_parameter_value('[INDEX]')
 
+                        if @rStack != nil
+                          if @rStack.size > 0
+                            if index.to_i < @rStack.size
+                              lValue = @rStack[index.to_i]
+                              rValue = @rStack.size
+                            else
+                              lValue = rValue = 'ATINDEX Failed, requested index is larger than stack size'
+                              bSuccess = false
+                              bError = true
+                            end
+                          else
+                            lValue = rValue = 'ATINDEX Failed, RubyStack is empty'
+                            bSuccess = false
+                            bError = true
+                          end
+                        else
+                          lValue = rValue = 'ATINDEX Failed, RubyStack not instantiated'
+                          bSuccess = false
+                          bError = true
+                        end
                       when 'NULCONSTRUCT'
                         @rStack = new.Array()
+                        lValue = rValue = @rStack.size
 
-                        if rValue != ''
+                        if @rStack != nil
                           bSuccess = true
                           bError = false
                         end
                       when 'NONNULCONSTRUCT'
                         @rStack = new.Array()
+                        lValue = rValue = @rStack.size
 
-                        if rValue != ''
+                        if @rStack != nil
                           bSuccess = true
                           bError = false
                         end
@@ -104,10 +154,14 @@ module Maadi
 
                     case step.look_for
                       when 'NORECORD'
+                      when 'LVALUE'
+                        results.add_result( Maadi::Procedure::Result.new( step, lValue.to_a, 'TEXT', ( !bError and bSuccess ) ? 'SUCCESS' : 'FAILURE' ))
+                      when 'RVALUE'
+                        results.add_result( Maadi::Procedure::Result.new( step, rValue.to_a, 'TEXT', ( !bError and bSuccess ) ? 'SUCCESS' : 'FAILURE' ))
                       when 'CHANGES'
-                        results.add_result( Maadi::Procedure::Result.new( step, '', 'TEXT', 'SUCCESS' ))
+                        results.add_result( Maadi::Procedure::Result.new( step, '', 'TEXT', ( !bError and bSuccess ) ? 'SUCCESS' : 'FAILURE' ))
                       when 'COMPLETED'
-                        results.add_result( Maadi::Procedure::Result.new( step, '', 'TEXT', 'SUCCESS' ))
+                        results.add_result( Maadi::Procedure::Result.new( step, '', 'TEXT', ( !bError and bSuccess ) ? 'SUCCESS' : 'FAILURE' ))
                       else
                         results.add_result( Maadi::Procedure::Result.new( step, '', 'TEXT', 'UNKNOWN' ))
                     end
