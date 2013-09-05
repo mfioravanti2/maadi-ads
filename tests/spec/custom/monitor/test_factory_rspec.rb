@@ -19,7 +19,7 @@ describe Maadi::Monitor::Monitor do
 
   it 'returns an instantiated custom Monitor object' do
     list = Maadi::Monitor::Monitor::choices
-    monitor = Maadi::Monitor::Monitor::factory(list.sample)
+    monitor = Maadi::Monitor::Monitor::factory('Example')
     expect(monitor).to_not eq(nil)
   end
 
