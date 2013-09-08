@@ -11,13 +11,13 @@ module Maadi
         #Current user information
 
         #Set up our paths
-        @options['BSHPATH'] = '../../utils/java/bsh-2.0b4.jar'
+        @options['BSHPATH'] = File.expand_path('~/RubymineProjects/maadi-ads/utils/java/bsh-2.0b4.jar')
         @options['STACKCLASSPATH'] = 'stack'
         @options['STACKNAME'] = 'stack' + @instance_name
         @options['ISCONSTRUCTED'] = 'false'
         @options['CLASSNAME'] = 'MyStack'
         @options['DEFAULTCAPACITY'] = 10;
-        @options['COMMANDNAME'] = 'java -cp ' + @options['BSHPATH']  + ' bsh.Interpreter'
+        @options['COMMANDNAME'] = "java -cp \"" + @options['BSHPATH']  + "\" bsh.Interpreter"
         @options['OUTPUTCATCH'] = '---12345---'
         @options['STDIN'] = nil
         @options['STDOUT'] = nil
@@ -25,21 +25,33 @@ module Maadi
         @db = nil;
 
         #Confirm that bsh exists
-        if File.file? @options['BSHPATH']
+        p @options['BSHPATH']
+        if File.exists?(@options['BSHPATH']) == true
           @db = 1 #Make it not nil
+        else
+          p 'JavaStack: Fatal Error - unable to locate the bsh path!'
         end
 
-        #Start up bsh
-        if @db != nil
-          @options['STDIN'], @options['STDOUT'], @options['STDERR'] = Open3.popen3(@commandName)
-        end
 
       end
 
       def prepare
         begin
+          p 'Trying to connect to the pipe: ' + @options['COMMANDNAME']
           #Create execute statement
-          executeStatement = 'java - jar'
+          @options['STDIN'], @options['STDOUT'], @options['STDERR'] = Open3.popen3(@options['COMMANDNAME'])
+
+          #Add Class Path to MyStack
+          classPath = 'addClassPath("stuff");\n'
+
+          #create the new stack
+          newCommand = @options['CLASSNAME'] + ' ' + @options['STACKNAME'] + ' = new ' + @options['CLASSNAME'] + '();\n'
+
+          p ' Trying to execute the classpath and new command'
+          #Execute new command and flush the pipe
+          @options['STDIN'].print classPath
+          @options['STDIN'].print newCommand
+          @options['STDIN'].flush()
         rescue => e
           Maadi::post_message(:Warn, "Application (#{@type}:#{@instance_name}) was unable to connect (#{e.message}).")
 
