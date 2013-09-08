@@ -48,15 +48,10 @@ module Maadi
           #Add Class Path to MyStack
           classPath = "addClassPath(\"" + @options['ROOTPATH'] + "/stuff\");\n"
 
-          #create the new stack
-          newCommand = @options['CLASSNAME'] + ' ' + @options['STACKNAME'] + ' = new ' + @options['CLASSNAME'] + '();\n'
-
-          p 'JavaStack->prepare: Trying to execute the classpath and new command'
-          p 'JavaStack->prepare: ' + classPath;
-          p 'JavaStack->prepare: ' + newCommand;
-          #Execute new command and flush the pipe
+          p 'JavaStack->prepare: Trying to execute the classpath'
+          p 'JavaStack->prepare->classPath: ' + classPath;
+          #Execute class path and flush the pipe
           @options['STDIN'].print classPath
-          @options['STDIN'].print newCommand
 
           #Print output catchers
           @options['STDIN'].print("System.out.println(\"" + @options['OUTPUTCATCH'] +  "\");\n")
@@ -140,14 +135,14 @@ module Maadi
                           errorHit = 'No value passed or value does not exist'
                         else
                           #Perfrom the push operation.  No results printed
-                          operationString = @options['STACKNAME'] + '.push(' + value + ')'
+                          operationString = @options['STACKNAME'] + ".push(" + value + ");\n"
                         end
                       when 'POP'
                         #Perform the pop operation and print the result of the pop.
-                        operationString = 'System.out.println(' + @options['STACKNAME'] + '.pop());'
+                        operationString = "System.out.println(" + @options['STACKNAME'] + ".pop());\n"
                       when 'SIZE'
                         #Perform the atIndex() operation
-                        operationString = @options['STACKNAME'] + '.size();'
+                        operationString = @options['STACKNAME'] + ".size();\n"
                       when 'ATINDEX'
                         #Need the index from the parameter value.
                         index = step.get_parameter_value('INDEX')
@@ -157,18 +152,18 @@ module Maadi
                           errorHit = 'No index passed or index does not exist'
                         else
                           #Perform the atIndex() operation
-                          operationString = @options['STACKNAME'] + '.atIndex(' + index + ');'
+                          operationString = @options['STACKNAME'] + ".atIndex(" + index + ");\n"
                         end
                       when 'NULCONSTRUCT'
                         #Perfrom the nullary constructor
-                        operationString = @options['CLASSNAME'] + ' ' + @options['STACKNAME'] + ' = new ' + @options['CLASSNAME'] + '();'
+                        operationString = @options['CLASSNAME'] + " " + @options['STACKNAME'] + " = new " + @options['CLASSNAME'] + "();\n"
                       when 'NONNULCONSTRUCT'
                         capacity = step.get_parameter_value('CAPACITY')
                         if (capacity == nil)
                           capacity = @options['DEFAULTCAPACITY']
                         end
                         #Use the constructor, but pass a parameter called capacity.
-                        operationString = @options['CLASSNAME'] + ' ' + @options['STACKNAME'] + ' = new ' + @options['CLASSNAME'] + '(' + capacity +');'
+                        operationString = @options['CLASSNAME'] + " " + @options['STACKNAME'] + " = new " + @options['CLASSNAME'] + "(" + capacity +");\n"
 
                       else
                     end
