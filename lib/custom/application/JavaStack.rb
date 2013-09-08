@@ -1,5 +1,6 @@
 require_relative 'factory'
 require_relative '../../core/helpers'
+require 'open3'
 
 module Maadi
   module Application
@@ -11,7 +12,8 @@ module Maadi
         #Current user information
 
         #Set up our paths
-        @options['BSHPATH'] = File.expand_path('~/RubymineProjects/maadi-ads/utils/java/bsh-2.0b4.jar')
+        @options['ROOTPATH'] = File.expand_path('~/RubymineProjects/maadi-ads/utils/java')
+        @options['BSHPATH'] = File.expand_path(@options['ROOTPATH'] + '/bsh-2.0b4.jar')
         @options['STACKCLASSPATH'] = 'stack'
         @options['STACKNAME'] = 'stack' + @instance_name
         @options['ISCONSTRUCTED'] = 'false'
@@ -25,8 +27,8 @@ module Maadi
         @db = nil;
 
         #Confirm that bsh exists
-        p @options['BSHPATH']
         if File.exists?(@options['BSHPATH']) == true
+          p 'JavaStack ->initialize:  FilePath is located'
           @db = 1 #Make it not nil
         else
           p 'JavaStack: Fatal Error - unable to locate the bsh path!'
@@ -36,26 +38,52 @@ module Maadi
       end
 
       def prepare
+
         begin
-          p 'Trying to connect to the pipe: ' + @options['COMMANDNAME']
+          p 'JavaStack->prepare: Trying to connect to the pipe: ' + @options['COMMANDNAME']
           #Create execute statement
-          @options['STDIN'], @options['STDOUT'], @options['STDERR'] = Open3.popen3(@options['COMMANDNAME'])
+          @options['STDIN'], @options['STDOUT'], @options['STDERR'] = Open3.popen3("java -cp \"C:/Users/Mr. Fluffy Pants/RubymineProjects/maadi-ads/utils/java/bsh-2.0b4.jar\" bsh.Interpreter")
+          p 'JavaStack->prepare:  Connection successful'
 
           #Add Class Path to MyStack
-          classPath = 'addClassPath("stuff");\n'
+          classPath = "addClassPath(\"" + @options['ROOTPATH'] + "/stuff\");\n"
 
           #create the new stack
           newCommand = @options['CLASSNAME'] + ' ' + @options['STACKNAME'] + ' = new ' + @options['CLASSNAME'] + '();\n'
 
-          p ' Trying to execute the classpath and new command'
+          p 'JavaStack->prepare: Trying to execute the classpath and new command'
+          p 'JavaStack->prepare: ' + classPath;
+          p 'JavaStack->prepare: ' + newCommand;
           #Execute new command and flush the pipe
           @options['STDIN'].print classPath
           @options['STDIN'].print newCommand
-          @options['STDIN'].flush()
-        rescue => e
-          Maadi::post_message(:Warn, "Application (#{@type}:#{@instance_name}) was unable to connect (#{e.message}).")
 
+          #Print output catchers
+          @options['STDIN'].print("System.out.println(\"" + @options['OUTPUTCATCH'] +  "\");\n")
+          @options['STDIN'].print("System.err.println(\"" + @options['OUTPUTCATCH'] +  "\");\n")
+          @options['STDIN'].flush()
+
+          #Print STDERR and STDOUT to screen to check for errors
+          p 'JavaStack->prepare: Printing STDOUT'
+          output1 = @options['STDOUT'].readline;
+
+          while !output1.include?(@options['OUTPUTCATCH'])
+            p output1
+            output1 = @options['STDOUT'].readline;
+          end
+
+          p 'JavaStack->prepare: Printing STDERR'
+          output1 = @options['STDERR'].readline;
+
+          while !output1.include?(@options['OUTPUTCATCH'])
+            p output1
+            output1 = @options['STDERR'].readline;
+          end
+          p 'JavaStack->prepare: Preparations are complete.'
+        rescue => e
+          Maadi::post_message(:Warn, "Application (#{@type}:#{@instance_name}) was unable to initialize (#{e.message}).")
         end
+
       end
 
       def supported_domains
