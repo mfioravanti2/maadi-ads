@@ -30,5 +30,6 @@ describe Maadi::Application::JavaStack do
     javaStack = Maadi::Application::JavaStack.new()
     javaStack.prepare()
     #javaStack.execute(1, NULCONSTRUCT)
+    #Some EQ statement
   end
 end
