@@ -274,6 +274,9 @@ module Maadi
         step.id = 'POP'
         procedure.id = 'POP'
 
+        if ( @stack_size > 0 )
+          @stack_size -= 1
+        end
         procedure.done
 
         return procedure
@@ -287,8 +290,43 @@ module Maadi
         end
 
         case procedure.id
-          when ''
+          when 'ATINDEX-NEW'
+            return build_at_index_new( 'ATINDEX-LAST' )
+          when 'ATINDEX-LAST'
+            return build_at_index_finalize( procedure, procedure.steps[0] )
           else
+        end
+
+        return procedure
+      end
+
+      def build_at_index_new( next_step )
+        procedure = build_skeleton( 'ATINDEX' )
+        step = build_step('ATINDEX', '[LVALUE]', '', 'TERM-PROC' )
+
+        constraint =  Maadi::Procedure::ConstraintRangedInteger.new( 0, @stack_size - 1 )
+        step.parameters.push Maadi::Procedure::Parameter.new('[INDEX]', constraint )
+
+        procedure.add_step( step )
+        procedure.id = next_step
+
+        return procedure
+      end
+
+      def build_at_index_finalize( procedure, step )
+        unless is_procedure?( procedure ) and is_step?( step )
+          return procedure
+        end
+
+        step.id = 'ATINDEX'
+        procedure.id = 'ATINDEX'
+
+        at_index = step.get_parameter_value( '[INDEX]' )
+        if at_index != ''
+          @stack_size += 1
+          procedure.done
+        else
+          procedure.failed
         end
 
         return procedure
