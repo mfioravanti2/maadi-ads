@@ -340,9 +340,34 @@ module Maadi
         end
 
         case procedure.id
-          when ''
+          when 'SIZE-NEW'
+            return build_size_new( 'SIZE-LAST' )
+          when 'SIZE-LAST'
+            return build_size_finalize( procedure, procedure.steps[0] )
           else
         end
+
+        return procedure
+      end
+
+      def build_size_new( next_step )
+        procedure = build_skeleton( 'SIZE' )
+        step = build_step('SIZE', '[LVALUE]', '', 'TERM-PROC' )
+
+        procedure.add_step( step )
+        procedure.id = next_step
+
+        return procedure
+      end
+
+      def build_size_finalize( procedure, step )
+        unless is_procedure?( procedure ) and is_step?( step )
+          return procedure
+        end
+
+        step.id = 'SIZE'
+        procedure.id = 'SIZE'
+        procedure.done
 
         return procedure
       end
