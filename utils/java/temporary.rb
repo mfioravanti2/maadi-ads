@@ -6,7 +6,7 @@ class Temporary
   @fileName = 'bsh-2.0b4.jar'
 
   #run the program
-  @commandName = 'java -cp ' + @fileName  + ' bsh.Interpreter'
+  @commandName = "java -cp \"C:/Users/Mr. Fluffy Pants/RubymineProjects/maadi-ads/utils/java/bsh-2.0b4.jar\" bsh.Interpreter"
   @outputCatcher = '---12345---'
 
 
