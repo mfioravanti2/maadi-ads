@@ -121,8 +121,7 @@ module Maadi
             results.proc_id = procedure.id
 
             procedure.steps.each do |step|
-              if step.target == execution_target
-                sql_cmd = step.execute
+              if step.target == ''             #The target should be empty
                 if supports_step?(step)
                   begin
                     case step.id
@@ -142,7 +141,7 @@ module Maadi
                         operationString = "System.out.println(" + @options['STACKNAME'] + ".pop());\n"
                       when 'SIZE'
                         #Perform the atIndex() operation
-                        operationString = @options['STACKNAME'] + ".size();\n"
+                        operationString = "System.out.println(" + @options['STACKNAME'] + ".size());\n"
                       when 'ATINDEX'
                         #Need the index from the parameter value.
                         index = step.get_parameter_value('INDEX')
@@ -169,23 +168,50 @@ module Maadi
                     end
 
                     #run the program and execute
-                    p 'Execute program'
+                    p 'Operational String: ' + operationString
                     @options['STDIN'].print( operationString)
                     @options['STDIN'].print("System.out.println(\"" + @options['OUTPUTCATCH'] +  "\");\n")
                     @options['STDIN'].print("System.err.println(\"" + @options['OUTPUTCATCH'] +  "\");\n")
                     @options['STDIN'].flush()
+                    p 'Execute program for: ' + step.id
+
+                    #Gather results in a string
+                    output1 = ''
+                    stdOutput = ''
+                    output1 = @options['STDOUT'].readline;
+
+                    while !output1.include?(@options['OUTPUTCATCH'])
+
+                      stdOutput += output1;
+                      output1 = @options['STDOUT'].readline;
+                    end
+
+                    stdErrput = ''
+                    output1 = @options['STDERR'].readline;
+
+                    while !output1.include?(@options['OUTPUTCATCH'])
+                      stdErrput+= output1
+                      output1 = @options['STDERR'].readline;
+                    end
+
+                    p 'Output: ' + stdOutput
+                    p 'Error: ' + stdErrput
+
                     case step.look_for
                       when 'NORECORD'
                       when 'CHANGES'
-                        results.add_result(Maadi::Procedure::Result.new(step, @db.affected_rows, 'TEXT', 'SUCCESS'))
+                        results.add_result(Maadi::Procedure::Result.new(step, @db.affected_rows, output1, 'SUCCESS'))
                       when 'COMPLETED'
-                        results.add_result(Maadi::Procedure::Result.new(step, '', 'TEXT', 'SUCCESS'))
+                        results.add_result(Maadi::Procedure::Result.new(step, stdOutput, 'STDOUT', 'SUCCESS'))
+                        results.add_result(Maadi::Procedure::Result.new(step, stdErrput, 'STDERR', 'SUCCESS'))
                       else
-                        results.add_result(Maadi::Procedure::Result.new(step, '', 'TEXT', 'UNKNOWN'))
+                        results.add_result(Maadi::Procedure::Result.new(step, stdOutput, 'STDOUT', 'UNKNOWN'))
+                        results.add_result(Maadi::Procedure::Result.new(step, stdErrput, 'STDERR', 'UNKNOWN'))
                     end
                   rescue => e
                     Maadi::post_message(:Warn, "Application (#{@type}:#{@instance_name}) encountered an error (#{e.message}).")
-                    results.add_result(Maadi::Procedure::Result.new(step, e.message, 'TEXT', 'EXCEPTION'))
+                    results.add_result(Maadi::Procedure::Result.new(step, stdOutput, 'STDOUT', 'EXCEPTION'))
+                    results.add_result(Maadi::Procedure::Result.new(step, stdErrput, 'STDERR', 'EXCEPTION'))
                   end
                 else
                   Maadi::post_message(:Warn, "Application (#{@type}:#{@instance_name}) encountered an unsupported step (#{procedure.id}, #{step.id}).")
