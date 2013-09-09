@@ -135,6 +135,28 @@ module Maadi
         end
 
         case procedure.id
+          when 'CREATE-NEW'
+            procedure = build_create_new( 'CREATE-NEW-NEXT' )
+            return build_add_create_type( procedure, procedure.steps[0], 'CREATE-NEW-NEXT' )
+          when 'CREATE-NEW-NEXT'
+            case procedure.steps[0].get_parameter_value( '[CREATE-TYPE]' )
+              when 'NULL'
+                return build_add_redirect( procedure, procedure.steps[0], 'CREATE-NULL-NEW' )
+              when 'NOTNULL'
+                return build_add_redirect( procedure, procedure.steps[0], 'CREATE-NOTNULL-NEW' )
+              else
+                return procedure
+            end
+          when 'CREATE-NULL-NEW'
+            return build_add_create_database_name( procedure, procedure.steps[0], 'CREATE-NULL-LAST' )
+          when 'CREATE-NULL-LAST'
+            return build_create_database_finalize( procedure, procedure.steps[0] )
+          when 'CREATE-NOTNULL-NEW'
+            return build_add_create_table_name( procedure, procedure.steps[0], 'CREATE-NOTNULL-PARAMS' )
+          when 'CREATE-NOTNULL-PARAMS'
+            return build_add_create_table_columns( procedure, procedure.steps[0], 'CREATE-NOTNULL-LAST' )
+          when 'CREATE-NOTNULL-LAST'
+            return build_create_table_finalize( procedure, procedure.steps[0] )
           else
         end
 
@@ -147,6 +169,42 @@ module Maadi
         return step
       end
 
+      def build_add_redirect( procedure, step, next_step, failed = false )
+        unless is_procedure?( procedure ) and is_step?( step )
+          return procedure
+        end
+
+        procedure.id = next_step
+
+        if failed
+          procedure.failed
+        end
+
+        return procedure
+      end
+
+      def build_create_new( next_step )
+        procedure = build_skeleton( 'CREATE' )
+        step = build_step('CREATE', 'COMPLETED', '', 'TERM-PROC' )
+
+        procedure.add_step( step )
+        procedure.id = next_step
+
+        return procedure
+      end
+
+      def build_add_create_type( procedure, step, next_step )
+        unless is_procedure?( procedure ) and is_step?( step )
+          return procedure
+        end
+
+        constraint = Maadi::Procedure::ConstraintPickList.new( %w(NULL NOTNULL) )
+        step.parameters.push Maadi::Procedure::Parameter.new('[CREATE-TYPE]', constraint )
+
+        procedure.id = next_step
+        return procedure
+      end
+
       # build a STACK PUSH procedure
       # this will allow a value to be pushed onto a stack.
       def manage_push( procedure )
@@ -155,6 +213,7 @@ module Maadi
         end
 
         case procedure.id
+          when ''
           else
         end
 
@@ -169,6 +228,7 @@ module Maadi
         end
 
         case procedure.id
+          when ''
           else
         end
 
@@ -183,6 +243,7 @@ module Maadi
         end
 
         case procedure.id
+          when ''
           else
         end
 
@@ -197,6 +258,7 @@ module Maadi
         end
 
         case procedure.id
+          when ''
           else
         end
 
