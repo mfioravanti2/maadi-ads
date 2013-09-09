@@ -207,7 +207,7 @@ module Maadi
       end
 
       def build_push_new( next_step )
-        procedure = build_skeleton( 'CREATE' )
+        procedure = build_skeleton( 'PUSH' )
         step = build_step('PUSH', '[LVALUE]', '', 'TERM-PROC' )
 
         constraint =  Maadi::Procedure::ConstraintRangedInteger.new( 1, 1024 )
@@ -229,6 +229,7 @@ module Maadi
 
         rvalue = step.get_parameter_value( '[RVALUE]' )
         if rvalue != ''
+          @stack_size += 1
           procedure.done
         else
           procedure.failed
@@ -245,9 +246,35 @@ module Maadi
         end
 
         case procedure.id
-          when ''
+          when 'POP-NEW'
+            return build_pop_new( 'POP-LAST' )
+          when 'POP-LAST'
+            return build_pop_finalize( procedure, procedure.steps[0] )
           else
         end
+
+        return procedure
+      end
+
+      def build_pop_new( next_step )
+        procedure = build_skeleton( 'POP' )
+        step = build_step('POP', '[LVALUE]', '', 'TERM-PROC' )
+
+        procedure.add_step( step )
+        procedure.id = next_step
+
+        return procedure
+      end
+
+      def build_pop_finalize( procedure, step )
+        unless is_procedure?( procedure ) and is_step?( step )
+          return procedure
+        end
+
+        step.id = 'POP'
+        procedure.id = 'POP'
+
+        procedure.done
 
         return procedure
       end
