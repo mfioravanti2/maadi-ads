@@ -25,6 +25,7 @@ module Maadi
         @options['STDOUT'] = nil
         @options['STDERR'] = nil
         @db = nil;
+        @rStack = nil;
 
         #Confirm that bsh exists
         if File.exists?(@options['BSHPATH']) == true
@@ -109,117 +110,297 @@ module Maadi
         return false
       end
 
+      #Runs the code
+      def runCode (operationalString)
+
+        p' In the run code for : ' + operationalString
+        #First, run the code with operationalString
+        @options['STDIN'].print (operationalString)
+        @options['STDIN'].print ("System.out.println(\"" + @options['OUTPUTCATCH'] + "\");\n")
+        @options['STDIN'].print ("System.err.println(\"" + @options['OUTPUTCATCH'] + "\");\n")
+        @options['STDIN'].flush()
+
+        #Gather results from both STDIN and STDOUT
+        output1 = ''
+        stdOut = ''
+        stdErr = ''
+
+        #Reads Standard out and std error
+
+        #Reads standard out
+        output1 = @options['STDOUT'].readline;
+
+        while !output1.include? (@options['OUTPUTCATCH'])
+          stdOut+= output1
+          output1 = @options['STDOUT'].readline;
+        end
+
+        #Reads standard error
+        output1 = @options['STDERR'].readline;
+
+        while !output1.include? (@options['OUTPUTCATCH'])
+          stdErr+= output1
+          output1 = @options['STDERR'].readline;
+        end
+
+        #Create the array and add Standard Out and Standard Error
+        stringArray = Array.new()
+        #Replace the bsh % with empty string
+        p 'Before strip, printing STDOUT for ' + operationalString + " : " + stdOut
+        p 'Before strip, printing STDERR for ' + operationalString + " : " + stdErr
+
+        stringArray.push(stdOut.sub("bsh %", ""))
+        stringArray.push(stdOut.sub("bsh %", ""))
+
+        p 'After strip, printing STDOUT for ' + operationalString + " : " + stringArray.at(0)
+        p 'After strip, printing STDERR for ' + operationalString + " : " + stringArray.at(1)
+
+        #Return a size 2 array
+        return stringArray
+
+      end
+
+      #Runs the operational String, then runs lValueOPString and rValueOPString.  Returns
+      #6 Strings. These strings are in pairs for STDIN and STDOUT, striped of the bsh%
+      def runOperation (operationalString, lValueOPString, rValueOPString)
+
+        #Create an array
+        stringArray = Array.new()
+
+        #Run the first operation
+        if operationalString != ''
+
+          #Run the code
+          tempArray = runCode(operationalString)
+
+          #Add contents
+          stringArray.push(tempArray.at(0))
+          stringArray.push(tempArray.at(1))
+
+        end
+
+        #Run the first operation
+        if lValueOPString != ''
+
+          #Run the code
+          tempArray = runCode(lValueOPString)
+
+          #Add contents
+          stringArray.push(tempArray.at(0))
+          stringArray.push(tempArray.at(1))
+
+        end
+
+        #Run the first operation
+        if rValueOPString != ''
+
+          #Run the code
+          tempArray = runCode(rValueOPString)
+
+          #Add contents
+          stringArray.push(tempArray.at(0))
+          stringArray.push(tempArray.at(1))
+
+        end
+
+
+        return stringArray
+
+      end
+
+
+
       def execute(test_id, procedure)
         results = Maadi::Procedure::Results.new(test_id.to_i, 0, "#{@type}:#{@instance_name}", nil)
-        operationString = ''
-        errorHit = false
-        errorString = nil
-        outputString = nil
+        p 'JavaStack->execute: In Execute'
+        if procedure.is_a? ( ::Maadi::Procedure::Procedure)
+          results.proc_id = procedure.id
+            p 'JavaStack procedure identified?'
 
-        if @db != nil
-          if procedure.is_a?(::Maadi::Procedure::Procedure)
-            results.proc_id = procedure.id
+          procedure.steps.each do |step|
+            p 'In here'
+            if step.target == ''
+              if supports_step? (step)
 
-            procedure.steps.each do |step|
-              if step.target == ''             #The target should be empty
-                if supports_step?(step)
-                  begin
-                    case step.id
-                      when 'PUSH'
-                        #Need the PRIMITIVE OR STRING value
-                        value = step.get_parameter_value('VALUE')
-                        #If it does not exist, flag error
-                        if (value == nil)
-                          errorHit = true
-                          errorHit = 'No value passed or value does not exist'
-                        else
-                          #Perfrom the push operation.  No results printed
-                          operationString = @options['STACKNAME'] + ".push(" + value + ");\n"
-                        end
-                      when 'POP'
-                        #Perform the pop operation and print the result of the pop.
+                #lValue is the item that is modified (usually the stack)
+                lValue = -1
+                #rValue is the item that is not modified during an operation
+                rValue = -1
+                bSuccess = false
+                bError = false
+                #The normal operation call
+                operationString = ''
+                #Used when a status update is needed, like the size of the stack after a push
+                lValueOPString = ''
+                rValueOPString = ''
+
+                begin
+                  case step.id
+
+                    #Case for when a push is called
+                    when 'PUSH'
+                      #Get the value to add to the push
+                      rValue = step.get_parameter_valie('[RVALUE]')
+
+                      #If the stack is instantiated, then work
+                      if(@rStack != nil)
+                        operationString = @options['STACKNAME'] + ".push(" + rValue + ");\n"
+                        lValueOPString = "System.out.println(" + @options['STACKNAME'] + ".size());\n"
+
+                        #Run the operation
+                        stringArray = runOperation(operationString, lValueOPString, '')
+
+                        #Set lValue - index 2 (STDOUT)
+                        lValue = stringArray.at(2)
+
+                        bSuccess = true
+                        bError = false
+                      else
+                        lValue = rValue = 'PUSH Failed, ' + @options['CLASSNAME'] + ' not instantiated'
+                        bSuccess = false
+                        bError = true
+                      end
+
+                    when 'POP'
+                      #Make sure the stack is initialized.
+                      if @rStack != nil
+                        #Need to check for size, but this is not available with this interface
                         operationString = "System.out.println(" + @options['STACKNAME'] + ".pop());\n"
-                      when 'SIZE'
-                        #Perform the atIndex() operation
-                        operationString = "System.out.println(" + @options['STACKNAME'] + ".size());\n"
-                      when 'ATINDEX'
-                        #Need the index from the parameter value.
-                        index = step.get_parameter_value('INDEX')
-                        #If it does not exist, flag error
-                        if (index == nil)
-                          errorHit = true
-                          errorHit = 'No index passed or index does not exist'
-                        else
-                          #Perform the atIndex() operation
-                          operationString = @options['STACKNAME'] + ".atIndex(" + index + ");\n"
-                        end
-                      when 'NULCONSTRUCT'
-                        #Perfrom the nullary constructor
-                        operationString = @options['CLASSNAME'] + " " + @options['STACKNAME'] + " = new " + @options['CLASSNAME'] + "();\n"
-                      when 'NONNULCONSTRUCT'
-                        capacity = step.get_parameter_value('CAPACITY')
-                        if (capacity == nil)
-                          capacity = @options['DEFAULTCAPACITY']
-                        end
-                        #Use the constructor, but pass a parameter called capacity.
-                        operationString = @options['CLASSNAME'] + " " + @options['STACKNAME'] + " = new " + @options['CLASSNAME'] + "(" + capacity +");\n"
+                        lValueOPString = "System.out.println(" + @options['STACKNAME'] + ".size());\n"
+
+                        #Run the operation
+                        stringArray = runOperation(operationString, lValueOPString, '')
+
+                        #Set lValue - index 0 (STDOUT)
+                        lValue = stringArray.at(0)
+
+                        #Set the rValue - index 2 (STDOUT)
+                        rValue = stringArray.at(2)
+
+                        bSuccess = true
+                        bError = false
+                      else
+                        lValue = rValue = 'POP Failed, ' + @options['CLASSNAME'] + ' not instantiated'
+                        bSuccess = false
+                        bError = true
+                      end
+
+                    when 'SIZE'
+                      if @rStack != nil
+
+                        operationString = @options['STACKNAME'] + ".size();\n"
+
+                        #Run the operation
+                        stringArray = runOperation(operationString, '', '')
+
+                        #Set lValue - index 0 (STDOUT)
+                        lValue = stringArray.at(0)
+
+                        bSuccess = true
+                        bError = false
+                      else
+                        lValue = rValue = 'SIZE Failed, ' + @options['CLASSNAME'] + ' not instantiated'
+                        bSuccess = false
+                        bError = true
+                      end
+                    when 'ATINDEX'
+
+                      #Get the index value
+                      index = step.get_parameter_value('[INDEX]')
+
+                      if @rStack != nil
+
+                        rValueOPString = "System.out.println(" + @options['STACKNAME'] + ".atIndex(" + index + "));\n"
+                        lValueOPString = "System.out.println(" + @options['STACKNAME'] + ".size());\n"
+
+                        #Run the operation
+                        stringArray = runOperation('', lValueOPString, rValueOPString)
+
+                        #Set lValue - index 2 (STDOUT)
+                        lValue = stringArray.at(2)
+
+                        #Set rValue = index 4 (STDOUT)
+                        rValue = stringArray.at(4)
 
                       else
-                    end
+                        lValue = rValue = 'ATINDEX Failed, ' + @options['CLASSNAME'] + ' not instantiated'
+                        bSuccess = false
+                        bError = true
+                      end
 
-                    #run the program and execute
-                    p 'Operational String: ' + operationString
-                    @options['STDIN'].print( operationString)
-                    @options['STDIN'].print("System.out.println(\"" + @options['OUTPUTCATCH'] +  "\");\n")
-                    @options['STDIN'].print("System.err.println(\"" + @options['OUTPUTCATCH'] +  "\");\n")
-                    @options['STDIN'].flush()
-                    p 'Execute program for: ' + step.id
+                    when 'NULCONSTRUCT'
+                      p 'JavaStack->Execute: NULCONSTRUCT CALLED'
+                      operationString = @options['CLASSNAME'] +  " " + @options['STACKNAME'] + " = new " + @options['CLASSNAME'] + "();\n"
+                      lValueOPString = "System.out.println(" + @options['STACKNAME'] + ".size());\n"
 
-                    #Gather results in a string
-                    output1 = ''
-                    stdOutput = ''
-                    output1 = @options['STDOUT'].readline;
+                      #Run the operation
+                      stringArray = runOperation(operationString, lValueOPString, '')
 
-                    while !output1.include?(@options['OUTPUTCATCH'])
+                      #Set lValue - index 0 (STDOUT)
+                      lValue = stringArray.at(0)
 
-                      stdOutput += output1;
-                      output1 = @options['STDOUT'].readline;
-                    end
+                      bSuccess = true
+                      bError = false
 
-                    stdErrput = ''
-                    output1 = @options['STDERR'].readline;
+                      @rStack = true
+                    when 'NONNULCONSTRUCT'
+                      # CURRENTLY DOES NOT TAKE A SIZE
+                      operationString = @options['CLASSNAME'] +  " " + @options['STACKNAME'] + " = new " + @options['CLASSNAME'] + "();\n"
+                      lValueOPString = "System.out.println(" + @options['STACKNAME'] + ".size());\n"
 
-                    while !output1.include?(@options['OUTPUTCATCH'])
-                      stdErrput+= output1
-                      output1 = @options['STDERR'].readline;
-                    end
+                      #Run the operation
+                      stringArray = runOperation(operationString, lValueOPString, '')
 
-                    p 'Output: ' + stdOutput
-                    p 'Error: ' + stdErrput
+                      #Set lValue - index 0 (STDOUT)
+                      lValue = stringArray.at(0)
 
-                    case step.look_for
-                      when 'NORECORD'
-                      when 'CHANGES'
-                        results.add_result(Maadi::Procedure::Result.new(step, @db.affected_rows, output1, 'SUCCESS'))
-                      when 'COMPLETED'
-                        results.add_result(Maadi::Procedure::Result.new(step, stdOutput, 'STDOUT', 'SUCCESS'))
-                        results.add_result(Maadi::Procedure::Result.new(step, stdErrput, 'STDERR', 'SUCCESS'))
-                      else
-                        results.add_result(Maadi::Procedure::Result.new(step, stdOutput, 'STDOUT', 'UNKNOWN'))
-                        results.add_result(Maadi::Procedure::Result.new(step, stdErrput, 'STDERR', 'UNKNOWN'))
-                    end
-                  rescue => e
-                    Maadi::post_message(:Warn, "Application (#{@type}:#{@instance_name}) encountered an error (#{e.message}).")
-                    results.add_result(Maadi::Procedure::Result.new(step, stdOutput, 'STDOUT', 'EXCEPTION'))
-                    results.add_result(Maadi::Procedure::Result.new(step, stdErrput, 'STDERR', 'EXCEPTION'))
+                      bSuccess = true
+                      bError = false
+
+                      @rStack = true
+
+
                   end
-                else
-                  Maadi::post_message(:Warn, "Application (#{@type}:#{@instance_name}) encountered an unsupported step (#{procedure.id}, #{step.id}).")
+
+                  p 'Print results'
+                  p 'Operational String: ' + operationString
+                  if lValue != -1
+                    p ' lValue: ' + lValue
+                  end
+                  if rValue != -1
+                    p ' rValue: ' + rValue
+                  end
+
+
+
+                  #Handle the results
+                  case step.look_for
+                    when 'NORECORD'
+                    when 'LVALUE'
+                      results.add_result( Maadi::Procedure::Result.new( step, lValue.to_a, 'TEXT', ( !bError and bSuccess ) ? 'SUCCESS' : 'FAILURE' ))
+                    when 'RVALUE'
+                      results.add_result( Maadi::Procedure::Result.new( step, rValue.to_a, 'TEXT', ( !bError and bSuccess ) ? 'SUCCESS' : 'FAILURE' ))
+                    when 'CHANGES'
+                      results.add_result( Maadi::Procedure::Result.new( step, '', 'TEXT', ( !bError and bSuccess ) ? 'SUCCESS' : 'FAILURE' ))
+                    when 'COMPLETED'
+                      results.add_result( Maadi::Procedure::Result.new( step, '', 'TEXT', ( !bError and bSuccess ) ? 'SUCCESS' : 'FAILURE' ))
+                    else
+                      results.add_result( Maadi::Procedure::Result.new( step, '', 'TEXT', 'UNKNOWN' ))
+                  end
+                rescue => e
+                  Maadi::post_message(:Warn, "Application (#{@type}:#{@instance_name}) encountered an error (#{e.message}).")
+                  results.add_result( Maadi::Procedure::Result.new( step, e.message, 'TEXT', 'EXCEPTION' ))
                 end
+              else
+                Maadi::post_message(:Warn, "Application (#{@type}:#{@instance_name}) encountered an unsupported step (#{procedure.id}, #{step.id}).")
               end
             end
           end
         end
+
+
+
+
 
         return results
       end
