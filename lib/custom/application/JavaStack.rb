@@ -149,8 +149,13 @@ module Maadi
         p 'Before strip, printing STDOUT for ' + operationalString + " : " + stdOut
         p 'Before strip, printing STDERR for ' + operationalString + " : " + stdErr
 
-        stringArray.push(stdOut.sub("bsh %", ""))
-        stringArray.push(stdOut.sub("bsh %", ""))
+        #Strip BSH characters
+        stdOut = stdOut.gsub("bsh %", "")
+        stdErr = stdErr.gsub("bsh %", "")
+
+        #Strip new lines and excess characters (whitepsace)
+        stringArray.push(stdOut.gsub("\n", "").strip())
+        stringArray.push(stdErr.gsub("\n", "").strip())
 
         p 'After strip, printing STDOUT for ' + operationalString + " : " + stringArray.at(0)
         p 'After strip, printing STDERR for ' + operationalString + " : " + stringArray.at(1)
@@ -288,7 +293,7 @@ module Maadi
                     when 'SIZE'
                       if @rStack != nil
 
-                        operationString = @options['STACKNAME'] + ".size();\n"
+                        operationString = "System.out.println(" + @options['STACKNAME'] + ".size());\n"
 
                         #Run the operation
                         stringArray = runOperation(operationString, '', '')
@@ -337,7 +342,7 @@ module Maadi
                       stringArray = runOperation(operationString, lValueOPString, '')
 
                       #Set lValue - index 0 (STDOUT)
-                      lValue = stringArray.at(0)
+                      lValue = stringArray.at(2)
 
                       bSuccess = true
                       bError = false
@@ -352,7 +357,7 @@ module Maadi
                       stringArray = runOperation(operationString, lValueOPString, '')
 
                       #Set lValue - index 0 (STDOUT)
-                      lValue = stringArray.at(0)
+                      lValue = stringArray.at(2)
 
                       bSuccess = true
                       bError = false
