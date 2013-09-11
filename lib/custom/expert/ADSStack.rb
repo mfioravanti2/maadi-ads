@@ -19,11 +19,15 @@ module Maadi
         @options['ATINDEX_RATIO'] = 1
         @options['SIZE_RATIO'] = 1
 
+        @options['MAX_INTEGER'] = 1024
+
         @notes['CREATE_RATIO'] = 'Relative Ratio for CREATE commands (0 or less, ignore command type)'
         @notes['PUSH_RATIO'] = 'Relative Ratio for PUSH commands (0 or less, ignore command type)'
         @notes['POP_RATIO'] = 'Relative Ratio for POP commands (0 or less, ignore command type)'
         @notes['ATINDEX_RATIO'] = 'Relative Ratio for AT INDEX commands (0 or less, ignore command type)'
         @notes['SIZE_RATIO'] = 'Relative Ratio for SIZE commands (0 or less, ignore command type)'
+
+        @notes['MAX_INTEGER'] = 'Maximum size of integers to attempt push on to the stack'
       end
 
       # returns (String) which the the domain that this expert specializes in
@@ -210,7 +214,7 @@ module Maadi
         procedure = build_skeleton( 'PUSH' )
         step = build_step('PUSH', '[LVALUE]', '', 'TERM-PROC' )
 
-        constraint =  Maadi::Procedure::ConstraintRangedInteger.new( 1, 1024 )
+        constraint =  Maadi::Procedure::ConstraintRangedInteger.new( 1, @options['MAX_INTEGER'] )
         step.parameters.push Maadi::Procedure::Parameter.new('[RVALUE]', constraint )
 
         procedure.add_step( step )

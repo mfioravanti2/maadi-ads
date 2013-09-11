@@ -5,8 +5,9 @@
 # profile.  Lines that start with # are not
 # executed (they are treated as comments).
 
-# select the MySQL application (to be used as the Oracle)
-set application RubyStack RubyStack
+# select the Ruby implementation of a stack application
+set application RubyStack RubyStack1
+set application RubyStack RubyStack2
 
-# select and configure the MySQL application (the one operating under reduced capacity)
-set application JavaStack JavaStack
+# select the Java implementation of a stack application
+#set application JavaStack JavaStack
