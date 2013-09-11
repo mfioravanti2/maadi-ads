@@ -10,4 +10,5 @@ require 'rubygems'
 require 'rspec'
 
 require_relative 'test_factory_rspec'
+require_relative 'test_rubystack_rspec'
 require_relative 'test_javastack_rspec'

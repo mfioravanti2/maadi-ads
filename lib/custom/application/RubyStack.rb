@@ -89,6 +89,9 @@ module Maadi
                           if @rStack.size > 0
                             lValue = @rStack.pop
                             rValue = @rStack.size
+
+                            bSuccess = true
+                            bError = false
                           else
                             lValue = rValue = 'POP Failed, RubyStack is empty'
                             bSuccess = false
@@ -134,7 +137,7 @@ module Maadi
                           bError = true
                         end
                       when 'NULCONSTRUCT'
-                        @rStack = new.Array()
+                        @rStack = Array.new()
                         lValue = rValue = @rStack.size
 
                         if @rStack != nil
@@ -142,7 +145,7 @@ module Maadi
                           bError = false
                         end
                       when 'NONNULCONSTRUCT'
-                        @rStack = new.Array()
+                        @rStack = Array.new()
                         lValue = rValue = @rStack.size
 
                         if @rStack != nil
@@ -155,9 +158,9 @@ module Maadi
                     case step.look_for
                       when 'NORECORD'
                       when 'LVALUE'
-                        results.add_result( Maadi::Procedure::Result.new( step, lValue.to_a, 'TEXT', ( !bError and bSuccess ) ? 'SUCCESS' : 'FAILURE' ))
+                        results.add_result( Maadi::Procedure::Result.new( step, lValue.to_s, 'TEXT', ( !bError and bSuccess ) ? 'SUCCESS' : 'FAILURE' ))
                       when 'RVALUE'
-                        results.add_result( Maadi::Procedure::Result.new( step, rValue.to_a, 'TEXT', ( !bError and bSuccess ) ? 'SUCCESS' : 'FAILURE' ))
+                        results.add_result( Maadi::Procedure::Result.new( step, rValue.to_s, 'TEXT', ( !bError and bSuccess ) ? 'SUCCESS' : 'FAILURE' ))
                       when 'CHANGES'
                         results.add_result( Maadi::Procedure::Result.new( step, '', 'TEXT', ( !bError and bSuccess ) ? 'SUCCESS' : 'FAILURE' ))
                       when 'COMPLETED'

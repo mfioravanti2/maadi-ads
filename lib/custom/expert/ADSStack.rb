@@ -212,7 +212,7 @@ module Maadi
 
       def build_push_new( next_step )
         procedure = build_skeleton( 'PUSH' )
-        step = build_step('PUSH', '[LVALUE]', '', 'TERM-PROC' )
+        step = build_step('PUSH', 'LVALUE', '', 'TERM-PROC' )
 
         constraint =  Maadi::Procedure::ConstraintRangedInteger.new( 1, @options['MAX_INTEGER'] )
         step.parameters.push Maadi::Procedure::Parameter.new('[RVALUE]', constraint )
@@ -262,7 +262,7 @@ module Maadi
 
       def build_pop_new( next_step )
         procedure = build_skeleton( 'POP' )
-        step = build_step('POP', '[LVALUE]', '', 'TERM-PROC' )
+        step = build_step('POP', 'LVALUE', '', 'TERM-PROC' )
 
         procedure.add_step( step )
         procedure.id = next_step
@@ -306,7 +306,7 @@ module Maadi
 
       def build_at_index_new( next_step )
         procedure = build_skeleton( 'ATINDEX' )
-        step = build_step('ATINDEX', '[LVALUE]', '', 'TERM-PROC' )
+        step = build_step('ATINDEX', 'LVALUE', '', 'TERM-PROC' )
 
         constraint =  Maadi::Procedure::ConstraintRangedInteger.new( 0, @stack_size - 1 )
         step.parameters.push Maadi::Procedure::Parameter.new('[INDEX]', constraint )
@@ -356,7 +356,7 @@ module Maadi
 
       def build_size_new( next_step )
         procedure = build_skeleton( 'SIZE' )
-        step = build_step('SIZE', '[LVALUE]', '', 'TERM-PROC' )
+        step = build_step('SIZE', 'LVALUE', '', 'TERM-PROC' )
 
         procedure.add_step( step )
         procedure.id = next_step
