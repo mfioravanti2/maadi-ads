@@ -41,16 +41,12 @@ module Maadi
       def prepare
 
         begin
-          p 'JavaStack->prepare: Trying to connect to the pipe: ' + @options['COMMANDNAME']
           #Create execute statement
           @options['STDIN'], @options['STDOUT'], @options['STDERR'] = Open3.popen3("java -cp \"C:/Users/Mr. Fluffy Pants/RubymineProjects/maadi-ads/utils/java/bsh-2.0b4.jar\" bsh.Interpreter")
-          p 'JavaStack->prepare:  Connection successful'
 
           #Add Class Path to MyStack
           classPath = "addClassPath(\"" + @options['ROOTPATH'] + "/stuff\");\n"
 
-          p 'JavaStack->prepare: Trying to execute the classpath'
-          p 'JavaStack->prepare->classPath: ' + classPath;
           #Execute class path and flush the pipe
           @options['STDIN'].print classPath
 
@@ -60,7 +56,6 @@ module Maadi
           @options['STDIN'].flush()
 
           #Print STDERR and STDOUT to screen to check for errors
-          p 'JavaStack->prepare: Printing STDOUT'
           output1 = @options['STDOUT'].readline;
 
           while !output1.include?(@options['OUTPUTCATCH'])
@@ -68,14 +63,14 @@ module Maadi
             output1 = @options['STDOUT'].readline;
           end
 
-          p 'JavaStack->prepare: Printing STDERR'
+          #Get stadnard error
           output1 = @options['STDERR'].readline;
 
           while !output1.include?(@options['OUTPUTCATCH'])
             p output1
             output1 = @options['STDERR'].readline;
           end
-          p 'JavaStack->prepare: Preparations are complete.'
+
         rescue => e
           Maadi::post_message(:Warn, "Application (#{@type}:#{@instance_name}) was unable to initialize (#{e.message}).")
         end
@@ -146,9 +141,6 @@ module Maadi
         #Create the array and add Standard Out and Standard Error
         stringArray = Array.new()
         #Replace the bsh % with empty string
-        p 'Before strip, printing STDOUT for ' + operationalString + " : " + stdOut
-        p 'Before strip, printing STDERR for ' + operationalString + " : " + stdErr
-
         #Strip BSH characters
         stdOut = stdOut.gsub("bsh %", "")
         stdErr = stdErr.gsub("bsh %", "")
@@ -156,9 +148,6 @@ module Maadi
         #Strip new lines and excess characters (whitepsace)
         stringArray.push(stdOut.gsub("\n", "").strip())
         stringArray.push(stdErr.gsub("\n", "").strip())
-
-        p 'After strip, printing STDOUT for ' + operationalString + " : " + stringArray.at(0)
-        p 'After strip, printing STDERR for ' + operationalString + " : " + stringArray.at(1)
 
         #Return a size 2 array
         return stringArray
@@ -217,14 +206,11 @@ module Maadi
 
       def execute(test_id, procedure)
         results = Maadi::Procedure::Results.new(test_id.to_i, 0, "#{@type}:#{@instance_name}", nil)
-        p 'JavaStack->execute: In Execute'
         if procedure.is_a? ( ::Maadi::Procedure::Procedure)
           results.proc_id = procedure.id
-            p 'JavaStack procedure identified?'
 
           procedure.steps.each do |step|
-            p 'In here'
-            if step.target == ''
+            if step.target == 'application'
               if supports_step? (step)
 
                 #lValue is the item that is modified (usually the stack)
@@ -244,11 +230,13 @@ module Maadi
 
                     #Case for when a push is called
                     when 'PUSH'
+
                       #Get the value to add to the push
-                      rValue = step.get_parameter_valie('[RVALUE]')
+                      rValue = step.get_parameter_value('[RVALUE]')
 
                       #If the stack is instantiated, then work
-                      if(@rStack != nil)
+                      if @rStack != nil  && rValue != ''
+
                         operationString = @options['STACKNAME'] + ".push(" + rValue + ");\n"
                         lValueOPString = "System.out.println(" + @options['STACKNAME'] + ".size());\n"
 
@@ -367,13 +355,15 @@ module Maadi
 
                   end
 
-                  p 'Print results'
-                  p 'Operational String: ' + operationString
+                  #Print some meaningful information
+                  Maadi::post_message(:Info, "Operation String: ' #{operationString.to_s}")
                   if lValue != -1
-                    p ' lValue: ' + lValue
+                    Maadi::post_message(:Info, " lValueOPString: ' #{lValueOPString.to_s}")
+                    Maadi::post_message(:Info, " lValue: ' #{lValue.to_s}")
                   end
                   if rValue != -1
-                    p ' rValue: ' + rValue
+                    Maadi::post_message(:Info, " rValueOPString: ' #{rValueOPString.to_s}")
+                    Maadi::post_message(:Info, " rValue: ' #{rValue.to_s}")
                   end
 
 
