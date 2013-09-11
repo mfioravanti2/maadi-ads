@@ -2,7 +2,7 @@
 #          Florida Institute of Technology
 # Course : CSE5400 Special Topics - High Volume Automated Testing
 # Date   : 01/18/2013
-# File   : test_adsstack_spec.rb
+# File   : test_expert_spec.rb
 #
 # Summary: This is the main test driver the custom Experts.
 
@@ -10,4 +10,3 @@ require 'rubygems'
 require 'rspec'
 
 require_relative 'test_factory_rspec'
-require_relative 'test_adsstack_rspec'
