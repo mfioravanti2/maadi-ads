@@ -59,8 +59,15 @@ describe Maadi::Application::JavaStack do
     step3.parameters.push Maadi::Procedure::Parameter.new('[RVALUE]', constraint )
     step3.parameters[0].populate_value
 
-    #The forth step, pop a vlaue
-    step4 = build_step('POP', '[LVALUE]', '', 'TERM-PROC' )
+    #The forth step, check the value at an index
+    step4 = build_step('ATINDEX', 'LVALUE', '', 'TERM-PROC' )
+
+    constraint =  Maadi::Procedure::ConstraintRangedInteger.new( 0, 0 )
+    step4.parameters.push Maadi::Procedure::Parameter.new('[INDEX]', constraint )
+    step4.parameters[0].populate_value
+
+    #The fifth step, pop a vlaue
+    step5 = build_step('POP', '[LVALUE]', '', 'TERM-PROC' )
 
 
     #create the procedure
@@ -70,6 +77,7 @@ describe Maadi::Application::JavaStack do
     procedure1.add_step(step2)
     procedure1.add_step(step3)
     procedure1.add_step(step4)
+    procedure1.add_step(step5)
 
     results = javaStack.execute(1, procedure1);
 
