@@ -383,8 +383,12 @@ module Maadi
                       bSuccess = true
                       bError = false
 
+                      #We use rStack as an indication that the stack was created. Otherwise, pops on an uninitialized stack will occur.
+                      #this is to help prevent errors.
                       @rStack = true
+
                     when 'NONNULCONSTRUCT'
+
                       # CURRENTLY DOES NOT TAKE A SIZE
                       operationString = @options['CLASSNAME'] +  " " + @options['STACKNAME'] + " = new " + @options['CLASSNAME'] + "();\n"
                       lValueOPString = "System.out.println(" + @options['STACKNAME'] + ".size());\n"

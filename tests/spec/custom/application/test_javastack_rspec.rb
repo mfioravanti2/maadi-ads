@@ -86,7 +86,7 @@ describe Maadi::Application::JavaStack do
 
     p results.to_s
 
-    p 'End of sample problem tester'
+    p 'End of sample problem tester.  Check results aboe to see if it works.'
 
 
   end
