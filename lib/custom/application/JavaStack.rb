@@ -86,6 +86,7 @@ module Maadi
           Maadi::post_message(:Warn, "Application (#{@type}:#{@instance_name}) was unable to initialize (#{e.message}).")
         end
 
+        super
       end
 
 
@@ -423,9 +424,9 @@ module Maadi
                   case step.look_for
                     when 'NORECORD'
                     when 'LVALUE'
-                      results.add_result( Maadi::Procedure::Result.new( step, lValue.to_a, 'TEXT', ( !bError and bSuccess ) ? 'SUCCESS' : 'FAILURE' ))
+                      results.add_result( Maadi::Procedure::Result.new( step, lValue.to_s, 'TEXT', ( !bError and bSuccess ) ? 'SUCCESS' : 'FAILURE' ))
                     when 'RVALUE'
-                      results.add_result( Maadi::Procedure::Result.new( step, rValue.to_a, 'TEXT', ( !bError and bSuccess ) ? 'SUCCESS' : 'FAILURE' ))
+                      results.add_result( Maadi::Procedure::Result.new( step, rValue.to_s, 'TEXT', ( !bError and bSuccess ) ? 'SUCCESS' : 'FAILURE' ))
                     when 'CHANGES'
                       results.add_result( Maadi::Procedure::Result.new( step, '', 'TEXT', ( !bError and bSuccess ) ? 'SUCCESS' : 'FAILURE' ))
                     when 'COMPLETED'
