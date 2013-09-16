@@ -1,6 +1,13 @@
 
 require_relative 'factory'
 require_relative '../../core/helpers'
+require_relative '../procedure/ConstraintConstant'
+require_relative '../procedure/ConstraintSingleWord'
+require_relative '../procedure/ConstraintSingleString'
+require_relative '../procedure/ConstraintPickList'
+require_relative '../procedure/ConstraintMultiPickList'
+require_relative '../procedure/ConstraintMultiWord'
+require_relative '../procedure/ConstraintRangedInteger'
 
 
 module Maadi
@@ -11,6 +18,7 @@ module Maadi
         super('ADSStack')
 
         @tests = Array.new
+        @has_stack = false
         @stack_size = 0
 
         @options['CREATE_RATIO'] = 1
@@ -58,7 +66,7 @@ module Maadi
       # tests become available or are not longer available.  The Stack expert is
       # partially stateful wrt constructing databases and tables.
       def tests
-        if @stack_szie.length < 1
+        unless @has_stack
           return %w(CREATE)
         end
 
@@ -186,6 +194,7 @@ module Maadi
 
         step.id = 'NULCONSTRUCT'
         procedure.id = 'NULCONSTRUCT'
+        @has_stack = true
 
         procedure.done
 

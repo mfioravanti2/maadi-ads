@@ -11,10 +11,11 @@ set collector LogFile LogFile-Log
 set collector option SQLite3-Log LOG_LEVEL PARTIAL
 
 set expert ADSStack Stack-Exp
-set expert option INSERT_RATIO 6
-set expert option SELECT_RATIO 6
-set expert option UPDATE_RATIO 4
-set expert option DELETE_RATIO 2
+set expert option CREATE_RATIO 0
+set expert option PUSH_RATIO 6
+set expert option POP_RATIO 6
+set expert option SIZE_RATIO 4
+set expert option ATINDEX_RATIO 2
 set organizer RandomSelection RS-Organizer
 set monitor Example ExMon
 

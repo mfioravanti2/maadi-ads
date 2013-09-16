@@ -7,7 +7,8 @@
 
 # select the Ruby implementation of a stack application
 set application RubyStack RubyStack1
-set application RubyStack RubyStack2
+#set application RubyStack RubyStack2
 
 # select the Java implementation of a stack application
-#set application JavaStack JavaStack
+set application JavaStack JavaStack
+#set application option JavaStack ROOTPATH D:/code/ruby/maadi-ads/utils/java
