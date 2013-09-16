@@ -1,3 +1,13 @@
+# Author : Scott Hull (shull2013@my.fit.edu)
+#          Florida Institute of Technology
+# Course : CSE5400 Special Topics - High Volume Automated Testing
+# Date   : 09/05/2013
+# File   : JavaStack.rb
+#
+# Summary: An Application class extention that interfaces with BeanShell (BSH)
+#          in order to utilize and maintain a JVM while performing operations
+#          on an implementation of a Stack.
+
 require_relative 'factory'
 require_relative '../../core/helpers'
 require 'open3'
@@ -6,6 +16,7 @@ module Maadi
   module Application
     class JavaStack < Application
 
+      #The constructor. Sets up default values and confirms that the BSH interpreter exists
       def initialize
         super('JavaStack')
 
@@ -24,25 +35,27 @@ module Maadi
         @options['STDIN'] = nil
         @options['STDOUT'] = nil
         @options['STDERR'] = nil
-        @db = nil;
-        @rStack = nil;
+        @db = nil;        #Instead of representing a database, this represents if the path exists for BSH
+        @rStack = nil;    #Instead of representing an instantiated object, represents if the stack has been constructed
 
-        #Confirm that bsh exists
+        #Confirm that bsh exists.  Use the class variable @db to specify if the BSHPath exists
         if File.exists?(@options['BSHPATH']) == true
-          p 'JavaStack ->initialize:  FilePath is located'
+          Maadi::post_message(:Info, "JavaStack ->initialize:  FilePath is located")
           @db = 1 #Make it not nil
         else
-          p 'JavaStack: Fatal Error - unable to locate the bsh path!'
+          Maadi::post_message(:Info, "JavaStack: Fatal Error - unable to locate the bsh path!")
         end
 
 
       end
 
+      #Prepares the bsh interpreter by opening a connection to stdout, stderr, and stdin.  Strips all formatting and
+      #adds the classpath to the specified folder titled "stuff".
       def prepare
 
         begin
           #Create execute statement
-          @options['STDIN'], @options['STDOUT'], @options['STDERR'] = Open3.popen3("java -cp \"C:/Users/Mr. Fluffy Pants/RubymineProjects/maadi-ads/utils/java/bsh-2.0b4.jar\" bsh.Interpreter")
+          @options['STDIN'], @options['STDOUT'], @options['STDERR'] = Open3.popen3("java -cp \"" + @options['BSHPATH'] + "\" bsh.Interpreter")
 
           #Add Class Path to MyStack
           classPath = "addClassPath(\"" + @options['ROOTPATH'] + "/stuff\");\n"
@@ -59,15 +72,13 @@ module Maadi
           output1 = @options['STDOUT'].readline;
 
           while !output1.include?(@options['OUTPUTCATCH'])
-            p output1
             output1 = @options['STDOUT'].readline;
           end
 
-          #Get stadnard error
+          #Get standard error
           output1 = @options['STDERR'].readline;
 
           while !output1.include?(@options['OUTPUTCATCH'])
-            p output1
             output1 = @options['STDERR'].readline;
           end
 
@@ -77,10 +88,15 @@ module Maadi
 
       end
 
+
+      #Returns the supported domains.  In this case, ADS-STACK.
       def supported_domains
         return %w(ADS-STACK)
       end
 
+
+      #Returns true if the step id is "Step" and is the correct type of step for a Stack.
+      #False otherwise
       def supports_step?(step)
         if step != nil
           if step.is_a?(::Maadi::Procedure::Step)
@@ -105,10 +121,14 @@ module Maadi
         return false
       end
 
-      #Runs the code
+      #Runs the code by printing the operationalString to STDIN, flushes the pipe, and gathers results
+      #from STDOUT and STDERR
+      #
+      #Params:
+      #operationaString - A string that represents a full execution statement to be used within the BSH interpreter
+      #
       def runCode (operationalString)
 
-        p' In the run code for : ' + operationalString
         #First, run the code with operationalString
         @options['STDIN'].print (operationalString)
         @options['STDIN'].print ("System.out.println(\"" + @options['OUTPUTCATCH'] + "\");\n")
@@ -122,7 +142,7 @@ module Maadi
 
         #Reads Standard out and std error
 
-        #Reads standard out
+        #Reads standard out until the string catch is called
         output1 = @options['STDOUT'].readline;
 
         while !output1.include? (@options['OUTPUTCATCH'])
@@ -130,7 +150,7 @@ module Maadi
           output1 = @options['STDOUT'].readline;
         end
 
-        #Reads standard error
+        #Reads standard error until the string catch is called
         output1 = @options['STDERR'].readline;
 
         while !output1.include? (@options['OUTPUTCATCH'])
@@ -139,71 +159,99 @@ module Maadi
         end
 
         #Create the array and add Standard Out and Standard Error
-        stringArray = Array.new()
-        #Replace the bsh % with empty string
-        #Strip BSH characters
+        resultsArray = Array.new()
+        #Replace the bsh % with empty string because we do not want them in output
+        #Strip (remove) BSH characters from strings, as these are not needed
         stdOut = stdOut.gsub("bsh %", "")
         stdErr = stdErr.gsub("bsh %", "")
 
-        #Strip new lines and excess characters (whitepsace)
-        stringArray.push(stdOut.gsub("\n", "").strip())
-        stringArray.push(stdErr.gsub("\n", "").strip())
+        #Strip (remove) new lines and excess characters (whitepsace) as these are not needed
+        resultsArray.push(stdOut.gsub("\n", "").strip())
+        resultsArray.push(stdErr.gsub("\n", "").strip())
 
         #Return a size 2 array
-        return stringArray
+        return resultsArray
 
       end
 
       #Runs the operational String, then runs lValueOPString and rValueOPString.  Returns
       #6 Strings. These strings are in pairs for STDIN and STDOUT, striped of the bsh%
+      # and linked in the corresponding indecies based on the command passed.
+      #
+      #Params:
+      #operationaString, lValueOPString, rValueOPString - A string that represents a full execution statement to be used within the BSH interpreter
+      #
       def runOperation (operationalString, lValueOPString, rValueOPString)
 
         #Create an array
-        stringArray = Array.new()
+        cmdResultsArray = Array.new()
 
         #Run the first operation
         if operationalString != ''
 
           #Run the code
-          tempArray = runCode(operationalString)
+          resultsArray = runCode(operationalString)
 
           #Add contents
-          stringArray.push(tempArray.at(0))
-          stringArray.push(tempArray.at(1))
+          cmdResultsArray.push(resultsArray.at(0))
+          cmdResultsArray.push(resultsArray.at(1))
+        else
+
+          #Push empty results
+          cmdResultsArray.push('')
+          cmdResultsArray.push('')
 
         end
 
-        #Run the first operation
+        #Run the second operation
         if lValueOPString != ''
 
           #Run the code
-          tempArray = runCode(lValueOPString)
+          resultsArray = runCode(lValueOPString)
 
           #Add contents
-          stringArray.push(tempArray.at(0))
-          stringArray.push(tempArray.at(1))
+          cmdResultsArray.push(resultsArray.at(0))
+          cmdResultsArray.push(resultsArray.at(1))
+
+        else
+
+          #Push empty results
+          cmdResultsArray.push('')
+          cmdResultsArray.push('')
 
         end
 
-        #Run the first operation
+        #Run the third operation
         if rValueOPString != ''
 
           #Run the code
-          tempArray = runCode(rValueOPString)
+          resultsArray = runCode(rValueOPString)
 
           #Add contents
-          stringArray.push(tempArray.at(0))
-          stringArray.push(tempArray.at(1))
+          cmdResultsArray.push(resultsArray.at(0))
+          cmdResultsArray.push(resultsArray.at(1))
+
+        else
+
+          #Push empty results
+          cmdResultsArray.push('')
+          cmdResultsArray.push('')
 
         end
 
 
-        return stringArray
+        return cmdResultsArray
 
       end
 
 
-
+      #Executes a procedure (a collection of steps) that are valid to the
+      # execution of a ADS-STACK domain.
+      #
+      #Parameters:
+      #test_id - an identification of a collection of steps
+      #procedure - The procedure to execute
+      #
       def execute(test_id, procedure)
         results = Maadi::Procedure::Results.new(test_id.to_i, 0, "#{@type}:#{@instance_name}", nil)
         if procedure.is_a? ( ::Maadi::Procedure::Procedure)
@@ -241,10 +289,10 @@ module Maadi
                         lValueOPString = "System.out.println(" + @options['STACKNAME'] + ".size());\n"
 
                         #Run the operation
-                        stringArray = runOperation(operationString, lValueOPString, '')
+                        cmdResultsArray = runOperation(operationString, lValueOPString, '')
 
                         #Set lValue - index 2 (STDOUT)
-                        lValue = stringArray.at(2)
+                        lValue = cmdResultsArray.at(2)
 
                         bSuccess = true
                         bError = false
@@ -262,13 +310,13 @@ module Maadi
                         lValueOPString = "System.out.println(" + @options['STACKNAME'] + ".size());\n"
 
                         #Run the operation
-                        stringArray = runOperation(operationString, lValueOPString, '')
+                        cmdResultsArray = runOperation(operationString, lValueOPString, '')
 
                         #Set lValue - index 0 (STDOUT)
-                        lValue = stringArray.at(0)
+                        lValue = cmdResultsArray.at(0)
 
                         #Set the rValue - index 2 (STDOUT)
-                        rValue = stringArray.at(2)
+                        rValue = cmdResultsArray.at(2)
 
                         bSuccess = true
                         bError = false
@@ -284,10 +332,10 @@ module Maadi
                         operationString = "System.out.println(" + @options['STACKNAME'] + ".size());\n"
 
                         #Run the operation
-                        stringArray = runOperation(operationString, '', '')
+                        cmdResultsArray = runOperation(operationString, '', '')
 
                         #Set lValue - index 0 (STDOUT)
-                        lValue = stringArray.at(0)
+                        lValue = cmdResultsArray.at(0)
 
                         bSuccess = true
                         bError = false
@@ -301,19 +349,19 @@ module Maadi
                       #Get the index value
                       index = step.get_parameter_value('[INDEX]')
 
-                      if @rStack != nil
+                      if @rStack != nil && index != ''
 
                         rValueOPString = "System.out.println(" + @options['STACKNAME'] + ".atIndex(" + index + "));\n"
                         lValueOPString = "System.out.println(" + @options['STACKNAME'] + ".size());\n"
 
                         #Run the operation
-                        stringArray = runOperation('', lValueOPString, rValueOPString)
+                        cmdResultsArray = runOperation('', lValueOPString, rValueOPString)
 
                         #Set lValue - index 2 (STDOUT)
-                        lValue = stringArray.at(2)
+                        lValue = cmdResultsArray.at(2)
 
                         #Set rValue = index 4 (STDOUT)
-                        rValue = stringArray.at(4)
+                        rValue = cmdResultsArray.at(4)
 
                       else
                         lValue = rValue = 'ATINDEX Failed, ' + @options['CLASSNAME'] + ' not instantiated'
@@ -322,30 +370,34 @@ module Maadi
                       end
 
                     when 'NULCONSTRUCT'
-                      p 'JavaStack->Execute: NULCONSTRUCT CALLED'
+
                       operationString = @options['CLASSNAME'] +  " " + @options['STACKNAME'] + " = new " + @options['CLASSNAME'] + "();\n"
                       lValueOPString = "System.out.println(" + @options['STACKNAME'] + ".size());\n"
 
                       #Run the operation
-                      stringArray = runOperation(operationString, lValueOPString, '')
+                      cmdResultsArray = runOperation(operationString, lValueOPString, '')
 
                       #Set lValue - index 0 (STDOUT)
-                      lValue = stringArray.at(2)
+                      lValue = cmdResultsArray.at(2)
 
                       bSuccess = true
                       bError = false
 
+                      #We use rStack as an indication that the stack was created. Otherwise, pops on an uninitialized stack will occur.
+                      #this is to help prevent errors.
                       @rStack = true
+
                     when 'NONNULCONSTRUCT'
+
                       # CURRENTLY DOES NOT TAKE A SIZE
                       operationString = @options['CLASSNAME'] +  " " + @options['STACKNAME'] + " = new " + @options['CLASSNAME'] + "();\n"
                       lValueOPString = "System.out.println(" + @options['STACKNAME'] + ".size());\n"
 
                       #Run the operation
-                      stringArray = runOperation(operationString, lValueOPString, '')
+                      cmdResultsArray = runOperation(operationString, lValueOPString, '')
 
                       #Set lValue - index 0 (STDOUT)
-                      lValue = stringArray.at(2)
+                      lValue = cmdResultsArray.at(2)
 
                       bSuccess = true
                       bError = false
@@ -365,7 +417,6 @@ module Maadi
                     Maadi::post_message(:Info, " rValueOPString: ' #{rValueOPString.to_s}")
                     Maadi::post_message(:Info, " rValue: ' #{rValue.to_s}")
                   end
-
 
 
                   #Handle the results
@@ -396,10 +447,11 @@ module Maadi
 
 
 
-
+        #When finished, return the results
         return results
       end
 
+      #Close the pipes.
       def teardown
         if @db != nil
           @options['STDIN'].close()
