@@ -10,7 +10,7 @@ require_relative 'globals'
 
 module Maadi
   module CLI
-    def help(type = 'all')
+    def self.help(type = 'all')
       case type.downcase
         when 'set'
           puts 'set <type> <object> [<instance_name>]'
