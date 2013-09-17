@@ -29,7 +29,7 @@ module Maadi
         @options['STACKNAME'] = 'stack' + @instance_name
         @options['ISCONSTRUCTED'] = 'false'
         @options['CLASSNAME'] = 'MyStack'
-        @options['DEFAULTCAPACITY'] = 10;
+        @options['DEFAULTCAPACITY'] = 10
         @options['COMMANDNAME'] = "java -cp \"" + @options['BSHPATH']  + "\" bsh.Interpreter"
         @options['OUTPUTCATCH'] = '---12345---'
         @jStdIn = nil
@@ -37,21 +37,33 @@ module Maadi
         @jStdErr = nil
         @db = nil;        #Instead of representing a database, this represents if the path exists for BSH
         @rStack = nil;    #Instead of representing an instantiated object, represents if the stack has been constructed
-
-        #Confirm that bsh exists.  Use the class variable @db to specify if the BSHPath exists
-        if File.exists?(@options['BSHPATH']) == true
-          Maadi::post_message(:Info, "JavaStack ->initialize:  FilePath is located")
-          @db = 1 #Make it not nil
-        else
-          Maadi::post_message(:Info, "JavaStack: Fatal Error - unable to locate the bsh path!")
-        end
-
-
       end
+
+      # Alter the Maadi::Generic.set_option, some paths have dependencies that need to
+      # be updated as a result of the ROOTPATH being updated.
+      def set_option( option, value )
+        if option == 'ROOTPATH'
+          @options['ROOTPATH'] = File.expand_path(value)
+          @options['BSHPATH'] = File.expand_path(@options['ROOTPATH'] + '/bsh-2.0b4.jar')
+          @options['COMMANDNAME'] = "java -cp \"" + @options['BSHPATH']  + "\" bsh.Interpreter"
+        else
+          super( option, value )
+        end
+      end
+
 
       #Prepares the bsh interpreter by opening a connection to stdout, stderr, and stdin.  Strips all formatting and
       #adds the classpath to the specified folder titled "stuff".
       def prepare
+
+        #Confirm that bsh exists.  Use the class variable @db to specify if the BSHPath exists
+        if File.exists?(@options['BSHPATH']) == true
+          Maadi::post_message(:Info, 'JavaStack ->initialize:  FilePath is located')
+          @db = 1 #Make it not nil
+        else
+          Maadi::post_message(:Info, 'JavaStack: Fatal Error - unable to locate the bsh path!')
+          return false
+        end
 
         begin
           #Create execute statement
