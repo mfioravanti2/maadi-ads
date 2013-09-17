@@ -32,9 +32,9 @@ module Maadi
         @options['DEFAULTCAPACITY'] = 10;
         @options['COMMANDNAME'] = "java -cp \"" + @options['BSHPATH']  + "\" bsh.Interpreter"
         @options['OUTPUTCATCH'] = '---12345---'
-        @options['STDIN'] = nil
-        @options['STDOUT'] = nil
-        @options['STDERR'] = nil
+        @jStdIn = nil
+        @jStdOut = nil
+        @jStdErr = nil
         @db = nil;        #Instead of representing a database, this represents if the path exists for BSH
         @rStack = nil;    #Instead of representing an instantiated object, represents if the stack has been constructed
 
@@ -55,31 +55,31 @@ module Maadi
 
         begin
           #Create execute statement
-          @options['STDIN'], @options['STDOUT'], @options['STDERR'] = Open3.popen3("java -cp \"" + @options['BSHPATH'] + "\" bsh.Interpreter")
+          @jStdIn, @jStdOut, @jStdErr = Open3.popen3("java -cp \"" + @options['BSHPATH'] + "\" bsh.Interpreter")
 
           #Add Class Path to MyStack
           classPath = "addClassPath(\"" + @options['ROOTPATH'] + "/stuff\");\n"
 
           #Execute class path and flush the pipe
-          @options['STDIN'].print classPath
+          @jStdIn.print classPath
 
           #Print output catchers
-          @options['STDIN'].print("System.out.println(\"" + @options['OUTPUTCATCH'] +  "\");\n")
-          @options['STDIN'].print("System.err.println(\"" + @options['OUTPUTCATCH'] +  "\");\n")
-          @options['STDIN'].flush()
+          @jStdIn.print("System.out.println(\"" + @options['OUTPUTCATCH'] +  "\");\n")
+          @jStdIn.print("System.err.println(\"" + @options['OUTPUTCATCH'] +  "\");\n")
+          @jStdIn.flush()
 
           #Print STDERR and STDOUT to screen to check for errors
-          output1 = @options['STDOUT'].readline;
+          output1 = @jStdOut.readline;
 
           while !output1.include?(@options['OUTPUTCATCH'])
-            output1 = @options['STDOUT'].readline;
+            output1 = @jStdOut.readline;
           end
 
           #Get standard error
-          output1 = @options['STDERR'].readline;
+          output1 = @jStdErr.readline;
 
           while !output1.include?(@options['OUTPUTCATCH'])
-            output1 = @options['STDERR'].readline;
+            output1 = @jStdErr.readline;
           end
 
         rescue => e
@@ -131,10 +131,10 @@ module Maadi
       def runCode (operationalString)
 
         #First, run the code with operationalString
-        @options['STDIN'].print (operationalString)
-        @options['STDIN'].print ("System.out.println(\"" + @options['OUTPUTCATCH'] + "\");\n")
-        @options['STDIN'].print ("System.err.println(\"" + @options['OUTPUTCATCH'] + "\");\n")
-        @options['STDIN'].flush()
+        @jStdIn.print (operationalString)
+        @jStdIn.print ("System.out.println(\"" + @options['OUTPUTCATCH'] + "\");\n")
+        @jStdIn.print ("System.err.println(\"" + @options['OUTPUTCATCH'] + "\");\n")
+        @jStdIn.flush()
 
         #Gather results from both STDIN and STDOUT
         output1 = ''
@@ -144,19 +144,19 @@ module Maadi
         #Reads Standard out and std error
 
         #Reads standard out until the string catch is called
-        output1 = @options['STDOUT'].readline;
+        output1 = @jStdOut.readline;
 
         while !output1.include? (@options['OUTPUTCATCH'])
           stdOut+= output1
-          output1 = @options['STDOUT'].readline;
+          output1 = @jStdOut.readline;
         end
 
         #Reads standard error until the string catch is called
-        output1 = @options['STDERR'].readline;
+        output1 = @jStdErr.readline;
 
         while !output1.include? (@options['OUTPUTCATCH'])
           stdErr+= output1
-          output1 = @options['STDERR'].readline;
+          output1 = @jStdErr.readline;
         end
 
         #Create the array and add Standard Out and Standard Error
@@ -455,9 +455,9 @@ module Maadi
       #Close the pipes.
       def teardown
         if @db != nil
-          @options['STDIN'].close()
-          @options['STDOUT'].close()
-          @options['STDERR'].close()
+          @jStdIn.close()
+          @jStdOut.close()
+          @jStdErr.close()
         end
 
         super

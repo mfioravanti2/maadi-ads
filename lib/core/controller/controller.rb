@@ -63,6 +63,7 @@ module Maadi
               end
 
               @applications.each do |application|
+                Maadi::post_message(:Info, "Controller is configuring Application (#{application.type}:#{application.instance_name})")
                 if application.works_with?( @generator.using_domain )
                   Maadi::post_message(:Info, "Expert (#{@generator.using_domain}) and Application (#{application.type}:#{application.instance_name}) are compatible")
                 else
@@ -81,6 +82,7 @@ module Maadi
                     collector.log_options( application )
                   end
                 end
+                Maadi::post_message(:Info, "Controller has completed configuring Application (#{application.type}:#{application.instance_name})")
               end
 
               Maadi::post_message(:Info, 'Controller is collecting procedures from Generator')
