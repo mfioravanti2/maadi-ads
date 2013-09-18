@@ -327,8 +327,8 @@ module Maadi
                         #First run the operation to check the size. If the size is zero, then flag error and exit
                         cmdResultsArray = runOperation('', lValueOPString, '')
 
-                        if cmdResultsArray.at(2).include?('0')
-                          lValue = rValue = 'POP Failed, RubyStack is empty'
+                        if cmdResultsArray.at(2).include?(' 0')
+                          lValue = rValue = 'POP Failed, Stack is empty'
                           bSuccess = false
                           bError = true
                         else
@@ -385,10 +385,10 @@ module Maadi
                         #First run the operation to check the size. If the size is zero, then flag error and exit
                         cmdResultsArray = runOperation('', lValueOPString, '')
 
-                        if cmdResultsArray.at(2).include?('0')
+                        if cmdResultsArray.at(2).include?(' 0')
 
                           #If the stack is empty, then there is no point to index something.
-                          lValue = rValue = 'ATINDEX Failed, RubyStack is empty'
+                          lValue = rValue = 'ATINDEX Failed, Stack is empty'
                           bSuccess = false
                           bError = true
                         elsif  index >= cmdResultsArray.at(2)
