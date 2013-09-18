@@ -22,6 +22,7 @@ module Maadi
     $controller = nil
     $manager = nil
     $runs = 100
+    $verbosity = 1
   end
 end
 

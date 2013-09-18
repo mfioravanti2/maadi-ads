@@ -6,14 +6,17 @@
 #
 # Summary: Some general helper functions to make life a little easier.
 
+require_relative 'cli/globals'
 
 module Maadi
   # post_message will display a message to standard out which includes a symbol for
   # its relative importance, a time stamp and the message.  They are tab deliminated.
-  def self.post_message( level, message )
-    levels = { :Warn => '[!]', :Info => '[*]', :More => '[+]', :Less => '[-]', :None => '   '}
+  def self.post_message( type, message, level=1 )
+    types = { :Warn => '[!]', :Info => '[*]', :More => '[+]', :Less => '[-]', :None => '   '}
     t = Time.now
 
-    puts "#{levels[level]}\t#{t.strftime('%Y:%m:%d:%H:%M:%S')}\t#{message}"
+    if level <= $verbosity
+      puts "#{types[type]}\t#{t.strftime('%Y:%m:%d:%H:%M:%S')}\t#{message}"
+    end
   end
 end

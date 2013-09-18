@@ -105,6 +105,22 @@ module Maadi
           if $controller != nil
             $controller.runs = $runs
           end
+        when 'verbosity'
+          begin
+            $verbosity = value.to_i
+          rescue
+            Maadi::post_message(:Warn, "Unable to extract integer from #{value}")
+            $verbosity = 1
+          end
+
+          if $verbosity < 1
+            $verbosity = 1
+          end
+          Maadi::post_message(:Warn, "Verbosity set to #{$verbosity}")
+
+          if $controller != nil
+            $controller.runs = $runs
+          end
         when 'collector'
           collector = Maadi::Collector::Collector.factory( ( value == 'default' ) ? 'SQLite3' : value )
           if collector != nil
