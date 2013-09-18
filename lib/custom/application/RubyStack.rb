@@ -80,7 +80,7 @@ module Maadi
                           bSuccess = true
                           bError = false
                         else
-                          lValue = rValue = 'PUSH Failed, RubyStack not instantiated'
+                          lValue = rValue = 'PUSH Failed, Stack not instantiated'
                           bSuccess = false
                           bError = true
                         end
@@ -93,12 +93,12 @@ module Maadi
                             bSuccess = true
                             bError = false
                           else
-                            lValue = rValue = 'POP Failed, RubyStack is empty'
+                            lValue = rValue = 'POP Failed, Stack is empty'
                             bSuccess = false
                             bError = true
                           end
                         else
-                          lValue = rValue = 'POP Failed, RubyStack not instantiated'
+                          lValue = rValue = 'POP Failed, Stack not instantiated'
                           bSuccess = false
                           bError = true
                         end
@@ -109,7 +109,7 @@ module Maadi
                           bSuccess = true
                           bError = false
                         else
-                          lValue = rValue = 'SIZE Failed, RubyStack not instantiated'
+                          lValue = rValue = 'SIZE Failed, Stack not instantiated'
                           bSuccess = false
                           bError = true
                         end
@@ -127,12 +127,12 @@ module Maadi
                               bError = true
                             end
                           else
-                            lValue = rValue = 'ATINDEX Failed, RubyStack is empty'
+                            lValue = rValue = 'ATINDEX Failed, Stack is empty'
                             bSuccess = false
                             bError = true
                           end
                         else
-                          lValue = rValue = 'ATINDEX Failed, RubyStack not instantiated'
+                          lValue = rValue = 'ATINDEX Failed, Stack not instantiated'
                           bSuccess = false
                           bError = true
                         end
