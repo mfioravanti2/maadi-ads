@@ -310,6 +310,8 @@ module Maadi
                         bSuccess = true
                         bError = false
                       else
+
+                        #Error:  the stack was not instantiated!
                         lValue = rValue = 'PUSH Failed, ' + @options['CLASSNAME'] + ' not instantiated'
                         bSuccess = false
                         bError = true
@@ -318,21 +320,34 @@ module Maadi
                     when 'POP'
                       #Make sure the stack is initialized.
                       if @rStack != nil
-                        #Need to check for size, but this is not available with this interface
-                        operationString = "System.out.println(" + @options['STACKNAME'] + ".pop());\n"
+                        #Need to check for size first
                         lValueOPString = "System.out.println(" + @options['STACKNAME'] + ".size());\n"
 
-                        #Run the operation
-                        cmdResultsArray = runOperation(operationString, lValueOPString, '')
 
-                        #Set lValue - index 0 (STDOUT)
-                        lValue = cmdResultsArray.at(0)
+                        #First run the operation to check the size. If the size is zero, then flag error and exit
+                        cmdResultsArray = runOperation('', lValueOPString, '')
 
-                        #Set the rValue - index 2 (STDOUT)
-                        rValue = cmdResultsArray.at(2)
+                        if cmdResultsArray.at(2).equal?('0')
+                          lValue = rValue = 'POP Failed, RubyStack is empty'
+                          bSuccess = false
+                          bError = true
+                        else
+                          #Run the operation normally: Setup the operation string and parse for results.
+                          operationString = "System.out.println(" + @options['STACKNAME'] + ".pop());\n"
+                          #Run the operation
+                          cmdResultsArray = runOperation(operationString, lValueOPString, '')
 
-                        bSuccess = true
-                        bError = false
+                          #Set lValue - index 0 (STDOUT)
+                          lValue = cmdResultsArray.at(0)
+
+                          #Set the rValue - index 2 (STDOUT)
+                          rValue = cmdResultsArray.at(2)
+
+                          bSuccess = true
+                          bError = false
+                        end
+
+
                       else
                         lValue = rValue = 'POP Failed, ' + @options['CLASSNAME'] + ' not instantiated'
                         bSuccess = false
@@ -363,18 +378,40 @@ module Maadi
                       index = step.get_parameter_value('[INDEX]')
 
                       if @rStack != nil && index != ''
-
-                        rValueOPString = "System.out.println(" + @options['STACKNAME'] + ".atIndex(" + index + "));\n"
+                        #Need to check for size first
                         lValueOPString = "System.out.println(" + @options['STACKNAME'] + ".size());\n"
 
-                        #Run the operation
-                        cmdResultsArray = runOperation('', lValueOPString, rValueOPString)
 
-                        #Set lValue - index 2 (STDOUT)
-                        lValue = cmdResultsArray.at(2)
+                        #First run the operation to check the size. If the size is zero, then flag error and exit
+                        cmdResultsArray = runOperation('', lValueOPString, '')
 
-                        #Set rValue = index 4 (STDOUT)
-                        rValue = cmdResultsArray.at(4)
+                        if cmdResultsArray.at(2).equal?('0')
+
+                          #If the stack is empty, then there is no point to index something.
+                          lValue = rValue = 'ATINDEX Failed, RubyStack is empty'
+                          bSuccess = false
+                          bError = true
+                        elsif  index >= cmdResultsArray.at(2)
+
+                          # Check to make sure the index is within bounds of the size.
+                          lValue = rValue = 'ATINDEX Failed, requested index is larger than stack size'
+                          bSuccess = false
+                          bError = true
+                        else
+
+                          #Everything is good, continue onward.
+                          rValueOPString = "System.out.println(" + @options['STACKNAME'] + ".atIndex(" + index + "));\n"
+                          lValueOPString = "System.out.println(" + @options['STACKNAME'] + ".size());\n"
+
+                          #Run the operation
+                          cmdResultsArray = runOperation('', lValueOPString, rValueOPString)
+
+                          #Set lValue - index 2 (STDOUT)
+                          lValue = cmdResultsArray.at(2)
+
+                          #Set rValue = index 4 (STDOUT)
+                          rValue = cmdResultsArray.at(4)
+                        end
 
                       else
                         lValue = rValue = 'ATINDEX Failed, ' + @options['CLASSNAME'] + ' not instantiated'
