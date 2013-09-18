@@ -327,7 +327,7 @@ module Maadi
                         #First run the operation to check the size. If the size is zero, then flag error and exit
                         cmdResultsArray = runOperation('', lValueOPString, '')
 
-                        if cmdResultsArray.at(2).include?(' 0')
+                        if cmdResultsArray.at(2).to_i == 0
                           lValue = rValue = 'POP Failed, Stack is empty'
                           bSuccess = false
                           bError = true
@@ -385,7 +385,7 @@ module Maadi
                         #First run the operation to check the size. If the size is zero, then flag error and exit
                         cmdResultsArray = runOperation('', lValueOPString, '')
 
-                        if cmdResultsArray.at(2).include?(' 0')
+                        if  cmdResultsArray.at(2).to_i == 0
 
                           #If the stack is empty, then there is no point to index something.
                           lValue = rValue = 'ATINDEX Failed, Stack is empty'
@@ -458,14 +458,14 @@ module Maadi
                   end
 
                   #Print some meaningful information
-                  Maadi::post_message(:Info, "Operation String: ' #{operationString.to_s}",3)
+                  Maadi::post_message(:Info, "Operation String: ' #{operationString.to_s}",1)
                   if lValue != -1
-                    Maadi::post_message(:Info, " lValueOPString: ' #{lValueOPString.to_s}",3)
-                    Maadi::post_message(:Info, " lValue: ' #{lValue.to_s}",3)
+                    Maadi::post_message(:Info, " lValueOPString: ' #{lValueOPString.to_s}",1)
+                    Maadi::post_message(:Info, " lValue: ' #{lValue.to_s}",1)
                   end
                   if rValue != -1
-                    Maadi::post_message(:Info, " rValueOPString: ' #{rValueOPString.to_s}",3)
-                    Maadi::post_message(:Info, " rValue: ' #{rValue.to_s}",3)
+                    Maadi::post_message(:Info, " rValueOPString: ' #{rValueOPString.to_s}",1)
+                    Maadi::post_message(:Info, " rValue: ' #{rValue.to_s}",1)
                   end
 
 
