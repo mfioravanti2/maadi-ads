@@ -68,6 +68,10 @@ module Maadi
                   bSuccess = false
                   bError = false
 
+                  if @rStack != nil
+                    Maadi::post_message(:Info, "#{@type}:#{@instance_name} Pre-#{step.id} Stack: ' #{@rStack.inspect.to_s}",3)
+                  end
+
                   begin
                     case step.id
                       when 'PUSH'
@@ -153,6 +157,17 @@ module Maadi
                           bError = false
                         end
                       else
+                    end
+
+                    #Print some meaningful information
+                    if @rStack != nil
+                      Maadi::post_message(:Info, "#{@type}:#{@instance_name} Post-#{step.id} Stack: ' #{@rStack.inspect.to_s}",3)
+                    end
+                    if lValue != -1
+                      Maadi::post_message(:Info, "#{@type}:#{@instance_name} #{step.id} lValue: ' #{lValue.to_s}",3)
+                    end
+                    if rValue != -1
+                      Maadi::post_message(:Info, "#{@type}:#{@instance_name} #{step.id} rValue: ' #{rValue.to_s}",3)
                     end
 
                     case step.look_for

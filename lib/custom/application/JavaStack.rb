@@ -458,14 +458,14 @@ module Maadi
                   end
 
                   #Print some meaningful information
-                  Maadi::post_message(:Info, "Operation String: ' #{operationString.to_s}",3)
+                  Maadi::post_message(:Info, "#{@type}:#{@instance_name} #{step.id} Operation String: ' #{operationString.to_s}",3)
                   if lValue != -1
-                    Maadi::post_message(:Info, " lValueOPString: ' #{lValueOPString.to_s}",3)
-                    Maadi::post_message(:Info, " lValue: ' #{lValue.to_s}",3)
+                    Maadi::post_message(:Info, "#{@type}:#{@instance_name} #{step.id} lValueOPString: ' #{lValueOPString.to_s}",3)
+                    Maadi::post_message(:Info, "#{@type}:#{@instance_name} #{step.id} lValue: ' #{lValue.to_s}",3)
                   end
                   if rValue != -1
-                    Maadi::post_message(:Info, " rValueOPString: ' #{rValueOPString.to_s}",3)
-                    Maadi::post_message(:Info, " rValue: ' #{rValue.to_s}",3)
+                    Maadi::post_message(:Info, "#{@type}:#{@instance_name} #{step.id} rValueOPString: ' #{rValueOPString.to_s}",3)
+                    Maadi::post_message(:Info, "#{@type}:#{@instance_name} #{step.id} rValue: ' #{rValue.to_s}",3)
                   end
 
 
