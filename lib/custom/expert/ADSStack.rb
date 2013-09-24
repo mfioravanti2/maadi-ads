@@ -27,7 +27,8 @@ module Maadi
         @options['ATINDEX_RATIO'] = 1
         @options['SIZE_RATIO'] = 1
 
-        @options['MAX_INTEGER'] = 1024
+        #@options['MAX_INTEGER'] = 1024                            # Smaller size for debugging
+        @options['MAX_INTEGER'] = (2**(0.size * 8 -2) -1)         # Select the maximum size for a Fixnum
 
         @notes['CREATE_RATIO'] = 'Relative Ratio for CREATE commands (0 or less, ignore command type)'
         @notes['PUSH_RATIO'] = 'Relative Ratio for PUSH commands (0 or less, ignore command type)'

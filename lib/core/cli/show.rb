@@ -162,6 +162,7 @@ module Maadi
     def self.show_config
       Maadi::post_message(:Info, 'Current Configuration')
       printf "[*]\tRuns           : " + $runs.to_s + "\n"
+      printf "[*]\tVerbosity      : " + $verbosity.to_s + "\n"
       printf "[*]\tCollector(s)   : " + item_status('collector') + "\n"
       printf "[*]\tExpert         : " + item_status('expert') + "\n"
       printf "[*]\tOrganizer      : " + item_status('organizer') + "\n"

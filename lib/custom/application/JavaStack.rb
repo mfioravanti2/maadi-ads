@@ -58,10 +58,10 @@ module Maadi
 
         #Confirm that bsh exists.  Use the class variable @db to specify if the BSHPath exists
         if File.exists?(@options['BSHPATH']) == true
-          Maadi::post_message(:Info, 'JavaStack ->initialize:  FilePath is located')
+          Maadi::post_message(:Info, "Application (#{@type}:#{@instance_name}) has valid BSH path")
           @db = 1 #Make it not nil
         else
-          Maadi::post_message(:Info, 'JavaStack: Fatal Error - unable to locate the bsh path!')
+          Maadi::post_message(:Warn, "Application (#{@type}:#{@instance_name}) BSH path is INVALID")
           return false
         end
 
