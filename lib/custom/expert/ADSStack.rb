@@ -1,3 +1,12 @@
+# Author : Mark Fioravanti (mfioravanti1994@my.fit.edu)
+#          Florida Institute of Technology
+# Course : CSE5400 Special Topics - High Volume Automated Testing
+# Date   : 01/18/2013
+# File   : application.rb
+#
+# Summary: The application is a general interface for real software under test,
+#          this class should be extended to implement the calls that would be expected
+#          to occur by executing a test procedure.
 
 require_relative 'factory'
 require_relative '../../core/helpers'
@@ -14,8 +23,13 @@ module Maadi
   module Expert
     class ADSStack < Expert
 
-      def initialize
-        super('ADSStack')
+      def initialize (type)
+
+        if(type == nil)
+          super('ADSStack')
+        else
+          super(type)
+        end
 
         @tests = Array.new
         @has_stack = false
