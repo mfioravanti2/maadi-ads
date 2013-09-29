@@ -75,6 +75,8 @@ module Maadi
           procedure = build_skeleton( test )
         end
 
+        #FIXME: Should I call super here?
+
         case test.downcase
           when 'pushpop'
             return manage_pushpop( procedure )
@@ -126,7 +128,7 @@ module Maadi
       end
 
       def build_pushpop_finalize( procedure, steps )
-        unless is_procedure?( procedure ) and is_step?( step )
+        unless is_procedure?( procedure ) and is_step?( steps[0] ) and is_step?( steps[1] )
           return procedure
         end
 
@@ -182,7 +184,7 @@ module Maadi
       end
 
       def build_pushpopsize_finalize( procedure, steps )
-        unless is_procedure?( procedure ) and is_step?( step )
+        unless is_procedure?( procedure ) and is_step?( steps[0] ) and is_step?( steps[1] ) and is_step?( step[2] )
           return procedure
         end
 
@@ -201,6 +203,107 @@ module Maadi
         return procedure
       end
 
+      #build a new stack index procedure
+      def manage_newstackindex (procedure)
+
+        unless is_procedure?( procedure )
+          return procedure
+        end
+
+        case procedure.id
+          when 'NEWSTACKINDEX-NEW'
+            reutrn build_newstackindex_new('NEWSTACKINDEX-LAST')
+          when 'NEWSTACKINDEX-LAST'
+            return build_newstackindex_finalize( procedure, procedure.step )
+          else
+        end
+
+        return procedure
+
+
+      end
+
+      def build_newstackindex_new( next_step )
+        procedure = build_skeleton( 'NEWSTACKINDEX' )
+        step1 = build_step('CREATE', 'COMPLETED', '', 'TERM-PROC' )
+        step2 = build_step('ATINDEX', 'LVALUE', '', 'TERM-PROC' )
+
+        constraint =  Maadi::Procedure::ConstraintRangedInteger.new( 0, 0 )
+        ste2p.parameters.push Maadi::Procedure::Parameter.new('[INDEX]', constraint )
+
+
+        procedure.add_step( step1 )
+        procedure.add_step( step2 )
+        procedure.id = next_step
+
+        return procedure
+      end
+
+      def build_newstackindex_finalize( procedure, steps )
+        unless is_procedure?( procedure ) and is_step?( step[0] ) and is_step?( step[1] )
+          return procedure
+        end
+
+        steps[0].id = 'CREATE'
+        steps[1].id = 'ATINDEX'
+
+        procedure.id = 'NEWSTACKINDEX'
+
+        rvalue = step[1].get_parameter_value( '[INDEX]' )
+        if rvalue != ''
+          procedure.done
+        else
+          procedure.failed
+        end
+
+        return procedure
+      end
+
+      #build a new stack size procedure
+      def manage_newstacksize (procedure)
+
+        unless is_procedure?( procedure )
+          return procedure
+        end
+
+        case procedure.id
+          when 'NEWSTACKSIZE-NEW'
+            reutrn build_newstacksize_new('NEWSTACKSIZE-LAST')
+          when 'NEWSTACKSIZE-LAST'
+            return build_newstacksize_finalize( procedure, procedure.step )
+          else
+        end
+
+        return procedure
+
+
+      end
+
+      def build_newstacksize_new( next_step )
+        procedure = build_skeleton( 'NEWSTACKSIZE' )
+        step1 = build_step('CREATE', 'COMPLETED', '', 'TERM-PROC' )
+        step2 = build_step('SIZE', 'LVALUE', '', 'TERM-PROC' )
+
+
+        procedure.add_step( step1 )
+        procedure.add_step( step2 )
+        procedure.id = next_step
+
+        return procedure
+      end
+
+      def build_newstacksize_finalize( procedure, steps )
+        unless is_procedure?( procedure ) and is_step?( step[0] ) and is_step?( step[1] )
+          return procedure
+        end
+
+        steps[0].id = 'CREATE'
+        steps[1].id = 'SIZE'
+
+        procedure.id = 'NEWSTACKSIZE'
+
+        return procedure
+      end
 
     end
   end
