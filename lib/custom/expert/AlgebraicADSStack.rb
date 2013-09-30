@@ -61,7 +61,7 @@ module Maadi
       end
 
       def domain
-        return 'ALGEBRIACADS-STACK'
+        return 'ALGEBRAICADS-STACK'
       end
 
       # build/update a procedure for a specified test

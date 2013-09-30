@@ -104,7 +104,7 @@ module Maadi
 
       #Returns the supported domains.  In this case, ADS-STACK.
       def supported_domains
-        return %w(ADS-STACK ALGEBRIACADS-STACK)
+        return %w(ADS-STACK ALGEBRAICADS-STACK)
       end
 
 

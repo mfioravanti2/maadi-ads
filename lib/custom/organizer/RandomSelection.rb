@@ -20,7 +20,7 @@ module Maadi
       end
 
       def supported_domains
-        return %w(SQL ADS-STACK ALGEBRIACADS-STACK)
+        return %w(SQL ADS-STACK ALGEBRAICADS-STACK)
       end
 
       def select_test( tests )

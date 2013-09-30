@@ -13,7 +13,7 @@ module Maadi
       end
 
       def supported_domains
-        return %w(ADS-STACK ALGEBRIACADS-STACK)
+        return %w(ADS-STACK ALGEBRAICADS-STACK)
       end
 
       def prepare
