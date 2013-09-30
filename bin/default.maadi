@@ -10,8 +10,9 @@ set collector LogFile LogFile-Log
 # reduce the log level of the SQLite3 collector
 set collector option SQLite3-Log LOG_LEVEL PARTIAL
 
-set expert ADSStack Stack-Exp
+set expert AlgebraicADSStack Stack-Exp
 set expert option CREATE_RATIO 0
+set expert option PUSHPOP_RATIO 6
 set expert option PUSH_RATIO 6
 set expert option POP_RATIO 6
 set expert option SIZE_RATIO 4

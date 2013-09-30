@@ -62,7 +62,9 @@ module Maadi
       # resources and services will be prepared to execution.
       # return (bool) true if all of the components are read.
       def prepare
-        @tests = Array.new
+        if (@tests== nil)
+          @tests = Array.new
+        end
 
         items = %w(CREATE PUSH POP ATINDEX SIZE)
         items.each do |item|

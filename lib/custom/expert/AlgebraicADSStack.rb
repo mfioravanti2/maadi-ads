@@ -60,6 +60,10 @@ module Maadi
         super
       end
 
+      def domain
+        return 'ALGEBRIACADS-STACK'
+      end
+
       # build/update a procedure for a specified test
       #   this function will mark a procedure as complete when all of the possible options
       #   have been specified.  Procedures built are assumed to have been successfully executed
@@ -75,7 +79,6 @@ module Maadi
           procedure = build_skeleton( test )
         end
 
-        #FIXME: Should I call super here?
 
         case test.downcase
           when 'pushpop'
@@ -87,29 +90,11 @@ module Maadi
           when 'newstacksize'
             return manage_newstacksize( procedure )
           else
+            #Call super here
+            return super(test, procedure)
         end
 
         return procedure
-      end
-
-      #build a Stack Push Pop procedure
-      def manage_pushpop (procedure)
-
-        unless is_procedure?( procedure )
-          return procedure
-        end
-
-        case procedure.id
-          when 'PUSHPOP-NEW'
-            reutrn build_pushpop_new('PUSHPOP-LAST')
-          when 'PUSHPOP-LAST'
-            return build_pushpop_finalize( procedure, procedure.step )
-          else
-        end
-
-        return procedure
-
-
       end
 
       def build_pushpop_new( next_step )
@@ -136,7 +121,7 @@ module Maadi
         steps[1].id = 'POP'
         procedure.id = 'PUSHPOP'
 
-        rvalue = step[0].get_parameter_value( '[RVALUE]' )
+        rvalue = steps[0].get_parameter_value( '[RVALUE]' )
         if rvalue != ''
           procedure.done
         else
@@ -145,6 +130,28 @@ module Maadi
 
         return procedure
       end
+
+      #build a Stack Push Pop procedure
+      def manage_pushpop (procedure)
+
+        unless is_procedure?( procedure )
+          return procedure
+        end
+
+        case procedure.id
+          when 'PUSHPOP-NEW'
+            return build_pushpop_new('PUSHPOP-LAST')
+          when 'PUSHPOP-LAST'
+            return build_pushpop_finalize( procedure, procedure.steps )
+          else
+        end
+
+        return procedure
+
+
+      end
+
+
 
       #build a Stack Push Pop Size procedure
       def manage_pushpopsize (procedure)
@@ -155,9 +162,9 @@ module Maadi
 
         case procedure.id
           when 'PUSHPOPSIZE-NEW'
-            reutrn build_pushpopsize_new('PUSHPOPSIZE-LAST')
+            return build_pushpopsize_new('PUSHPOPSIZE-LAST')
           when 'PUSHPOPSIZE-LAST'
-            return build_pushpopsize_finalize( procedure, procedure.step )
+            return build_pushpopsize_finalize( procedure, procedure.steps )
           else
         end
 
@@ -184,7 +191,7 @@ module Maadi
       end
 
       def build_pushpopsize_finalize( procedure, steps )
-        unless is_procedure?( procedure ) and is_step?( steps[0] ) and is_step?( steps[1] ) and is_step?( step[2] )
+        unless is_procedure?( procedure ) and is_step?( steps[0] ) and is_step?( steps[1] ) and is_step?( steps[2] )
           return procedure
         end
 
@@ -193,7 +200,7 @@ module Maadi
         steps[2].id = 'SIZE'
         procedure.id = 'PUSHPOPSIZE'
 
-        rvalue = step[0].get_parameter_value( '[RVALUE]' )
+        rvalue = steps[0].get_parameter_value( '[RVALUE]' )
         if rvalue != ''
           procedure.done
         else
@@ -212,9 +219,9 @@ module Maadi
 
         case procedure.id
           when 'NEWSTACKINDEX-NEW'
-            reutrn build_newstackindex_new('NEWSTACKINDEX-LAST')
+            return build_newstackindex_new('NEWSTACKINDEX-LAST')
           when 'NEWSTACKINDEX-LAST'
-            return build_newstackindex_finalize( procedure, procedure.step )
+            return build_newstackindex_finalize( procedure, procedure.steps )
           else
         end
 
@@ -229,7 +236,7 @@ module Maadi
         step2 = build_step('ATINDEX', 'LVALUE', '', 'TERM-PROC' )
 
         constraint =  Maadi::Procedure::ConstraintRangedInteger.new( 0, 0 )
-        ste2p.parameters.push Maadi::Procedure::Parameter.new('[INDEX]', constraint )
+        step2.parameters.push Maadi::Procedure::Parameter.new('[INDEX]', constraint )
 
 
         procedure.add_step( step1 )
@@ -240,7 +247,7 @@ module Maadi
       end
 
       def build_newstackindex_finalize( procedure, steps )
-        unless is_procedure?( procedure ) and is_step?( step[0] ) and is_step?( step[1] )
+        unless is_procedure?( procedure ) and is_step?( steps[0] ) and is_step?( steps[1] )
           return procedure
         end
 
@@ -249,7 +256,7 @@ module Maadi
 
         procedure.id = 'NEWSTACKINDEX'
 
-        rvalue = step[1].get_parameter_value( '[INDEX]' )
+        rvalue = steps[1].get_parameter_value( '[INDEX]' )
         if rvalue != ''
           procedure.done
         else
@@ -268,9 +275,9 @@ module Maadi
 
         case procedure.id
           when 'NEWSTACKSIZE-NEW'
-            reutrn build_newstacksize_new('NEWSTACKSIZE-LAST')
+            return build_newstacksize_new('NEWSTACKSIZE-LAST')
           when 'NEWSTACKSIZE-LAST'
-            return build_newstacksize_finalize( procedure, procedure.step )
+            return build_newstacksize_finalize( procedure, procedure.steps )
           else
         end
 
@@ -293,7 +300,7 @@ module Maadi
       end
 
       def build_newstacksize_finalize( procedure, steps )
-        unless is_procedure?( procedure ) and is_step?( step[0] ) and is_step?( step[1] )
+        unless is_procedure?( procedure ) and is_step?( steps[0] ) and is_step?( steps[1] )
           return procedure
         end
 
@@ -301,6 +308,7 @@ module Maadi
         steps[1].id = 'SIZE'
 
         procedure.id = 'NEWSTACKSIZE'
+        procedure.done
 
         return procedure
       end
