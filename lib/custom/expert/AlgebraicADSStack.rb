@@ -235,7 +235,7 @@ module Maadi
         step1 = build_step('CREATE', 'COMPLETED', '', 'TERM-PROC' )
         step2 = build_step('ATINDEX', 'LVALUE', '', 'TERM-PROC' )
 
-        constraint =  Maadi::Procedure::ConstraintRangedInteger.new( 0, 0 )
+        constraint =  Maadi::Procedure::ConstraintRangedInteger.new( 1, @options['MAX_INTEGER'] )
         step2.parameters.push Maadi::Procedure::Parameter.new('[INDEX]', constraint )
 
 
@@ -259,6 +259,8 @@ module Maadi
         rvalue = steps[1].get_parameter_value( '[INDEX]' )
         if rvalue != ''
           procedure.done
+          @has_stack = true
+          @stack_size = 0
         else
           procedure.failed
         end
@@ -308,6 +310,8 @@ module Maadi
         steps[1].id = 'SIZE'
 
         procedure.id = 'NEWSTACKSIZE'
+        @has_stack = true
+        @stack_size = 0
         procedure.done
 
         return procedure
