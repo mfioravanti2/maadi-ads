@@ -251,7 +251,7 @@ module Maadi
           return procedure
         end
 
-        steps[0].id = 'CREATE'
+        steps[0].id = 'NULCONSTRUCT'
         steps[1].id = 'ATINDEX'
 
         procedure.id = 'NEWSTACKINDEX'
@@ -304,7 +304,7 @@ module Maadi
           return procedure
         end
 
-        steps[0].id = 'CREATE'
+        steps[0].id = 'NULCONSTRUCT'
         steps[1].id = 'SIZE'
 
         procedure.id = 'NEWSTACKSIZE'
