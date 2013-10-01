@@ -43,6 +43,8 @@ module Maadi
                 return true
               when 'NONNULCONSTRUCT'
                 return true
+              when 'DETAILS'
+                return true
               else
             end
           end
@@ -156,6 +158,15 @@ module Maadi
                           bSuccess = true
                           bError = false
                         end
+                      when 'DETAILS'
+                        if @rStack != nil
+                          lValue = @rStack.to_s
+                          bSuccess = true
+                          bError = false
+                        else
+                          #Do nothing
+                        end
+
                       else
                     end
 

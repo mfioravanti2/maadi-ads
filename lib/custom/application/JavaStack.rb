@@ -126,6 +126,8 @@ module Maadi
                 return true
               when 'NONNULCONSTRUCT'
                 return true
+              when 'DETAILS'
+                return true
               else
             end
           end
@@ -453,8 +455,21 @@ module Maadi
                       bError = false
 
                       @rStack = true
+                    when 'DETAILS'
 
+                      if @rStack != nil
+                        operationString = ''
+                        lValueOPString = "System.out.println(" + @options['STACKNAME'] + ");\n"
 
+                        #Run the operation
+                        cmdResultsArray = runOperation('', lValueOPString, '')
+
+                        #Set lValue - index 0 (STDOUT)
+                        lValue = cmdResultsArray.at(2)
+
+                        bSuccess = true
+                        bError = false
+                      end
                   end
 
                   #Print some meaningful information
