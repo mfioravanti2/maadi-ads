@@ -34,9 +34,9 @@ module Maadi
                 @items.push ModifyProcedure.new( order )
               when 'modify-step'
                 @items.push ModifyStep.new( order )
-              when 'add-parameter'
+              when 'modify-parameter'
                 @items.push ModifyParameter.new( order )
-              when 'add-constraint'
+              when 'modify-constraint'
                 @items.push ModifyConstraint.new( order )
               when 'next-route'
                 @items.push NextRoute.new( order )
