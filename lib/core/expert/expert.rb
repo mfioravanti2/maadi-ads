@@ -11,6 +11,8 @@
 #          processor.
 
 require_relative '../generic/generic'
+require_relative 'builder'
+require_relative 'model'
 require_relative '../procedure/procedure'
 require_relative '../helpers'
 
@@ -20,6 +22,15 @@ module Maadi
       # type (String) is a convenient human readable label.
       def initialize(type)
         super(type)
+
+        @options['BUILD-NAME'] = ''
+        @notes['BUILD-NAME'] = 'XML file which contains the build script'
+
+        @options['MODEL-NAME'] = ''
+        @notes['MODEL-NAME'] = 'Ruby class file which contains the Model for the Expert'
+
+        @builder = nil
+        @model = nil
       end
 
       def domain
@@ -30,12 +41,35 @@ module Maadi
       # resources and services will be prepared to execution.
       # return (bool) true if all of the components are read.
       def prepare
+        if File.exists?( "../lib/custom/expert/builders/#{@options['BUILD-NAME']}.xml" )
+          Maadi::post_message(:More, "Expert (#{@type}) preparing Procedure Builder")
+
+          @builder = Builder.new()
+          @builder.set_option( 'BUILD-NAME', @options['BUILD-NAME'] )
+
+          @builder.prepare
+        else
+          Maadi::post_message(:Warn, "Expert (#{@type}) unable to access Procedure Build File")
+          return false
+        end
+
+        if File.exists?( "../lib/custom/expert/models/#{@options['MODEL-NAME']}.rb" )
+          require_relative "../../../lib/custom/expert/models/#{@options['MODEL-NAME']}"
+
+          class_name = Object.const_get('Maadi').const_get('Expert').const_get('Models').const_get(@options['MODEL-NAME'])
+          @model = class_name.new()
+
+          @model.prepare
+        else
+          Maadi::post_message(:Warn, "Expert (#{@type}) unable to access Model File")
+          return false
+        end
+
         Maadi::post_message(:More, "Expert (#{@type}) is ready")
         super
       end
 
       # provide a list of possible tests
-      # procedure (Procedure) procedure which is to be added to the scheduler
       # return (Array of Strings) with each element representing the name of
       # a test that this domain expert can generate
       def tests
@@ -72,6 +106,16 @@ module Maadi
       # teardown the object if any database connections, files, etc. are open.
       def teardown
         Maadi::post_message(:Less, "Expert (#{@type}) is NO longer ready")
+
+        if @builder != nil
+          @builder.teardown
+          @builder = nil
+        end
+
+        if @model != nil
+          @model.teardown
+          @model = nil
+        end
         super
       end
 

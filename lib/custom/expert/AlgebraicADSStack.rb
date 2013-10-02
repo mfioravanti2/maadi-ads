@@ -79,7 +79,6 @@ module Maadi
           procedure = build_skeleton( test )
         end
 
-
         case test.downcase
           when 'pushpop'
             return manage_pushpop( procedure )
@@ -98,15 +97,8 @@ module Maadi
       end
 
       def build_pushpop_new( next_step )
-        procedure = build_skeleton( 'PUSHPOP' )
-        step1 = build_step('PUSH', 'LVALUE', '', 'TERM-PROC' )
-        step2 = build_step('POP', 'LVALUE', '', 'TERM-PROC' )
-
-        constraint =  Maadi::Procedure::ConstraintRangedInteger.new( 1, @options['MAX_INTEGER'] )
-        step1.parameters.push Maadi::Procedure::Parameter.new('[RVALUE]', constraint )
-
-        procedure.add_step( step1 )
-        procedure.add_step( step2 )
+        procedure = build_push_new( next_step )
+        procedure.add_step( build_pop_new( next_step ).steps[0] )
         procedure.id = next_step
 
         return procedure
@@ -117,23 +109,15 @@ module Maadi
           return procedure
         end
 
-        steps[0].id = 'PUSH'
-        steps[1].id = 'POP'
+        procedure = build_push_finalize( procedure, steps[0] )
+        procedure = build_pop_finalize( procedure, steps[1] )
         procedure.id = 'PUSHPOP'
-
-        rvalue = steps[0].get_parameter_value( '[RVALUE]' )
-        if rvalue != ''
-          procedure.done
-        else
-          procedure.failed
-        end
 
         return procedure
       end
 
       #build a Stack Push Pop procedure
       def manage_pushpop (procedure)
-
         unless is_procedure?( procedure )
           return procedure
         end
@@ -147,8 +131,6 @@ module Maadi
         end
 
         return procedure
-
-
       end
 
 
