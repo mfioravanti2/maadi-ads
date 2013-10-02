@@ -639,7 +639,7 @@ module Maadi
           is_ok = false
 
           begin
-            stm = @db.prepare( 'SELECT DISTINCT R1.qProcId FROM qryResults As R1, qryResults As R2 WHERE R1.qTestId = R2.qTestId AND R1.qStatus != R2.qStatus')
+            stm = @db.prepare( 'SELECT DISTINCT R1.qProcId FROM qryResults As R1, qryResults As R2 WHERE R1.qTestId = R2.qTestId AND R1.qStepId = R2.qStepId AND R1.qStatus != R2.qStatus')
             rs = stm.execute
 
             rs.each do |row|
@@ -667,7 +667,7 @@ module Maadi
           is_ok = false
 
           begin
-            stm = @db.prepare( 'SELECT DISTINCT R1.qProcId FROM qryResults As R1, qryResults As R2 WHERE R1.qTestId = R2.qTestId AND R1.qType = ? AND R2.qType = ? AND ABS( R1.qData - R2.qData ) > ?')
+            stm = @db.prepare( 'SELECT DISTINCT R1.qProcId FROM qryResults As R1, qryResults As R2 WHERE R1.qTestId = R2.qTestId AND R1.qStepId = R2.qStepId AND R1.qType = ? AND R2.qType = ? AND ABS( R1.qData - R2.qData ) > ?')
             stm.bind_params( type.to_s, type.to_s, epsilon )
             rs = stm.execute
 
@@ -695,7 +695,7 @@ module Maadi
           is_ok = false
 
           begin
-            stm = @db.prepare( 'SELECT DISTINCT R1.qProcId FROM qryResults As R1, qryResults As R2 WHERE R1.qTestId = R2.qTestId AND R1.qType = ? AND R2.qType = ? AND R1.qData != R2.qData')
+            stm = @db.prepare( 'SELECT DISTINCT R1.qProcId FROM qryResults As R1, qryResults As R2 WHERE R1.qTestId = R2.qTestId AND R1.qStepId = R2.qStepId AND R1.qType = ? AND R2.qType = ? AND R1.qData != R2.qData')
             stm.bind_params( type.to_s, type.to_s )
             rs = stm.execute
 
