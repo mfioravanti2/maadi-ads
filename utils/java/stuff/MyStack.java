@@ -85,6 +85,23 @@ public class MyStack {
             return null;
         }
     }
+
+    /**
+     * Returns a string representation of objects on stack.
+     * @return
+     */
+    public String toString() {
+        String format = "[ ";
+        for(int i = 0; i < this.size; i++) {
+            format+="\"";
+            format+= (this.elements[i] + "\"");
+            if(i < (this.size-1)) {
+                format+=", ";
+            }
+        }
+
+        return format+" ]";
+    }
 }
 
 

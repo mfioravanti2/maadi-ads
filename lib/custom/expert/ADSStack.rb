@@ -40,6 +40,7 @@ module Maadi
         @options['POP_RATIO'] = 1
         @options['ATINDEX_RATIO'] = 1
         @options['SIZE_RATIO'] = 1
+        @options['DETAILS_RATIO'] = 1
 
         #@options['MAX_INTEGER'] = 1024                            # Smaller size for debugging
         @options['MAX_INTEGER'] = (2**(0.size * 8 -2) -1)         # Select the maximum size for a Fixnum
@@ -66,7 +67,7 @@ module Maadi
           @tests = Array.new
         end
 
-        items = %w(CREATE PUSH POP ATINDEX SIZE)
+        items = %w(CREATE PUSH POP ATINDEX SIZE DETAILS)
         items.each do |item|
           if @options["#{item}_RATIO"].to_i >= 1
             1.upto(@options["#{item}_RATIO"].to_i) do
@@ -145,6 +146,8 @@ module Maadi
             return manage_atindex( procedure )
           when 'size'
             return manage_size( procedure )
+          when 'details'
+            return manage_details(procedure)
           else
         end
 
@@ -402,6 +405,49 @@ module Maadi
         return procedure
       end
 
+      #build a new stack size procedure
+      def manage_details (procedure)
+
+        unless is_procedure?( procedure )
+          return procedure
+        end
+
+        case procedure.id
+          when 'DETAILS-NEW'
+            return build_details_new('DETAILS-LAST')
+          when 'DETAILS-LAST'
+            return build_details_finalize( procedure, procedure.steps )
+          else
+        end
+
+        return procedure
+
+
+      end
+
+      def build_details_new( next_step )
+        procedure = build_skeleton( 'DETAILS' )
+        step = build_step('DETAILS', 'LVALUE', '', 'TERM-PROC' )
+
+        procedure.add_step( step )
+        procedure.id = next_step
+
+        procedure.id = next_step
+        return procedure
+      end
+
+      def build_details_finalize( procedure, steps )
+        unless is_procedure?( procedure ) and is_step?( steps[0] )
+          return procedure
+        end
+
+        steps[0].id = 'DETAILS'
+
+        procedure.id = 'DETAILS'
+        procedure.done
+
+        return procedure
+      end
 
     end
   end

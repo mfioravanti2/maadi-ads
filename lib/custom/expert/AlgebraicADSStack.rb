@@ -79,6 +79,7 @@ module Maadi
           procedure = build_skeleton( test )
         end
 
+
         case test.downcase
           when 'pushpop'
             return manage_pushpop( procedure )
@@ -97,27 +98,38 @@ module Maadi
       end
 
       def build_pushpop_new( next_step )
-        procedure = build_push_new( next_step )
-        procedure.add_step( build_pop_new( next_step ).steps[0] )
-        procedure.id = next_step
+        procedure = build_skeleton( 'PUSHPOP' )
+        procedure.add_step( build_push_new(next_step).steps[0] )
+        procedure.add_step( build_pop_new(next_step).steps[0] )
+        procedure.add_step( build_details_new(next_step).steps[0])
 
+        procedure.id = next_step
         return procedure
       end
 
       def build_pushpop_finalize( procedure, steps )
-        unless is_procedure?( procedure ) and is_step?( steps[0] ) and is_step?( steps[1] )
+        unless is_procedure?( procedure ) and is_step?( steps[0] ) and is_step?( steps[1] ) and is_step? (steps[2])
           return procedure
         end
 
-        procedure = build_push_finalize( procedure, steps[0] )
-        procedure = build_pop_finalize( procedure, steps[1] )
+        steps[0].id = 'PUSH'
+        steps[1].id = 'POP'
+        steps[2].id = 'DETAILS'
         procedure.id = 'PUSHPOP'
+
+        rvalue = steps[0].get_parameter_value( '[RVALUE]' )
+        if rvalue != ''
+          procedure.done
+        else
+          procedure.failed
+        end
 
         return procedure
       end
 
       #build a Stack Push Pop procedure
       def manage_pushpop (procedure)
+
         unless is_procedure?( procedure )
           return procedure
         end
@@ -131,6 +143,8 @@ module Maadi
         end
 
         return procedure
+
+
       end
 
 
@@ -157,18 +171,11 @@ module Maadi
 
       def build_pushpopsize_new( next_step )
         procedure = build_skeleton( 'PUSHPOPSIZE' )
-        step1 = build_step('PUSH', 'LVALUE', '', 'TERM-PROC' )
-        step2 = build_step('POP', 'LVALUE', '', 'TERM-PROC' )
-        step3 = build_step('SIZE', 'LVALUE', '', 'TERM-PROC' )
+        procedure.add_step( build_push_new(next_step).steps[0] )
+        procedure.add_step( build_pop_new(next_step).steps[0] )
+        procedure.add_step( build_size_new(next_step).steps[0] )
 
-        constraint =  Maadi::Procedure::ConstraintRangedInteger.new( 1, @options['MAX_INTEGER'] )
-        step1.parameters.push Maadi::Procedure::Parameter.new('[RVALUE]', constraint )
-
-        procedure.add_step( step1 )
-        procedure.add_step( step2 )
-        procedure.add_step( step3 )
         procedure.id = next_step
-
         return procedure
       end
 
@@ -214,17 +221,10 @@ module Maadi
 
       def build_newstackindex_new( next_step )
         procedure = build_skeleton( 'NEWSTACKINDEX' )
-        step1 = build_step('CREATE', 'COMPLETED', '', 'TERM-PROC' )
-        step2 = build_step('ATINDEX', 'LVALUE', '', 'TERM-PROC' )
+        procedure.add_step( build_create_new(next_step).steps[0] )
+        procedure.add_step( build_at_index_new(next_step).steps[0] )
 
-        constraint =  Maadi::Procedure::ConstraintRangedInteger.new( 0, 0 )
-        step2.parameters.push Maadi::Procedure::Parameter.new('[INDEX]', constraint )
-
-
-        procedure.add_step( step1 )
-        procedure.add_step( step2 )
         procedure.id = next_step
-
         return procedure
       end
 
@@ -241,6 +241,8 @@ module Maadi
         rvalue = steps[1].get_parameter_value( '[INDEX]' )
         if rvalue != ''
           procedure.done
+          @has_stack = true
+          @stack_size = 0
         else
           procedure.failed
         end
@@ -270,14 +272,10 @@ module Maadi
 
       def build_newstacksize_new( next_step )
         procedure = build_skeleton( 'NEWSTACKSIZE' )
-        step1 = build_step('CREATE', 'COMPLETED', '', 'TERM-PROC' )
-        step2 = build_step('SIZE', 'LVALUE', '', 'TERM-PROC' )
+        procedure.add_step( build_create_new(next_step).steps[0] )
+        procedure.add_step( build_size_new(next_step).steps[0] )
 
-
-        procedure.add_step( step1 )
-        procedure.add_step( step2 )
         procedure.id = next_step
-
         return procedure
       end
 
@@ -290,6 +288,8 @@ module Maadi
         steps[1].id = 'SIZE'
 
         procedure.id = 'NEWSTACKSIZE'
+        @has_stack = true
+        @stack_size = 0
         procedure.done
 
         return procedure
