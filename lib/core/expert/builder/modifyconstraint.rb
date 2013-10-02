@@ -4,7 +4,7 @@ require_relative '../../procedure/procedure'
 module Maadi
   module Expert
     module Builder
-      class ModifyProcedure
+      class ModifyConstraint
         attr_accessor :attribute, :value
 
         def initialize(node)
@@ -17,11 +17,7 @@ module Maadi
         def process( procedure, expert, model )
           if procedure != nil
             if procedure.is_a? Maadi::Procedure::Procedure
-              case @attribute
-                when 'name'
-                  procedure.id = @value
-                else
-              end
+
             end
           end
 

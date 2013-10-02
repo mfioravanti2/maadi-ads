@@ -13,7 +13,7 @@ module Maadi
           end
         end
 
-        def process( procedure )
+        def process( procedure, expert, model )
           procedure = Maadi::Procedure::Procedure.new( @id )
           return procedure
         end

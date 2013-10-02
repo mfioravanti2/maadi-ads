@@ -4,7 +4,7 @@ require_relative '../../procedure/procedure'
 module Maadi
   module Expert
     module Builder
-      class ModifyProcedure
+      class ModifyParameter
         attr_accessor :attribute, :value
 
         def initialize(node)

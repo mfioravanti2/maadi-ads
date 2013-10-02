@@ -15,7 +15,7 @@ module Maadi
           end
         end
 
-        def process( procedure )
+        def process( procedure, expert, model )
           if procedure != nil
             if procedure.is_a? Maadi::Procedure::Procedure
               step = procedure.get_step( @to_step )

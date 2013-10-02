@@ -89,14 +89,14 @@ module Maadi
           end
         end
 
-        def process( procedure )
+        def process( procedure, expert, model )
           if procedure != nil
             if procedure.is_a? Maadi::Procedure::Procedure
               success = 0
               items = nil
 
               @conditions.each do |condition|
-                if condition.test
+                if condition.test( procedure, expert, model )
                   success += 1
                 end
               end
@@ -109,7 +109,7 @@ module Maadi
 
               if items.count > 0
                 items.each do |item|
-                  procedure = item.process( procedure )
+                  procedure = item.process( procedure, expert, model )
                 end
               end
             end

@@ -13,7 +13,7 @@ module Maadi
          end
         end
 
-        def process( procedure )
+        def process( procedure, expert, model )
           if procedure != nil
             if procedure.is_a? Maadi::Procedure::Procedure
               procedure.id = @name

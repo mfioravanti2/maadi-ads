@@ -4,25 +4,27 @@ require_relative '../../procedure/procedure'
 module Maadi
   module Expert
     module Builder
-      class AddStep
-        attr_accessor :to_procedure, :id, :target, :look_for, :command, :on_fail
+      class AddParameter
+        attr_accessor :to_procedure, :to_step, :name
 
         def initialize(node)
           if node != nil
             @to_procedure = node['to_procedure']
-            @id = node['name']
-            @target = node['target']
-            @look_for = node['look_for']
-            @command = node['command']
-            @on_fail = node['on_failure']
+            @to_step = node['to_step']
+            @name = node['name']
           end
         end
 
         def process( procedure, expert, model )
           if procedure != nil
             if procedure.id == @to_procedure
-              step = Maadi::Procedure::Step.new( @id, @target, @look_for, @command, Array.new(), @on_fail )
-              procedure.add_step( step )
+              step = procedure.get_step( @to_step )
+              if step != nil
+                if step.id == @to_step
+                  parameter = Maadi::Procedure::Parameter.new( @name, nil, '' )
+                  step.parameters.push parameter
+                end
+              end
             end
           end
 

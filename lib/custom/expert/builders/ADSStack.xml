@@ -40,6 +40,47 @@
       <conditions>
         <condition name="MODEL-EXISTS" query="MODEL" item="STACK-EXISTS" type="EXISTS" />
       </conditions>
+      <phases default="PUSH-NEW">
+        <phase id="0" name="PUSH-NEW">
+          <sequence id="0" on_failure="EXIT">
+            <add-procedure name="PUSH-NEW" />
+          </sequence>
+          <sequence id="1" on_failure="EXIT">
+            <add-step to_procedure="PUSH-NEW" name="PUSH-WIP" target="application" look_for="COMPLETED" command="" on_failure="TERM-PROC" />
+          </sequence>
+          <sequence id="2" on_failure="EXIT">
+            <add-parameter to_procedure="PUSH-NEW" to_step="PUSH-WIP" name="[RVALUE]" />
+          </sequence>
+          <sequence id="3" on_failure="EXIT">
+            <add-constraint to_procedure="PUSH-NEW" to_step="PUSH-WIP" to_parameter="[RVALUE]" type="RANGED-INTEGER" min_range="0" max_range="OPTIONS:MAX_INTEGER" />
+          </sequence>
+          <sequence id="4" on_failure="EXIT">
+            <modify-procedure attribute="name" value="PUSH-LAST" />
+            <next-route name="PUSH-LAST" />
+          </sequence>
+        </phase>
+        <phase id="1" name="PUSH-LAST">
+          <sequence id="0" on_failure="EXIT">
+            <validate type="FINAL">
+              <conditions>
+                <condition name="PARAMETER-EXISTS" query="STEP:PUSH-NEW" item="[RVALUE]" type="NOT EMPTY" />
+              </conditions>
+              <actions>
+                <action type="SUCCESS">
+                  <modify-procedure attribute="status" value="done" />
+                  <modify-procedure attribute="name" value="PUSH" />
+                  <modify-step to_step="PUSH-WIP" attribute="name" value="PUSH" />
+                  <modify-model attribute="STACK-SIZE" type="INCREMENT" value="1" />
+                </action>
+                <action type="FAILURE">
+                  <modify-procedure attribute="status" value="done" />
+                  <modify-procedure attribute="status" value="failed" />
+                </action>
+              </actions>
+            </validate>
+          </sequence>
+        </phase>
+      </phases>
     </test>
   </tests>
 </xml>

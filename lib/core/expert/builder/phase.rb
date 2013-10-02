@@ -20,10 +20,10 @@ module Maadi
           end
         end
 
-        def process( procedure )
+        def process( procedure, expert, model )
           if @sequences.count > 0
             @sequences.each do |sequence|
-              procedure = sequence.process( procedure )
+              procedure = sequence.process( procedure, expert, model )
             end
           end
 
