@@ -23,8 +23,14 @@ module Maadi
       def initialize(type)
         super(type)
 
+        @options['USE-BUILDER'] = 'FALSE'
+        @notes['USE-BUILDER'] = 'TRUE/FALSE Use a Builder to assist in procedure construction'
+
         @options['BUILD-NAME'] = ''
         @notes['BUILD-NAME'] = 'XML file which contains the build script'
+
+        @options['USE-MODEL'] = 'FALSE'
+        @notes['USE-MODEL'] = 'TRUE/FALSE Use an External Model to assist in procedure construction'
 
         @options['MODEL-NAME'] = ''
         @notes['MODEL-NAME'] = 'Ruby class file which contains the Model for the Expert'
@@ -41,28 +47,32 @@ module Maadi
       # resources and services will be prepared to execution.
       # return (bool) true if all of the components are read.
       def prepare
-        if File.exists?( "../lib/custom/expert/builders/#{@options['BUILD-NAME']}.xml" )
-          Maadi::post_message(:More, "Expert (#{@type}) preparing Procedure Builder")
+        if @options['USE-BUILDER'] == 'TRUE'
+          if File.exists?( "../lib/custom/expert/builders/#{@options['BUILD-NAME']}.xml" )
+            Maadi::post_message(:More, "Expert (#{@type}) preparing Procedure Builder")
 
-          @builder = Builder.new()
-          @builder.set_option( 'BUILD-NAME', @options['BUILD-NAME'] )
+            @builder = Builder.new()
+            @builder.set_option( 'BUILD-NAME', @options['BUILD-NAME'] )
 
-          @builder.prepare
-        else
-          Maadi::post_message(:Warn, "Expert (#{@type}) unable to access Procedure Build File")
-          return false
+            @builder.prepare
+          else
+            Maadi::post_message(:Warn, "Expert (#{@type}) unable to access Procedure Build File")
+            return false
+          end
         end
 
-        if File.exists?( "../lib/custom/expert/models/#{@options['MODEL-NAME']}.rb" )
-          require_relative "../../../lib/custom/expert/models/#{@options['MODEL-NAME']}"
+        if @options['USE-MODEL'] == 'TRUE'
+          if File.exists?( "../lib/custom/expert/models/#{@options['MODEL-NAME']}.rb" )
+            require_relative "../../../lib/custom/expert/models/#{@options['MODEL-NAME']}"
 
-          class_name = Object.const_get('Maadi').const_get('Expert').const_get('Models').const_get(@options['MODEL-NAME'])
-          @model = class_name.new()
+            class_name = Object.const_get('Maadi').const_get('Expert').const_get('Models').const_get(@options['MODEL-NAME'])
+            @model = class_name.new()
 
-          @model.prepare
-        else
-          Maadi::post_message(:Warn, "Expert (#{@type}) unable to access Model File")
-          return false
+            @model.prepare
+          else
+            Maadi::post_message(:Warn, "Expert (#{@type}) unable to access Model File")
+            return false
+          end
         end
 
         Maadi::post_message(:More, "Expert (#{@type}) is ready")

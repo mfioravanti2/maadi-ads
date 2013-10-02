@@ -92,7 +92,26 @@ module Maadi
         def process( procedure )
           if procedure != nil
             if procedure.is_a? Maadi::Procedure::Procedure
+              success = 0
+              items = nil
 
+              @conditions.each do |condition|
+                if condition.test
+                  success += 1
+                end
+              end
+
+              if success == @conditions.count
+                items = @on_success
+              else
+                items = @on_failure
+              end
+
+              if items.count > 0
+                items.each do |item|
+                  procedure = item.process( procedure )
+                end
+              end
             end
           end
 

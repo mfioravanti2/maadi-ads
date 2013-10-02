@@ -3,7 +3,9 @@ require 'rubygems'
 require_relative '../lib/core/expert/expert'
 
 builder = Maadi::Expert::Builder::Builder.new()
+builder.set_option('USE-BUILDER', 'TRUE')
 builder.set_option('BUILD-NAME', 'ADSStack')
+builder.set_option('USE-MODEL', 'FALSE')
 builder.prepare
 
 procedure = builder.procedure('CREATE',nil)
