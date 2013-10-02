@@ -222,7 +222,13 @@ module Maadi
       def build_newstackindex_new( next_step )
         procedure = build_skeleton( 'NEWSTACKINDEX' )
         procedure.add_step( build_create_new(next_step).steps[0] )
+
+        #Making index always look at 0.  Because thats what the axiom says. Silly.
+        step =   build_at_index_new(next_step).steps[0]
+
+        step.get_parameter('[INDEX]').constraint = Maadi::Procedure::ConstraintConstant.new( 0 )
         procedure.add_step( build_at_index_new(next_step).steps[0] )
+
 
         procedure.id = next_step
         return procedure
