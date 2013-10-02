@@ -178,7 +178,7 @@ module Maadi
                       Maadi::post_message(:Info, "#{@type}:#{@instance_name} #{step.id} lValue: ' #{lValue.to_s}",3)
                     end
                     if rValue != -1
-                      Maadi::post_message(:Info, "#{@type}:#{@instance_name} #{step.id} rValue: ' #{rValue.to_s}",3)
+                      Maadi::post_message(:Info, "#{@type}:#{@instance_name} #{step.id} rValue: ' #{rValue.to_s}", 3)
                     end
 
                     case step.look_for

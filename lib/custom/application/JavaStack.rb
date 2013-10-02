@@ -430,7 +430,7 @@ module Maadi
                       cmdResultsArray = runOperation(operationString, lValueOPString, '')
 
                       #Set lValue - index 0 (STDOUT)
-                      lValue = cmdResultsArray.at(2)
+                      rValue = lValue = cmdResultsArray.at(2)
 
                       bSuccess = true
                       bError = false
@@ -449,7 +449,7 @@ module Maadi
                       cmdResultsArray = runOperation(operationString, lValueOPString, '')
 
                       #Set lValue - index 0 (STDOUT)
-                      lValue = cmdResultsArray.at(2)
+                      rValue = lValue = cmdResultsArray.at(2)
 
                       bSuccess = true
                       bError = false
