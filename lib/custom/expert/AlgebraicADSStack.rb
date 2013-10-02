@@ -101,18 +101,20 @@ module Maadi
         procedure = build_skeleton( 'PUSHPOP' )
         procedure.add_step( build_push_new(next_step).steps[0] )
         procedure.add_step( build_pop_new(next_step).steps[0] )
+        procedure.add_step( build_details_new(next_step).steps[0])
 
         procedure.id = next_step
         return procedure
       end
 
       def build_pushpop_finalize( procedure, steps )
-        unless is_procedure?( procedure ) and is_step?( steps[0] ) and is_step?( steps[1] )
+        unless is_procedure?( procedure ) and is_step?( steps[0] ) and is_step?( steps[1] ) and is_step? (steps[2])
           return procedure
         end
 
         steps[0].id = 'PUSH'
         steps[1].id = 'POP'
+        steps[2].id = 'DETAILS'
         procedure.id = 'PUSHPOP'
 
         rvalue = steps[0].get_parameter_value( '[RVALUE]' )
