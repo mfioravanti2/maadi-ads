@@ -125,8 +125,8 @@ module Maadi
                         if @rStack != nil
                           if @rStack.size > 0
                             if index.to_i < @rStack.size
-                              lValue = @rStack[index.to_i]
-                              rValue = @rStack.size
+                              rValue = @rStack[index.to_i]
+                              lValue = @rStack.size
                             else
                               lValue = rValue = 'ATINDEX Failed, requested index is larger than stack size'
                               bSuccess = false
