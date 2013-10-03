@@ -44,6 +44,22 @@ module Maadi
       def satisfies?( value )
         return false
       end
+
+      def self.is_constraint?( constraint, with_id = '' )
+        if constraint != nil
+          if constraint.is_a?( Maadi::Procedure::Constraint )
+            if with_id != ''
+              if constraint.type == with_id
+                return true
+              end
+            else
+              return true
+            end
+          end
+        end
+
+        return false
+      end
     end
   end
 end

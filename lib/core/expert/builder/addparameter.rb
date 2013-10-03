@@ -16,16 +16,14 @@ module Maadi
         end
 
         def process( procedure, expert, model )
-          if procedure != nil
-            if procedure.id == @to_procedure
-              step = procedure.get_step( @to_step )
-              if step != nil
-                if step.id == @to_step
-                  parameter = Maadi::Procedure::Parameter.new( @name, nil, '' )
-                  step.parameters.push parameter
-                end
-              end
+          if Maadi::Procedure::Procedure.is_procedure?( procedure, @to_procedure )
+            step = procedure.get_step( @to_step )
+
+            if Maadi::Procedure::Step.is_step?( step, @to_step )
+              parameter = Maadi::Procedure::Parameter.new( @name, nil, '' )
+              step.parameters.push parameter
             end
+
           end
 
           return procedure

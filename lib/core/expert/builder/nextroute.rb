@@ -14,10 +14,8 @@ module Maadi
         end
 
         def process( procedure, expert, model )
-          if procedure != nil
-            if procedure.is_a? Maadi::Procedure::Procedure
-              procedure.id = @name
-            end
+          if Maadi::Procedure::Procedure.is_procedure?( procedure )
+            procedure.id = @name
           end
 
           return procedure

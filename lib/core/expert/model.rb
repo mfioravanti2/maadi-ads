@@ -21,6 +21,8 @@ module Maadi
         # type (String) is a convenient human readable label.
         def initialize(type)
           super(type)
+
+          @values = Hash.new
         end
 
         # prepare will setup the execution environment.  No tests will be executed but all required
@@ -30,6 +32,28 @@ module Maadi
           Maadi::post_message(:More, "Model (#{@type}) is ready")
 
           super
+        end
+
+        def values
+          return @values.keys
+        end
+
+        def has_value?( attribute )
+          return @values.keys.include?( attribute )
+        end
+
+        def set_value( attribute, value )
+          if @values.keys.include?( attribute )
+            @values[attribute] = value
+          end
+        end
+
+        def get_value( attribute )
+          if @values.keys.include?( attribute )
+            return @values[attribute]
+          end
+
+          return ''
         end
 
         # teardown the object if any database connections, files, etc. are open.

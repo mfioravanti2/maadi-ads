@@ -89,10 +89,16 @@ module Maadi
         return nil
       end
 
-      def Procedure::is_procedure?( procedure )
+      def Procedure::is_procedure?( procedure, with_id = '' )
         if procedure != nil
           if procedure.is_a?( Maadi::Procedure::Procedure )
-            return true
+            if with_id != ''
+              if procedure.id == with_id
+                return true
+              end
+            else
+              return true
+            end
           end
         end
 

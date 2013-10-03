@@ -1,4 +1,6 @@
 
+require_relative '../../procedure/procedure'
+
 require_relative 'addprocedure'
 require_relative 'addstep'
 require_relative 'addparameter'

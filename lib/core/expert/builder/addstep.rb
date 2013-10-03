@@ -19,11 +19,9 @@ module Maadi
         end
 
         def process( procedure, expert, model )
-          if procedure != nil
-            if procedure.id == @to_procedure
+          if Maadi::Procedure::Procedure.is_procedure?( procedure, @to_procedure )
               step = Maadi::Procedure::Step.new( @id, @target, @look_for, @command, Array.new(), @on_fail )
               procedure.add_step( step )
-            end
           end
 
           return procedure

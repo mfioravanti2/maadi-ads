@@ -15,13 +15,11 @@ module Maadi
         end
 
         def process( procedure, expert, model )
-          if procedure != nil
-            if procedure.is_a? Maadi::Procedure::Procedure
-              case @attribute
-                when 'name'
-                  procedure.id = @value
-                else
-              end
+          if Maadi::Procedure::Procedure.is_procedure?( procedure )
+            case @attribute
+              when 'name'
+                procedure.id = @value
+              else
             end
           end
 

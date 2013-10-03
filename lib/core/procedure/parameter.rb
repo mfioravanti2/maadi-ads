@@ -45,6 +45,22 @@ module Maadi
           @values = Array.new
         end
       end
+
+      def self.is_parameter?( parameter, with_id = '' )
+        if parameter != nil
+          if parameter.is_a?( Maadi::Procedure::Parameter )
+            if with_id != ''
+              if parameter.label == with_id
+                return true
+              end
+            else
+              return true
+            end
+         end
+        end
+
+        return false
+      end
     end
   end
 end

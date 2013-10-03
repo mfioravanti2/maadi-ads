@@ -5,22 +5,32 @@ module Maadi
   module Expert
     module Builder
       class ModifyParameter
-        attr_accessor :attribute, :value
+        attr_accessor :to_procedure, :to_step, :to_parameter, :attribute, :value
 
         def initialize(node)
           if node != nil
+            @to_procedure = node['to_procedure']
+            @to_step = node['to_step']
+            @to_parameter = node['to_parameter']
             @attribute = node['attribute']
             @value = node['value']
           end
         end
 
         def process( procedure, expert, model )
-          if procedure != nil
-            if procedure.is_a? Maadi::Procedure::Procedure
-              case @attribute
-                when 'name'
-                  procedure.id = @value
-                else
+          if Maadi::Procedure::Procedure.is_procedure?( procedure, @to_procedure )
+            step = procedure.get_step( @to_step )
+
+            if Maadi::Procedure::Step.is_step?( step, @to_step )
+              parameter = step.get_parameter( @to_parameter )
+
+              if Maadi::Procedure::Parameter.is_parameter?( parameter, @to_parameter )
+
+                case @attribute
+                  when 'label'
+                    parameter.label = @value
+                  else
+                end
               end
             end
           end

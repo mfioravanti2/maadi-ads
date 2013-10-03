@@ -119,10 +119,16 @@ module Maadi
         end
       end
 
-      def self.is_step?( step )
+      def self.is_step?( step, with_id = '' )
         if step != nil
           if step.is_a?( Maadi::Procedure::Step )
-            return true
+            if with_id != ''
+              if step.id == with_id
+                return true
+              end
+            else
+              return true
+            end
           end
         end
 

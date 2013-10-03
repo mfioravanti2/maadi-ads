@@ -21,35 +21,31 @@ module Maadi
         end
 
         def process( procedure, expert, model )
-          if procedure != nil
-            if procedure.id == @to_procedure
-              step = procedure.get_step( @to_step )
-              if step != nil
-                if step.id == @to_step
-                  parameter = step.get_parameter( @to_parameter )
-                  if parameter != nil
-                    if parameter.label == @to_parameter
-                      case @type.downcase
-                        when 'ranged-integer'
+          if Maadi::Procedure::Procedure.is_procedure?( procedure, @to_procedure )
+            step = procedure.get_step( @to_step )
 
-                          min_value = @node['min_range']
-                          if min_value.include?( 'OPTIONS:' ) && expert != nil
-                            key = min_value.sub( 'OPTION:', '' ).to_s
-                            min_value = expert.get_option( key )
-                          end
+            if Maadi::Procedure::Step.is_step?( step, @to_step )
+              parameter = step.get_parameter( @to_parameter )
 
-                          max_value = @node['max_range']
-                          if max_value.include?( 'OPTIONS:' ) && expert != nil
-                            key = max_value.sub( 'OPTIONS:', '' ).to_s
-                            max_value = expert.get_option( key )
-                          end
+              if Maadi::Procedure::Parameter.is_parameter?( parameter, @to_parameter )
+                case @type.downcase
+                  when 'ranged-integer'
 
-                          constraint = Maadi::Procedure::ConstraintRangedInteger.new( min_value, max_value  )
-                          parameter.constraint = constraint
-                        else
-                      end
+                    min_value = @node['min_range']
+                    if min_value.include?( 'OPTIONS:' ) && expert != nil
+                      key = min_value.sub( 'OPTION:', '' ).to_s
+                      min_value = expert.get_option( key )
                     end
-                  end
+
+                    max_value = @node['max_range']
+                    if max_value.include?( 'OPTIONS:' ) && expert != nil
+                      key = max_value.sub( 'OPTIONS:', '' ).to_s
+                      max_value = expert.get_option( key )
+                    end
+
+                    constraint = Maadi::Procedure::ConstraintRangedInteger.new( min_value, max_value  )
+                    parameter.constraint = constraint
+                  else
                 end
               end
             end
