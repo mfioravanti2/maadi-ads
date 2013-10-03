@@ -4,7 +4,7 @@ require_relative '../../core/helpers'
 
 module Maadi
   module Application
-    class RubyStack < Application
+    class RubyQueue < Application
 
       def initialize
         super('RubyQueue')
@@ -152,6 +152,7 @@ module Maadi
                       end
                     when 'NONNULCONSTRUCT'
                       @rQueue = Queue.new()
+                      @rQueue.
                       lValue = rValue = @rQueue.size
 
                       if @rQueue != nil
