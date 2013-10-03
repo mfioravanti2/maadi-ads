@@ -16,7 +16,7 @@ set expert option PUSHPOP_RATIO 4
 set expert option PUSH_RATIO 20
 set expert option POP_RATIO 4
 set expert option SIZE_RATIO 4
-set expert option ATINDEX_RATIO 2
+set expert option ATINDEX_RATIO 5
 set expert option DETAILS_RATIO 3
 set organizer RandomSelection RS-Organizer
 set monitor Example ExMon

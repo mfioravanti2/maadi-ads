@@ -28,7 +28,7 @@ module Maadi
         @options['QUEUECLASSPATH'] = 'queue'
         @options['QUEUENAME'] = 'queue' + @instance_name
         @options['ISCONSTRUCTED'] = 'false'
-        @options['CLASSNAME'] = 'Queue'
+        @options['CLASSNAME'] = 'LinkedList'
         @options['DEFAULTCAPACITY'] = 10
         @options['COMMANDNAME'] = "java -cp \"" + @options['BSHPATH']  + "\" bsh.Interpreter"
         @options['OUTPUTCATCH'] = '---12345---'
@@ -300,7 +300,7 @@ module Maadi
                       #If the queue is instantiated, then work
                       if @rQueue != nil  && rValue != ''
 
-                        operationString = @options['QUEUENAME'] + ".add(" + rValue + ");\n"
+                        operationString = @options['QUEUENAME'] + ".offer(" + rValue + ");\n"
                         lValueOPString = "System.out.println(" + @options['QUEUENAME'] + ".size());\n"
 
                         #Run the operation
