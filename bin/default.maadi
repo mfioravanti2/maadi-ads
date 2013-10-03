@@ -12,11 +12,12 @@ set collector LogFile LogFile-Log
 
 set expert AlgebraicADSStack Stack-Exp
 set expert option CREATE_RATIO 0
-set expert option PUSHPOP_RATIO 6
-set expert option PUSH_RATIO 6
-set expert option POP_RATIO 6
+set expert option PUSHPOP_RATIO 4
+set expert option PUSH_RATIO 20
+set expert option POP_RATIO 4
 set expert option SIZE_RATIO 4
 set expert option ATINDEX_RATIO 2
+set expert option DETAILS_RATIO 3
 set organizer RandomSelection RS-Organizer
 set monitor Example ExMon
 
