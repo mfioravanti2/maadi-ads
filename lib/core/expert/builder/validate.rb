@@ -1,13 +1,23 @@
+# Author : Mark Fioravanti (mfioravanti1994@my.fit.edu)
+#          Florida Institute of Technology
+# Course : CSE5400 Special Topics - Algebraic Data Structures
+# Date   : 10/01/2013
+# File   : validate.rb
+#
+# Summary: Builder object to validate the state of a procedure
 
 require_relative '../../procedure/procedure'
 
 require_relative 'addprocedure'
 require_relative 'addstep'
+require_relative 'addparameter'
+require_relative 'addconstraint'
 require_relative 'modifyprocedure'
 require_relative 'modifystep'
+require_relative 'modifyparameter'
+require_relative 'modifyconstraint'
 require_relative 'modifymodel'
 require_relative 'nextroute'
-require_relative 'validate'
 
 module Maadi
   module Expert
@@ -74,12 +84,18 @@ module Maadi
                 list.push AddProcedure.new( order )
               when 'add-step'
                 list.push AddStep.new( order )
+              when 'add-parameter'
+                list.push AddParameter.new( order )
+              when 'add-constraint'
+                list.push AddConstraint.new( order )
               when 'modify-procedure'
                 list.push ModifyProcedure.new( order )
               when 'modify-step'
                 list.push ModifyStep.new( order )
-              when 'modify-model'
-                list.push ModifyModel.new( order )
+              when 'modify-parameter'
+                list.push ModifyParameter.new( order )
+              when 'modify-constraint'
+                list.push ModifyConstraint.new( order )
               when 'next-route'
                 list.push NextRoute.new( order )
               when 'validate'
