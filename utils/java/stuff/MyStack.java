@@ -91,7 +91,7 @@ public class MyStack {
      * @return
      */
     public String toString() {
-        String format = "[ ";
+        String format = "[";
         for(int i = 0; i < this.size; i++) {
             format+="\"";
             format+= (this.elements[i] + "\"");
@@ -100,7 +100,7 @@ public class MyStack {
             }
         }
 
-        return format+" ]";
+        return format+"]";
     }
 }
 
