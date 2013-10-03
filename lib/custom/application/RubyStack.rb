@@ -127,6 +127,9 @@ module Maadi
                             if index.to_i < @rStack.size
                               rValue = @rStack[index.to_i]
                               lValue = @rStack.size
+
+                              bSuccess = true
+                              bError = false
                             else
                               lValue = rValue = 'ATINDEX Failed, requested index is larger than stack size'
                               bSuccess = false
@@ -149,7 +152,12 @@ module Maadi
                         if @rStack != nil
                           bSuccess = true
                           bError = false
+                        else
+                          bSuccess = false
+                          bError = true
                         end
+
+
                       when 'NONNULCONSTRUCT'
                         @rStack = Array.new()
                         lValue = rValue = @rStack.size
@@ -157,6 +165,9 @@ module Maadi
                         if @rStack != nil
                           bSuccess = true
                           bError = false
+                        else
+                          bSuccess = false
+                          bError = true
                         end
                       when 'DETAILS'
                         if @rStack != nil
@@ -164,7 +175,8 @@ module Maadi
                           bSuccess = true
                           bError = false
                         else
-                          #Do nothing
+                          bSuccess = false
+                          bError = true
                         end
 
                       else

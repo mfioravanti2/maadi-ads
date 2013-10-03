@@ -413,6 +413,9 @@ module Maadi
 
                           #Set rValue = index 4 (STDOUT)
                           rValue = cmdResultsArray.at(4)
+
+                          bSuccess = true
+                          bError = false
                         end
 
                       else

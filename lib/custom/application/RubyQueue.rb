@@ -127,6 +127,9 @@ module Maadi
                           if index.to_i < @rQueue.size
                             rValue = Array(@rQueue)[index.to_i]
                             lValue = @rQueue.size
+
+                            bSuccess = true
+                            bError = false
                           else
                             lValue = rValue = 'ATINDEX Failed, requested index is larger than queue size'
                             bSuccess = false
@@ -149,6 +152,9 @@ module Maadi
                       if @rQueue != nil
                         bSuccess = true
                         bError = false
+                      else
+                        bSuccess = false
+                        bError = true
                       end
                     when 'NONNULCONSTRUCT'
                       @rQueue = Queue.new()
@@ -157,6 +163,9 @@ module Maadi
                       if @rQueue != nil
                         bSuccess = true
                         bError = false
+                      else
+                        bSuccess = false
+                        bError = true
                       end
                     when 'DETAILS'
                       if @rQueue != nil
@@ -164,7 +173,8 @@ module Maadi
                         bSuccess = true
                         bError = false
                       else
-                        #Do nothing
+                        bSuccess = false
+                        bError = true
                       end
 
                     else
