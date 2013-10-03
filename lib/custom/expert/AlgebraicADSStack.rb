@@ -5,7 +5,8 @@
 # File   : AlgebraicADSStack.rb
 #
 # Summary: This is an extension of the ADSStack class that utilizes
-#          various tests for axioms listed.
+#          various tests for axioms listed.  You can use this class
+#          instead of ADSStack and should get the same results.
 require_relative 'factory'
 require_relative '../../core/helpers'
 require_relative '../procedure/ConstraintConstant'
@@ -21,7 +22,11 @@ module Maadi
   module Expert
     class AlgebraicADSStack < ADSStack
 
+      #Initializes the object.  Adds ratios and calls super class.
       def initialize
+
+        #Call the super class so that it will grab all the
+        # defaults of super's operations.
         super('AlgebraicADSStack')
 
         #Options originally from  ADSStack are taken care of above.
@@ -60,6 +65,7 @@ module Maadi
         super
       end
 
+      #Return the domain.  This is for hte A-ADS-STACK
       def domain
         return 'ALGEBRAICADS-STACK'
       end
@@ -79,7 +85,8 @@ module Maadi
           procedure = build_skeleton( test )
         end
 
-
+        #If the case is listed, then run the procedure.
+        #Otherwise pipe to super for handling.
         case test.downcase
           when 'pushpop'
             return manage_pushpop( procedure )
@@ -94,29 +101,47 @@ module Maadi
             return super(test, procedure)
         end
 
+        #This is probably dead code and will not get hit.
+        #Nevertheless, will keep just in case addons are made
+        #in the future.
         return procedure
       end
 
+      #Builds the new skeletal code for PUSHPOP
+      #by setting up the procedure and creating the steps.
+      #This operation is a concatination of other operations listed
+      #in super, so this should try to use the super's variant for setting up steps.
+
       def build_pushpop_new( next_step )
+        #Build the skeletal code
         procedure = build_skeleton( 'PUSHPOP' )
+
+        #Setup the steps
         procedure.add_step( build_push_new(next_step).steps[0] )
         procedure.add_step( build_pop_new(next_step).steps[0] )
         procedure.add_step( build_details_new(next_step).steps[0])
 
+        #Set the id for the next step and then return
         procedure.id = next_step
         return procedure
       end
 
+      #Finalizes PUSHPOP.  Makes sure everything is in order.
+      #Returns a procedure that is either done or failed.
       def build_pushpop_finalize( procedure, steps )
+
+        #Unless these are procedures and the correct number of steps are listed, fail out.
         unless is_procedure?( procedure ) and is_step?( steps[0] ) and is_step?( steps[1] ) and is_step? (steps[2])
           return procedure
         end
 
+        #Define the and procedure ids.
         steps[0].id = 'PUSH'
         steps[1].id = 'POP'
         steps[2].id = 'DETAILS'
         procedure.id = 'PUSHPOP'
 
+        #If the value is not set, then the procedure has failed.
         rvalue = steps[0].get_parameter_value( '[RVALUE]' )
         if rvalue != ''
           procedure.done
@@ -124,6 +149,7 @@ module Maadi
           procedure.failed
         end
 
+        #Return the procedure with the state of done or failed.
         return procedure
       end
 
@@ -169,26 +195,42 @@ module Maadi
 
       end
 
+      #Builds the new skeletal code for PUSHPOPSIZE
+      #by setting up the procedure and creating the steps.
+      #This operation is a concatination of other operations listed
+      #in super, so this should try to use the super's variant for setting up steps.
       def build_pushpopsize_new( next_step )
+
+        #Build the skeletal procedure
         procedure = build_skeleton( 'PUSHPOPSIZE' )
+
+        #Add the steps
         procedure.add_step( build_push_new(next_step).steps[0] )
         procedure.add_step( build_pop_new(next_step).steps[0] )
         procedure.add_step( build_size_new(next_step).steps[0] )
 
+        #Set the step ID
         procedure.id = next_step
+
+        #Return the newly acquired procedure.
         return procedure
       end
 
+      #Finalize the PUSHPOPSIZE procedure. Make sure it has the right steps
+      # and verify if the values are set before proceding.
+      # Returns a procedure with the status of either done or failed.
       def build_pushpopsize_finalize( procedure, steps )
         unless is_procedure?( procedure ) and is_step?( steps[0] ) and is_step?( steps[1] ) and is_step?( steps[2] )
           return procedure
         end
 
+        #Set up the step ids and the procedure ids
         steps[0].id = 'PUSH'
         steps[1].id = 'POP'
         steps[2].id = 'SIZE'
         procedure.id = 'PUSHPOPSIZE'
 
+        #If the value is not set correctly, then it should return failed.
         rvalue = steps[0].get_parameter_value( '[RVALUE]' )
         if rvalue != ''
           procedure.done
@@ -196,6 +238,8 @@ module Maadi
           procedure.failed
         end
 
+        #Returns a procedure with the correct step ids and if it
+        #is either done or failed.
         return procedure
       end
 
@@ -219,31 +263,46 @@ module Maadi
 
       end
 
+      #Builds the new skeletal code for NEWSTACKINDEX
+      #by setting up the procedure and creating the steps.
+      #This operation is a concatination of other operations listed
+      #in super, so this should try to use the super's variant for setting up steps.
       def build_newstackindex_new( next_step )
+
+        #Setup the skeletal procedure
         procedure = build_skeleton( 'NEWSTACKINDEX' )
+
+        #Add the step
         procedure.add_step( build_create_new(next_step).steps[0] )
 
         #Making index always look at 0.  Because thats what the axiom says. Silly.
         step =   build_at_index_new(next_step).steps[0]
 
+        #Set the value to 0 and add the step
         step.get_parameter('[INDEX]').constraint = Maadi::Procedure::ConstraintConstant.new( 0 )
         procedure.add_step( build_at_index_new(next_step).steps[0] )
 
-
+        #Return the procedure with the next_step id
         procedure.id = next_step
         return procedure
       end
 
+      #Finalizes the step.
+      #Makes sure that the step is either done or failed.
       def build_newstackindex_finalize( procedure, steps )
+
+        #Verify that the steps are there and that the procedure is a procedure
         unless is_procedure?( procedure ) and is_step?( steps[0] ) and is_step?( steps[1] )
           return procedure
         end
 
+        #Set the step ids and the procedure ids
         steps[0].id = 'NULCONSTRUCT'
         steps[1].id = 'ATINDEX'
 
         procedure.id = 'NEWSTACKINDEX'
 
+        #If the value is not set, then return failed.
         rvalue = steps[1].get_parameter_value( '[INDEX]' )
         if rvalue != ''
           procedure.done
@@ -253,6 +312,7 @@ module Maadi
           procedure.failed
         end
 
+        #Returns either a failed procedure or a done procedure
         return procedure
       end
 
@@ -276,28 +336,49 @@ module Maadi
 
       end
 
+      #Builds the new skeletal code for NEWSTACKSIZE
+      #by setting up the procedure and creating the steps.
+      #This operation is a concatination of other operations listed
+      #in super, so this should try to use the super's variant for setting up steps.
       def build_newstacksize_new( next_step )
+
+        #Builds the skeletal procedure
         procedure = build_skeleton( 'NEWSTACKSIZE' )
+
+        #Adds the steps
         procedure.add_step( build_create_new(next_step).steps[0] )
         procedure.add_step( build_size_new(next_step).steps[0] )
 
+        #Sets the step id
         procedure.id = next_step
+
+        #Returns the procedure
         return procedure
       end
 
+      #Finalizes the procedure
+      #Returns either a completed procedure that is done, or a failed one.
       def build_newstacksize_finalize( procedure, steps )
+
+        #Verifiy the steps exists and that the procedure is a procedure
         unless is_procedure?( procedure ) and is_step?( steps[0] ) and is_step?( steps[1] )
           return procedure
         end
 
+        #Set the step and procedure ids
         steps[0].id = 'NULCONSTRUCT'
         steps[1].id = 'SIZE'
 
         procedure.id = 'NEWSTACKSIZE'
+
+        #Make sure to state that it has a stack
         @has_stack = true
         @stack_size = 0
+
+        #Set to done
         procedure.done
 
+        #Returns a completed procedure
         return procedure
       end
 
