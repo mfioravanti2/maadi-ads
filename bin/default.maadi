@@ -25,5 +25,6 @@ set monitor Example ExMon
 load app-ads-stack.maadi
 
 set scheduler FIFO Queue
-set analyzer Comparison Comp
+#set analyzer Comparison Comp
+set analyzer Differences Diff
 

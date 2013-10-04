@@ -11,7 +11,9 @@ builder.set_option('BUILD-NAME', 'ADSStack')
 builder.set_option('USE-MODEL', 'FALSE')
 builder.prepare
 
-procedure = builder.procedure( 'PUSH', nil, expert, nil )
+test = 'PUSH'
+
+procedure = builder.procedure( test, nil, expert, nil )
 
 if procedure != nil
   puts "Procedure named #{procedure.id} was created."
@@ -27,7 +29,7 @@ if procedure != nil
   end
 end
 
-procedure = builder.procedure( 'CREATE',procedure, expert, nil )
+procedure = builder.procedure( test, procedure, expert, nil )
 
 if procedure != nil
   puts "Procedure named #{procedure.id} was updated."

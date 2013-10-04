@@ -379,6 +379,32 @@ module Maadi
         return list
       end
 
+      # obtain a list of types found within the results of repository
+      # return (Array of String) each element represents a different type within the repository
+      def types
+        list = Array.new
+
+        if @db != nil
+          is_ok = false
+
+          begin
+            stm = @db.prepare( 'SELECT qType FROM qryResults GROUP BY qType ORDER BY qType')
+            rs = stm.execute
+
+            rs.each do |row|
+              list.push row['qType']
+            end
+
+            stm.close
+            is_ok = true
+          rescue ::SQLite3::Exception => e
+            Maadi::post_message(:Warn, "Repository (#{@type}:#{@instance_name}) encountered an SELECT Types error (#{e.message}).")
+          end
+        end
+
+        return list
+      end
+
       # obtain a list of applications found within the results of repository
       # return (Array of String) each element represents a different application within the repository
       def applications
@@ -695,7 +721,12 @@ module Maadi
           is_ok = false
 
           begin
-            stm = @db.prepare( 'SELECT DISTINCT R1.qProcId FROM qryResults As R1, qryResults As R2 WHERE R1.qTestId = R2.qTestId AND R1.qStepId = R2.qStepId AND R1.qType = ? AND R2.qType = ? AND R1.qData != R2.qData')
+            if type.upcase != 'TEXT'
+              stm = @db.prepare( 'SELECT DISTINCT R1.qProcId FROM qryResults As R1, qryResults As R2 WHERE R1.qTestId = R2.qTestId AND R1.qStepId = R2.qStepId AND R1.qType = ? AND R2.qType = ? AND R1.qData != R2.qData')
+            else
+              stm = @db.prepare( 'SELECT DISTINCT R1.qProcId FROM qryResults As R1, qryResults As R2 WHERE R1.qTestId = R2.qTestId AND R1.qStepId = R2.qStepId AND R1.qType = ? AND R2.qType = ? AND R1.qData NOT LIKE R2.qData')
+            end
+
             stm.bind_params( type.to_s, type.to_s )
             rs = stm.execute
 

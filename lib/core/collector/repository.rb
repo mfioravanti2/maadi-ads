@@ -50,6 +50,12 @@ module Maadi
         return Array.new
       end
 
+      # obtain a list of types found within the results of repository
+      # return (Array of String) each element represents a different type within the repository
+      def types
+        return Array.new
+      end
+
       # obtain a list of applications found within the results of repository
       # return (Array of String) each element represents a different application within the repository
       def applications
