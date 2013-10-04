@@ -65,8 +65,10 @@ module Maadi
               if supports_step?( step )
                 # lValue is the item that is modified (usually the stack)
                 lValue = -1
+                lType = 'TEXT'
                 # rValue is the item that is not modified during an operation
                 rValue = -1
+                rType = 'TEXT'
                 bSuccess = false
                 bError = false
 
@@ -82,11 +84,14 @@ module Maadi
                       if @rQueue != nil
                         @rQueue.push rValue
                         lValue = @rQueue.size
+                        lType = 'INTEGER'
 
                         bSuccess = true
                         bError = false
                       else
                         lValue = rValue = 'PUSH Failed, Queue not instantiated'
+                        lType = rType = 'TEXT'
+
                         bSuccess = false
                         bError = true
                       end
@@ -94,28 +99,37 @@ module Maadi
                       if @rQueue != nil
                         if @rQueue.size > 0
                           lValue = @rQueue.pop
+                          lType = 'INTEGER'
                           rValue = @rQueue.size
+                          rType = 'INTEGER'
 
                           bSuccess = true
                           bError = false
                         else
                           lValue = rValue = 'POP Failed, Queue is empty'
+                          lType = rType = 'TEXT'
+
                           bSuccess = false
                           bError = true
                         end
                       else
                         lValue = rValue = 'POP Failed, Queue not instantiated'
+                        lType = rType = 'TEXT'
+
                         bSuccess = false
                         bError = true
                       end
                     when 'SIZE'
                       if @rQueue != nil
                         lValue = @rQueue.size
+                        lType = 'INTEGER'
 
                         bSuccess = true
                         bError = false
                       else
                         lValue = rValue = 'SIZE Failed, Queue not instantiated'
+                        lType = rType = 'TEXT'
+
                         bSuccess = false
                         bError = true
                       end
@@ -126,28 +140,37 @@ module Maadi
                         if @rQueue.size > 0
                           if index.to_i < @rQueue.size
                             rValue = Array(@rQueue)[index.to_i]
+                            rType = 'INTEGER'
                             lValue = @rQueue.size
+                            lType = 'INTEGER'
 
                             bSuccess = true
                             bError = false
                           else
                             lValue = rValue = 'ATINDEX Failed, requested index is larger than queue size'
+                            lType = rType = 'TEXT'
+
                             bSuccess = false
                             bError = true
                           end
                         else
                           lValue = rValue = 'ATINDEX Failed, Queue is empty'
+                          lType = rType = 'TEXT'
+
                           bSuccess = false
                           bError = true
                         end
                       else
                         lValue = rValue = 'ATINDEX Failed, Queue not instantiated'
+                        lType = rType = 'TEXT'
+
                         bSuccess = false
                         bError = true
                       end
                     when 'NULCONSTRUCT'
                       @rQueue = Queue.new()
                       lValue = rValue = @rQueue.size
+                      lType = rType = 'INTEGER'
 
                       if @rQueue != nil
                         bSuccess = true
@@ -159,6 +182,7 @@ module Maadi
                     when 'NONNULCONSTRUCT'
                       @rQueue = Queue.new()
                       lValue = rValue = @rQueue.size
+                      lType = rType = 'INTEGER'
 
                       if @rQueue != nil
                         bSuccess = true
@@ -183,6 +207,9 @@ module Maadi
                         bSuccess = true
                         bError = false
                       else
+                        lValue = rValue = 'DETAILS Failed, Queue not instantiated'
+                        lType = rType = 'TEXT'
+
                         bSuccess = false
                         bError = true
                       end
@@ -204,15 +231,15 @@ module Maadi
                   case step.look_for
                     when 'NORECORD'
                     when 'LVALUE'
-                      results.add_result( Maadi::Procedure::Result.new( step, lValue.to_s, 'TEXT', ( !bError and bSuccess ) ? 'SUCCESS' : 'FAILURE' ))
+                      results.add_result( Maadi::Procedure::Result.new( step, lValue.to_s, lType, ( !bError and bSuccess ) ? 'SUCCESS' : 'FAILURE' ))
                     when 'RVALUE'
-                      results.add_result( Maadi::Procedure::Result.new( step, rValue.to_s, 'TEXT', ( !bError and bSuccess ) ? 'SUCCESS' : 'FAILURE' ))
+                      results.add_result( Maadi::Procedure::Result.new( step, rValue.to_s, rType, ( !bError and bSuccess ) ? 'SUCCESS' : 'FAILURE' ))
                     when 'CHANGES'
                       results.add_result( Maadi::Procedure::Result.new( step, '', 'TEXT', ( !bError and bSuccess ) ? 'SUCCESS' : 'FAILURE' ))
                     when 'COMPLETED'
                       results.add_result( Maadi::Procedure::Result.new( step, '', 'TEXT', ( !bError and bSuccess ) ? 'SUCCESS' : 'FAILURE' ))
                     else
-                      results.add_result( Maadi::Procedure::Result.new( step, '', 'TEXT', 'UNKNOWN' ))
+                      results.add_result( Maadi::Procedure::Result.new( step, step.look_for, 'TEXT', 'UNKNOWN' ))
                   end
                 rescue => e
                   Maadi::post_message(:Warn, "Application (#{@type}:#{@instance_name}) encountered an error (#{e.message}).")
