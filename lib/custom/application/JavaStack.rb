@@ -278,8 +278,10 @@ module Maadi
 
                 #lValue is the item that is modified (usually the stack)
                 lValue = -1
+                lType = 'TEXT'
                 #rValue is the item that is not modified during an operation
                 rValue = -1
+                rType = 'TEXT'
                 bSuccess = false
                 bError = false
                 #The normal operation call
@@ -293,7 +295,6 @@ module Maadi
 
                     #Case for when a push is called
                     when 'PUSH'
-
                       #Get the value to add to the push
                       rValue = step.get_parameter_value('[RVALUE]')
 
@@ -308,13 +309,15 @@ module Maadi
 
                         #Set lValue - index 2 (STDOUT)
                         lValue = cmdResultsArray.at(2)
+                        lType = 'INTEGER'
 
                         bSuccess = true
                         bError = false
                       else
-
                         #Error:  the stack was not instantiated!
                         lValue = rValue = 'PUSH Failed, ' + @options['CLASSNAME'] + ' not instantiated'
+                        lType = rType = 'TEXT'
+
                         bSuccess = false
                         bError = true
                       end
@@ -325,12 +328,13 @@ module Maadi
                         #Need to check for size first
                         lValueOPString = "System.out.println(" + @options['STACKNAME'] + ".size());\n"
 
-
                         #First run the operation to check the size. If the size is zero, then flag error and exit
                         cmdResultsArray = runOperation('', lValueOPString, '')
 
                         if cmdResultsArray.at(2).to_i == 0
                           lValue = rValue = 'POP Failed, Stack is empty'
+                          lType = rType = 'TEXT'
+
                           bSuccess = false
                           bError = true
                         else
@@ -341,24 +345,25 @@ module Maadi
 
                           #Set lValue - index 0 (STDOUT)
                           lValue = cmdResultsArray.at(0)
+                          lType = 'INTEGER'
 
                           #Set the rValue - index 2 (STDOUT)
                           rValue = cmdResultsArray.at(2)
+                          rType = 'INTEGER'
 
                           bSuccess = true
                           bError = false
                         end
-
-
                       else
                         lValue = rValue = 'POP Failed, ' + @options['CLASSNAME'] + ' not instantiated'
+                        lType = rType = 'TEXT'
+
                         bSuccess = false
                         bError = true
                       end
 
                     when 'SIZE'
                       if @rStack != nil
-
                         operationString = "System.out.println(" + @options['STACKNAME'] + ".size());\n"
 
                         #Run the operation
@@ -366,11 +371,14 @@ module Maadi
 
                         #Set lValue - index 0 (STDOUT)
                         lValue = cmdResultsArray.at(0)
+                        lType = 'INTEGER'
 
                         bSuccess = true
                         bError = false
                       else
                         lValue = rValue = 'SIZE Failed, ' + @options['CLASSNAME'] + ' not instantiated'
+                        lType = rType = 'TEXT'
+
                         bSuccess = false
                         bError = true
                       end
@@ -395,12 +403,16 @@ module Maadi
 
                           #If the stack is empty, then there is no point to index something.
                           lValue = rValue = 'ATINDEX Failed, Stack is empty'
+                          lType = rType = 'TEXT'
+
                           bSuccess = false
                           bError = true
                         elsif  index >= tempSize
 
                           # Check to make sure the index is within bounds of the size.
                           lValue = rValue = 'ATINDEX Failed, requested index is larger than stack size'
+                          lType = rType = 'TEXT'
+
                           bSuccess = false
                           bError = true
                         else
@@ -414,9 +426,11 @@ module Maadi
 
                           #Set lValue - index 2 (STDOUT)
                           lValue = cmdResultsArray.at(2)
+                          lType = 'INTEGER'
 
                           #Set rValue = index 4 (STDOUT)
                           rValue = cmdResultsArray.at(4)
+                          rType = 'INTEGER'
 
                           bSuccess = true
                           bError = false
@@ -424,6 +438,8 @@ module Maadi
 
                       else
                         lValue = rValue = 'ATINDEX Failed, ' + @options['CLASSNAME'] + ' not instantiated'
+                        lType = rType = 'TEXT'
+
                         bSuccess = false
                         bError = true
                       end
@@ -438,6 +454,7 @@ module Maadi
 
                       #Set lValue - index 0 (STDOUT)
                       rValue = lValue = cmdResultsArray.at(2)
+                      rType = lType = 'INTEGER'
 
                       bSuccess = true
                       bError = false
@@ -457,6 +474,7 @@ module Maadi
 
                       #Set lValue - index 0 (STDOUT)
                       rValue = lValue = cmdResultsArray.at(2)
+                      rType = lType = 'INTEGER'
 
                       bSuccess = true
                       bError = false
@@ -476,6 +494,12 @@ module Maadi
 
                         bSuccess = true
                         bError = false
+                      else
+                        lValue = rValue = 'DETAILS Failed, ' + @options['CLASSNAME'] + ' not instantiated'
+                        lType = rType = 'TEXT'
+
+                        bSuccess = false
+                        bError = true
                       end
                   end
 
@@ -495,15 +519,15 @@ module Maadi
                   case step.look_for
                     when 'NORECORD'
                     when 'LVALUE'
-                      results.add_result( Maadi::Procedure::Result.new( step, lValue.to_s, 'TEXT', ( !bError and bSuccess ) ? 'SUCCESS' : 'FAILURE' ))
+                      results.add_result( Maadi::Procedure::Result.new( step, lValue.to_s, lType, ( !bError and bSuccess ) ? 'SUCCESS' : 'FAILURE' ))
                     when 'RVALUE'
-                      results.add_result( Maadi::Procedure::Result.new( step, rValue.to_s, 'TEXT', ( !bError and bSuccess ) ? 'SUCCESS' : 'FAILURE' ))
+                      results.add_result( Maadi::Procedure::Result.new( step, rValue.to_s, rType, ( !bError and bSuccess ) ? 'SUCCESS' : 'FAILURE' ))
                     when 'CHANGES'
                       results.add_result( Maadi::Procedure::Result.new( step, '', 'TEXT', ( !bError and bSuccess ) ? 'SUCCESS' : 'FAILURE' ))
                     when 'COMPLETED'
                       results.add_result( Maadi::Procedure::Result.new( step, '', 'TEXT', ( !bError and bSuccess ) ? 'SUCCESS' : 'FAILURE' ))
                     else
-                      results.add_result( Maadi::Procedure::Result.new( step, '', 'TEXT', 'UNKNOWN' ))
+                      results.add_result( Maadi::Procedure::Result.new( step, step.look_for, 'TEXT', 'UNKNOWN' ))
                   end
                 rescue => e
                   Maadi::post_message(:Warn, "Application (#{@type}:#{@instance_name}) encountered an error (#{e.message}).")
