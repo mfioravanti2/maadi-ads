@@ -377,7 +377,8 @@ module Maadi
                     when 'ATINDEX'
 
                       #Get the index value
-                      index = step.get_parameter_value('[INDEX]')
+                      stringIndex = step.get_parameter_value('[INDEX]')
+                      index = stringIndex.to_i
 
                       if @rStack != nil && index != ''
                         #Need to check for size first
@@ -387,13 +388,16 @@ module Maadi
                         #First run the operation to check the size. If the size is zero, then flag error and exit
                         cmdResultsArray = runOperation('', lValueOPString, '')
 
-                        if  cmdResultsArray.at(2).to_i == 0
+                        #get the size
+                        tempSize = cmdResultsArray.at(2).to_i
+
+                        if  tempSize == 0
 
                           #If the stack is empty, then there is no point to index something.
                           lValue = rValue = 'ATINDEX Failed, Stack is empty'
                           bSuccess = false
                           bError = true
-                        elsif  index >= cmdResultsArray.at(2)
+                        elsif  index >= tempSize
 
                           # Check to make sure the index is within bounds of the size.
                           lValue = rValue = 'ATINDEX Failed, requested index is larger than stack size'
@@ -402,7 +406,7 @@ module Maadi
                         else
 
                           #Everything is good, continue onward.
-                          rValueOPString = "System.out.println(" + @options['STACKNAME'] + ".atIndex(" + index + "));\n"
+                          rValueOPString = "System.out.println(" + @options['STACKNAME'] + ".atIndex(" + stringIndex + "));\n"
                           lValueOPString = "System.out.println(" + @options['STACKNAME'] + ".size());\n"
 
                           #Run the operation
