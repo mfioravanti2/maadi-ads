@@ -377,7 +377,8 @@ module Maadi
                     when 'ATINDEX'
 
                       #Get the index value
-                      index = step.get_parameter_value('[INDEX]')
+                      stringIndex = step.get_parameter_value('[INDEX]')
+                      index = stringIndex.to_i
 
                       if @rQueue != nil && index != ''
                         #Need to check for size first
@@ -386,14 +387,16 @@ module Maadi
 
                         #First run the operation to check the size. If the size is zero, then flag error and exit
                         cmdResultsArray = runOperation('', lValueOPString, '')
+                        #get the size
+                        tempSize = cmdResultsArray.at(2).to_i
 
-                        if  cmdResultsArray.at(2).to_i == 0
+                        if  tempSize == 0
 
                           #If the queue is empty, then there is no point to index something.
                           lValue = rValue = 'ATINDEX Failed, Queue is empty'
                           bSuccess = false
                           bError = true
-                        elsif  index >= cmdResultsArray.at(2)
+                        elsif  index >= tempSize
 
                           # Check to make sure the index is within bounds of the size.
                           lValue = rValue = 'ATINDEX Failed, requested index is larger than queue size'
@@ -402,7 +405,7 @@ module Maadi
                         else
 
                           #Everything is good, continue onward.
-                          rValueOPString = "System.out.println(" + @options['QUEUENAME'] + ".get(" + index + "));\n"
+                          rValueOPString = "System.out.println(" + @options['QUEUENAME'] + ".get(" + stringIndex + "));\n"
                           lValueOPString = "System.out.println(" + @options['QUEUENAME'] + ".size());\n"
 
                           #Run the operation
