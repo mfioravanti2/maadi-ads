@@ -169,7 +169,17 @@ module Maadi
                       end
                     when 'DETAILS'
                       if @rQueue != nil
-                        lValue = @rQueue.inspect.to_s
+
+                        #Modify details to work right
+                        newStringInspect = @rQueue.inspect.to_s
+                        newStringInspect = newStringInspect.gsub(/(.*)<Queue:(.*)que=\[/, '[')
+                        newStringInspect = newStringInspect.gsub(/\], @(.*)/ , ']' )
+                        newStringInspect = newStringInspect.gsub(/\[\"/, '[')
+                        newStringInspect = newStringInspect.gsub(/\"\]/, ']')
+                        newStringInspect = newStringInspect.gsub(/\"\, \"/, ', ')
+
+
+                        lValue = newStringInspect
                         bSuccess = true
                         bError = false
                       else
