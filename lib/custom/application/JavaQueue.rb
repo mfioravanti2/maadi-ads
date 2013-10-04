@@ -278,8 +278,11 @@ module Maadi
 
                 #lValue is the item that is modified (usually the queue)
                 lValue = -1
+                lType = 'TEXT'
                 #rValue is the item that is not modified during an operation
                 rValue = -1
+                rType = 'TEXT'
+
                 bSuccess = false
                 bError = false
                 #The normal operation call
@@ -290,16 +293,13 @@ module Maadi
 
                 begin
                   case step.id
-
                     #Case for when a push is called
                     when 'PUSH'
-
                       #Get the value to add to the push
                       rValue = step.get_parameter_value('[RVALUE]')
 
                       #If the queue is instantiated, then work
                       if @rQueue != nil  && rValue != ''
-
                         operationString = @options['QUEUENAME'] + ".offer(" + rValue + ");\n"
                         lValueOPString = "System.out.println(" + @options['QUEUENAME'] + ".size());\n"
 
@@ -308,6 +308,7 @@ module Maadi
 
                         #Set lValue - index 2 (STDOUT)
                         lValue = cmdResultsArray.at(2)
+                        lType = 'INTEGER'
 
                         bSuccess = true
                         bError = false
@@ -315,6 +316,8 @@ module Maadi
 
                         #Error:  the queue was not instantiated!
                         lValue = rValue = 'PUSH Failed, ' + @options['CLASSNAME'] + ' not instantiated'
+                        lType = rType = 'TEXT'
+
                         bSuccess = false
                         bError = true
                       end
@@ -331,6 +334,8 @@ module Maadi
 
                         if cmdResultsArray.at(2).to_i == 0
                           lValue = rValue = 'POP Failed, Queue is empty'
+                          lType = rType = 'TEXT'
+
                           bSuccess = false
                           bError = true
                         else
@@ -341,17 +346,19 @@ module Maadi
 
                           #Set lValue - index 0 (STDOUT)
                           lValue = cmdResultsArray.at(0)
+                          lType = 'INTEGER'
 
                           #Set the rValue - index 2 (STDOUT)
                           rValue = cmdResultsArray.at(2)
+                          rType = 'INTEGER'
 
                           bSuccess = true
                           bError = false
                         end
-
-
                       else
                         lValue = rValue = 'POP Failed, ' + @options['CLASSNAME'] + ' not instantiated'
+                        lType = rType = 'TEXT'
+
                         bSuccess = false
                         bError = true
                       end
@@ -366,16 +373,18 @@ module Maadi
 
                         #Set lValue - index 0 (STDOUT)
                         lValue = cmdResultsArray.at(0)
+                        lType = 'INTEGER'
 
                         bSuccess = true
                         bError = false
                       else
                         lValue = rValue = 'SIZE Failed, ' + @options['CLASSNAME'] + ' not instantiated'
+                        lType = rType = 'TEXT'
+
                         bSuccess = false
                         bError = true
                       end
                     when 'ATINDEX'
-
                       #Get the index value
                       stringIndex = step.get_parameter_value('[INDEX]')
                       index = stringIndex.to_i
@@ -384,26 +393,26 @@ module Maadi
                         #Need to check for size first
                         lValueOPString = "System.out.println(" + @options['QUEUENAME'] + ".size());\n"
 
-
                         #First run the operation to check the size. If the size is zero, then flag error and exit
                         cmdResultsArray = runOperation('', lValueOPString, '')
                         #get the size
                         tempSize = cmdResultsArray.at(2).to_i
 
                         if  tempSize == 0
-
                           #If the queue is empty, then there is no point to index something.
                           lValue = rValue = 'ATINDEX Failed, Queue is empty'
+                          lType = rType = 'TEXT'
+
                           bSuccess = false
                           bError = true
                         elsif  index >= tempSize
-
                           # Check to make sure the index is within bounds of the size.
                           lValue = rValue = 'ATINDEX Failed, requested index is larger than queue size'
+                          lType = rType = 'TEXT'
+
                           bSuccess = false
                           bError = true
                         else
-
                           #Everything is good, continue onward.
                           rValueOPString = "System.out.println(" + @options['QUEUENAME'] + ".get(" + stringIndex + "));\n"
                           lValueOPString = "System.out.println(" + @options['QUEUENAME'] + ".size());\n"
@@ -413,9 +422,11 @@ module Maadi
 
                           #Set lValue - index 2 (STDOUT)
                           lValue = cmdResultsArray.at(2)
+                          lType = 'INTEGER'
 
                           #Set rValue = index 4 (STDOUT)
                           rValue = cmdResultsArray.at(4)
+                          rType = 'INTEGER'
 
                           bSuccess = true
                           bError = false
@@ -423,12 +434,12 @@ module Maadi
 
                       else
                         lValue = rValue = 'ATINDEX Failed, ' + @options['CLASSNAME'] + ' not instantiated'
+                        lType = rType = 'TEXT'
+
                         bSuccess = false
                         bError = true
                       end
-
                     when 'NULCONSTRUCT'
-
                       operationString = @options['CLASSNAME'] +  " " + @options['QUEUENAME'] + " = new " + @options['CLASSNAME'] + "();\n"
                       lValueOPString = "System.out.println(" + @options['QUEUENAME'] + ".size());\n"
 
@@ -437,6 +448,7 @@ module Maadi
 
                       #Set lValue - index 0 (STDOUT)
                       rValue = lValue = cmdResultsArray.at(2)
+                      rType = lType = 'INTEGER'
 
                       bSuccess = true
                       bError = false
@@ -446,7 +458,6 @@ module Maadi
                       @rQueue = true
 
                     when 'NONNULCONSTRUCT'
-
                       # CURRENTLY DOES NOT TAKE A SIZE
                       operationString = @options['CLASSNAME'] +  " " + @options['QUEUENAME'] + " = new " + @options['CLASSNAME'] + "();\n"
                       lValueOPString = "System.out.println(" + @options['QUEUENAME'] + ".size());\n"
@@ -456,13 +467,13 @@ module Maadi
 
                       #Set lValue - index 0 (STDOUT)
                       rValue = lValue = cmdResultsArray.at(2)
+                      rType = lType = 'INTEGER'
 
                       bSuccess = true
                       bError = false
 
                       @rQueue = true
                     when 'DETAILS'
-
                       if @rQueue != nil
                         operationString = ''
                         lValueOPString = "System.out.println(" + @options['QUEUENAME'] + ");\n"
@@ -472,9 +483,16 @@ module Maadi
 
                         #Set lValue - index 0 (STDOUT)
                         lValue = cmdResultsArray.at(2)
+                        lType = 'TEXT'
 
                         bSuccess = true
                         bError = false
+                      else
+                        lValue = rValue = 'DETAILS Failed, ' + @options['CLASSNAME'] + ' not instantiated'
+                        lType = rType = 'TEXT'
+
+                        bSuccess = false
+                        bError = true
                       end
                   end
 
@@ -489,20 +507,19 @@ module Maadi
                     Maadi::post_message(:Info, "#{@type}:#{@instance_name} #{step.id} rValue: ' #{rValue.to_s}",3)
                   end
 
-
                   #Handle the results
                   case step.look_for
                     when 'NORECORD'
                     when 'LVALUE'
-                      results.add_result( Maadi::Procedure::Result.new( step, lValue.to_s, 'TEXT', ( !bError and bSuccess ) ? 'SUCCESS' : 'FAILURE' ))
+                      results.add_result( Maadi::Procedure::Result.new( step, lValue.to_s, lType, ( !bError and bSuccess ) ? 'SUCCESS' : 'FAILURE' ))
                     when 'RVALUE'
-                      results.add_result( Maadi::Procedure::Result.new( step, rValue.to_s, 'TEXT', ( !bError and bSuccess ) ? 'SUCCESS' : 'FAILURE' ))
+                      results.add_result( Maadi::Procedure::Result.new( step, rValue.to_s, rType, ( !bError and bSuccess ) ? 'SUCCESS' : 'FAILURE' ))
                     when 'CHANGES'
                       results.add_result( Maadi::Procedure::Result.new( step, '', 'TEXT', ( !bError and bSuccess ) ? 'SUCCESS' : 'FAILURE' ))
                     when 'COMPLETED'
                       results.add_result( Maadi::Procedure::Result.new( step, '', 'TEXT', ( !bError and bSuccess ) ? 'SUCCESS' : 'FAILURE' ))
                     else
-                      results.add_result( Maadi::Procedure::Result.new( step, '', 'TEXT', 'UNKNOWN' ))
+                      results.add_result( Maadi::Procedure::Result.new( step, step.look_for, 'TEXT', 'UNKNOWN' ))
                   end
                 rescue => e
                   Maadi::post_message(:Warn, "Application (#{@type}:#{@instance_name}) encountered an error (#{e.message}).")

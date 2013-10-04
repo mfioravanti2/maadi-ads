@@ -491,6 +491,7 @@ module Maadi
 
                         #Set lValue - index 0 (STDOUT)
                         lValue = cmdResultsArray.at(2)
+                        lType = 'TEXT'
 
                         bSuccess = true
                         bError = false
