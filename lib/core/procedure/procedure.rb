@@ -61,6 +61,10 @@ module Maadi
         @is_bad = true
       end
 
+      def not_failed
+        @is_bad = false
+      end
+
       def has_failed?
         return @is_bad
       end

@@ -23,9 +23,19 @@ module Maadi
 
         def process( procedure, expert, model )
           if Maadi::Procedure::Procedure.is_procedure?( procedure )
-            case @attribute
+            case @attribute.downcase
               when 'name'
                 procedure.id = @value
+              when 'complete'
+                if @value.downcase == 'done'
+                  procedure.done
+                end
+              when 'status'
+                if @value.downcase == 'success'
+                  procedure.failed
+                else
+                  procedure.not_failed
+                end
               else
             end
           end

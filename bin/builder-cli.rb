@@ -16,7 +16,7 @@ test = 'POP'
 procedure = builder.procedure( test, nil, expert, nil )
 
 if procedure != nil
-  puts "Procedure named #{procedure.id} was created."
+  puts "Procedure named #{procedure.id} was created (Status: #{ ( procedure.is_complete? ) ? 'DONE' : 'WIP'}, #{ ( procedure.has_failed? ) ? 'SUCCESS' : 'FAILED'})."
 
   procedure.steps.each do |step|
     puts "\tSTEP: #{step.id} (Looking for #{step.look_for})"
@@ -36,7 +36,7 @@ end
 procedure = builder.procedure( test, procedure, expert, nil )
 
 if procedure != nil
-  puts "Procedure named #{procedure.id} was updated."
+  puts "Procedure named #{procedure.id} was updated (Status: #{ ( procedure.is_complete? ) ? 'DONE' : 'WIP'}, #{ ( procedure.has_failed? ) ? 'SUCCESS' : 'FAILED'})."
 
   procedure.steps.each do |step|
     puts "\tSTEP: #{step.id} (Looking for #{step.look_for})"

@@ -20,14 +20,15 @@
               <conditions />
               <actions>
                 <action type="SUCCESS">
-                  <modify-procedure attribute="status" value="done" />
+                  <modify-procedure attribute="complete" value="done" />
+                  <modify-procedure attribute="status" value="success" />
                   <modify-procedure attribute="name" value="NULCONSTRUCT" />
                   <modify-step to_step="CREATE-WIP" attribute="name" value="NULCONSTRUCT" />
                   <modify-model attribute="STACK-EXISTS" type="BOOL" value="TRUE" />
                   <modify-model attribute="STACK-SIZE" type="INTEGER" value="0" />
                 </action>
                 <action type="FAILURE">
-                  <modify-procedure attribute="status" value="done" />
+                  <modify-procedure attribute="complete" value="done" />
                   <modify-procedure attribute="status" value="failed" />
                 </action>
               </actions>
@@ -67,13 +68,14 @@
               </conditions>
               <actions>
                 <action type="SUCCESS">
-                  <modify-procedure attribute="status" value="done" />
+                  <modify-procedure attribute="complete" value="done" />
+                  <modify-procedure attribute="status" value="success" />
                   <modify-procedure attribute="name" value="PUSH" />
                   <modify-step to_step="PUSH-WIP" attribute="name" value="PUSH" />
                   <modify-model attribute="STACK-SIZE" type="INCREMENT" value="1" />
                 </action>
                 <action type="FAILURE">
-                  <modify-procedure attribute="status" value="done" />
+                  <modify-procedure attribute="complete" value="done" />
                   <modify-procedure attribute="status" value="failed" />
                 </action>
               </actions>
@@ -104,13 +106,14 @@
             <validate type="FINAL">
               <actions>
                 <action type="SUCCESS">
-                  <modify-procedure attribute="status" value="done" />
+                  <modify-procedure attribute="complete" value="done" />
+                  <modify-procedure attribute="status" value="success" />
                   <modify-procedure attribute="name" value="POP" />
                   <modify-step to_step="POP-WIP" attribute="name" value="POP" />
                   <modify-model attribute="STACK-SIZE" type="DECREMENT" value="1" />
                 </action>
                 <action type="FAILURE">
-                  <modify-procedure attribute="status" value="done" />
+                  <modify-procedure attribute="complete" value="done" />
                   <modify-procedure attribute="status" value="failed" />
                 </action>
               </actions>
