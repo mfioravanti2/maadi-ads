@@ -26,8 +26,6 @@ module Maadi
               0.upto(@objects.length - 1) do |index|
                 @path[@objects[index]] = @keys[index]
               end
-
-              puts @path.inspect
             end
           end
 
@@ -38,39 +36,44 @@ module Maadi
               param = nil
 
               @path.each do |key,value|
-                puts "Testing: #{key} = #{value}"
                 case key.downcase
                   when 'procedure'
-                    proc = procedure
-                    if @look_for.downcase == 'procedure'
-                      return Maadi::Procedure::Procedure.is_procedure?( procedure, value )
-                    else
-                      unless Maadi::Procedure::Procedure.is_procedure?( procedure, value )
-                        return false
+                    if Maadi::Procedure::Procedure.is_procedure?( procedure )
+                      proc = procedure
+                      if @look_for.downcase == 'procedure'
+                        return Maadi::Procedure::Procedure.is_procedure?( procedure, value )
+                      else
+                        unless Maadi::Procedure::Procedure.is_procedure?( procedure, value )
+                          return false
+                        end
                       end
                     end
                   when 'step'
-                    step = proc.get_step( value )
-                    if @look_for.downcase == 'step'
-                      return Maadi::Procedure::Step.is_step?( step, value )
-                    else
-                      unless Maadi::Procedure::Step.is_step?( step, value )
-                        return false
+                    if Maadi::Procedure::Procedure.is_procedure?( proc )
+                      step = proc.get_step( value )
+                      if @look_for.downcase == 'step'
+                        return Maadi::Procedure::Step.is_step?( step, value )
+                      else
+                        unless Maadi::Procedure::Step.is_step?( step, value )
+                          return false
+                        end
                       end
                     end
                   when 'parameter'
-                    param = step.get_parameter( value )
-                    if @look_for.downcase == 'parameter'
-                      if Maadi::Procedure::Parameter.is_parameter?( param, value )
-                        if param.value != ''
-                          return true
+                    if Maadi::Procedure::Step.is_step?( step )
+                      param = step.get_parameter( value )
+                      if @look_for.downcase == 'parameter'
+                        if Maadi::Procedure::Parameter.is_parameter?( param, value )
+                          if param.value != ''
+                            return true
+                          end
                         end
-                      end
 
-                      return false
-                    else
-                      unless Maadi::Procedure::Step.is_step?( param, value )
                         return false
+                      else
+                        unless Maadi::Procedure::Step.is_step?( param, value )
+                          return false
+                        end
                       end
                     end
                 end
