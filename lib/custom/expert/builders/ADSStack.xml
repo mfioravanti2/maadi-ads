@@ -63,7 +63,7 @@
           <sequence id="0" on_failure="EXIT">
             <validate type="FINAL">
               <conditions>
-                <condition name="PARAMETER-EXISTS" query="STEP:PUSH-NEW" item="[RVALUE]" type="NOT EMPTY" />
+                <condition type="EXISTS" look_for='PARAMETER' objects="PROCEDURE:STEP:PARAMETER" keys="PUSH-LAST:PUSH-WIP:[RVALUE]" />
               </conditions>
               <actions>
                 <action type="SUCCESS">

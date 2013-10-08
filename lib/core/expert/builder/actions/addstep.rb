@@ -6,7 +6,7 @@
 #
 # Summary: Builder object to add a step to a procedure
 
-require_relative '../../procedure/procedure'
+require_relative '../../../procedure/procedure'
 
 module Maadi
   module Expert

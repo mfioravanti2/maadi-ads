@@ -6,7 +6,7 @@
 #
 # Summary: Builder object to modify a constraint on an existing procedure
 
-require_relative '../../procedure/procedure'
+require_relative '../../../procedure/procedure'
 
 require_relative 'addconstraint'
 

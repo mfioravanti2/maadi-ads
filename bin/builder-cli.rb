@@ -21,13 +21,15 @@ if procedure != nil
   procedure.steps.each do |step|
     puts "\tSTEP: #{step.id}"
     step.parameters.each do |parameter|
-      puts "\t\tPARAMETER: #{parameter.label}"
+      puts "\t\tPARAMETER: #{parameter.label} = #{parameter.value}"
       if parameter.constraint != nil
         puts "\t\t\tCONSTRAINT: #{parameter.constraint.display}"
       end
     end
   end
 end
+
+procedure.get_step( 'PUSH-WIP' ).get_parameter( '[RVALUE]' ).populate_value
 
 procedure = builder.procedure( test, procedure, expert, nil )
 
@@ -37,7 +39,7 @@ if procedure != nil
   procedure.steps.each do |step|
     puts "\tSTEP: #{step.id}"
     step.parameters.each do |parameter|
-      puts "\t\tPARAMETER: #{parameter.label}"
+      puts "\t\tPARAMETER: #{parameter.label} = #{parameter.value}"
       if parameter.constraint != nil
         puts "\t\t\tCONSTRAINT: #{parameter.constraint.display}"
       end
@@ -45,4 +47,5 @@ if procedure != nil
   end
 end
 
+expert.teardown
 builder.teardown

@@ -2,29 +2,26 @@
 #          Florida Institute of Technology
 # Course : CSE5400 Special Topics - Algebraic Data Structures
 # Date   : 10/01/2013
-# File   : modifymodel.rb
+# File   : addprocedure.rb
 #
-# Summary: Builder object to modify a value in the model
+# Summary: Builder object to add create a new procedure
 
-require_relative '../../procedure/procedure'
+require_relative '../../../procedure/procedure'
 
 module Maadi
   module Expert
     module Builder
-      class ModifyModel
-        attr_accessor :name
+      class AddProcedure
+        attr_accessor :id
 
         def initialize(node)
           if node != nil
-            @name = node['name']
+            @id = node['name']
           end
         end
 
         def process( procedure, expert, model )
-          if Maadi::Procedure::Procedure.is_procedure?( procedure )
-
-          end
-
+          procedure = Maadi::Procedure::Procedure.new( @id )
           return procedure
         end
       end
