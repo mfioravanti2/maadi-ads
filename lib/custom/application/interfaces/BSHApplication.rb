@@ -19,7 +19,7 @@ module Maadi
       #The constructor. Sets up default values and confirms that the BSH interpreter exists
       def initialize (type)
 
-        if(type == nil)
+        if type == nil
           super('BSHType')
         else
           super(type)
@@ -37,10 +37,11 @@ module Maadi
         @options['DEFAULTCAPACITY'] = 10
         @options['COMMANDNAME'] = "java -cp \"" + @options['BSHPATH']  + "\" bsh.Interpreter"
         @options['OUTPUTCATCH'] = '---12345---'
+
         @jStdIn = nil
         @jStdOut = nil
         @jStdErr = nil
-        @db = nil;        #Instead of representing a database, this represents if the path exists for BSH
+        @bsh = nil        #Instead of representing a database, this represents if the path exists for BSH
       end
 
       # Alter the Maadi::Generic.set_option, some paths have dependencies that need to
@@ -55,15 +56,14 @@ module Maadi
         end
       end
 
-
       #Prepares the bsh interpreter by opening a connection to stdout, stderr, and stdin.  Strips all formatting and
       #adds the classpath to the specified folder titled "stuff".
       def prepare
 
-        #Confirm that bsh exists.  Use the class variable @db to specify if the BSHPath exists
-        if File.exists?(@options['BSHPATH']) == true
+        #Confirm that bsh exists.  Use the class variable @@bsh to specify if the BSHPath exists
+        if File.exists?(@options['BSHPATH'])
           Maadi::post_message(:Info, "Application (#{@type}:#{@instance_name}) has valid BSH path")
-          @db = 1 #Make it not nil
+          @bsh = 1 #Make it not nil
         else
           Maadi::post_message(:Warn, "Application (#{@type}:#{@instance_name}) BSH path is INVALID")
           return false
@@ -161,7 +161,6 @@ module Maadi
 
         #Return a size 2 array
         return resultsArray
-
       end
 
       #Runs the operational String, then runs lValueOPString and rValueOPString.  Returns
@@ -172,13 +171,11 @@ module Maadi
       #operationaString, lValueOPString, rValueOPString - A string that represents a full execution statement to be used within the BSH interpreter
       #
       def runOperation (operationalString, lValueOPString, rValueOPString)
-
         #Create an array
         cmdResultsArray = Array.new()
 
         #Run the first operation
         if operationalString != ''
-
           #Run the code
           resultsArray = runCode(operationalString)
 
@@ -186,57 +183,45 @@ module Maadi
           cmdResultsArray.push(resultsArray.at(0))
           cmdResultsArray.push(resultsArray.at(1))
         else
-
           #Push empty results
           cmdResultsArray.push('')
           cmdResultsArray.push('')
-
         end
 
         #Run the second operation
         if lValueOPString != ''
-
           #Run the code
           resultsArray = runCode(lValueOPString)
 
           #Add contents
           cmdResultsArray.push(resultsArray.at(0))
           cmdResultsArray.push(resultsArray.at(1))
-
         else
-
           #Push empty results
           cmdResultsArray.push('')
           cmdResultsArray.push('')
-
         end
 
         #Run the third operation
         if rValueOPString != ''
-
           #Run the code
           resultsArray = runCode(rValueOPString)
 
           #Add contents
           cmdResultsArray.push(resultsArray.at(0))
           cmdResultsArray.push(resultsArray.at(1))
-
         else
-
           #Push empty results
           cmdResultsArray.push('')
           cmdResultsArray.push('')
-
         end
 
-
         return cmdResultsArray
-
       end
 
       #Close the pipes.
       def teardown
-        if @db != nil
+        if @bsh != nil
           @jStdIn.close()
           @jStdOut.close()
           @jStdErr.close()

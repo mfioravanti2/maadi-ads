@@ -28,26 +28,8 @@ module Maadi
       end
 
       def supports_step?( step )
-        if step != nil
-          if step.is_a?( ::Maadi::Procedure::Step )
-            case step.id
-              when 'PUSH'
-                return true
-              when 'POP'
-                return true
-              when 'SIZE'
-                return true
-              when 'ATINDEX'
-                return true
-              when 'NULCONSTRUCT'
-                return true
-              when 'NONNULCONSTRUCT'
-                return true
-              when 'DETAILS'
-                return true
-              else
-            end
-          end
+        if Maadi::Procedure::Step.is_step?( step )
+          return %w(PUSH POP SIZE ATINDEX NULCONSTRUCT NONNULCONSTRUCT DETAILS).include?( step.id )
         end
 
         return false
