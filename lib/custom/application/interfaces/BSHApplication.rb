@@ -8,8 +8,8 @@
 #          in order to utilize and maintain a JVM while performing operations
 #          on a specific implementation.
 
-require_relative 'factory'
-require_relative '../../core/helpers'
+require_relative '../factory'
+require_relative '../../../core/helpers'
 require 'open3'
 
 module Maadi
