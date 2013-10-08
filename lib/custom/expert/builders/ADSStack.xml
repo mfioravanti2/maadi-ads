@@ -82,5 +82,42 @@
         </phase>
       </phases>
     </test>
+    <test name="POP">
+      <conditions>
+        <condition name="MODEL-EXISTS" query="MODEL" item="STACK-EXISTS" type="EXISTS" />
+      </conditions>
+      <phases default="POP-NEW">
+        <phase id="0" name="POP-NEW">
+          <sequence id="0" on_failure="EXIT">
+            <add-procedure name="POP-NEW" />
+          </sequence>
+          <sequence id="1" on_failure="EXIT">
+            <add-step to_procedure="POP-NEW" name="POP-WIP" target="application" look_for="LVALUE" command="" on_failure="TERM-PROC" />
+          </sequence>
+          <sequence id="4" on_failure="EXIT">
+            <modify-procedure attribute="name" value="POP-LAST" />
+            <next-route name="POP-LAST" />
+          </sequence>
+        </phase>
+        <phase id="1" name="POP-LAST">
+          <sequence id="0" on_failure="EXIT">
+            <validate type="FINAL">
+              <actions>
+                <action type="SUCCESS">
+                  <modify-procedure attribute="status" value="done" />
+                  <modify-procedure attribute="name" value="POP" />
+                  <modify-step to_step="POP-WIP" attribute="name" value="POP" />
+                  <modify-model attribute="STACK-SIZE" type="DECREMENT" value="1" />
+                </action>
+                <action type="FAILURE">
+                  <modify-procedure attribute="status" value="done" />
+                  <modify-procedure attribute="status" value="failed" />
+                </action>
+              </actions>
+            </validate>
+          </sequence>
+        </phase>
+      </phases>
+    </test>
   </tests>
 </xml>
