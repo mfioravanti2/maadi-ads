@@ -8,16 +8,17 @@
 
 require_relative '../../procedure/procedure'
 
-require_relative 'addprocedure'
-require_relative 'addstep'
-require_relative 'addparameter'
-require_relative 'addconstraint'
-require_relative 'modifyprocedure'
-require_relative 'modifystep'
-require_relative 'modifyparameter'
-require_relative 'modifyconstraint'
-require_relative 'modifymodel'
-require_relative 'nextroute'
+require_relative 'actions/addprocedure'
+require_relative 'actions/addstep'
+require_relative 'actions/addparameter'
+require_relative 'actions/addconstraint'
+require_relative 'actions/modifyprocedure'
+require_relative 'actions/modifystep'
+require_relative 'actions/modifyparameter'
+require_relative 'actions/modifyconstraint'
+require_relative 'actions/modifymodel'
+require_relative 'actions/nextroute'
+
 require_relative 'validate'
 
 module Maadi

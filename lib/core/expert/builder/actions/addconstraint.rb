@@ -6,9 +6,9 @@
 #
 # Summary: Builder object to add a constraint to a procedure
 
-require_relative '../../procedure/procedure'
+require_relative '../../../procedure/procedure'
 
-require_relative '../../../custom/procedure/ConstraintRangedInteger'
+require_relative '../../../../custom/procedure/ConstraintRangedInteger'
 
 module Maadi
   module Expert

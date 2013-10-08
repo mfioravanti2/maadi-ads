@@ -2,26 +2,29 @@
 #          Florida Institute of Technology
 # Course : CSE5400 Special Topics - Algebraic Data Structures
 # Date   : 10/01/2013
-# File   : addprocedure.rb
+# File   : modifyroute.rb
 #
-# Summary: Builder object to add create a new procedure
+# Summary: Builder object to modify a the routing on an existing procedure
 
-require_relative '../../procedure/procedure'
+require_relative '../../../procedure/procedure'
 
 module Maadi
   module Expert
     module Builder
-      class AddProcedure
-        attr_accessor :id
+      class NextRoute
+        attr_accessor :name
 
         def initialize(node)
           if node != nil
-            @id = node['name']
-          end
+            @name = node['name']
+         end
         end
 
         def process( procedure, expert, model )
-          procedure = Maadi::Procedure::Procedure.new( @id )
+          if Maadi::Procedure::Procedure.is_procedure?( procedure )
+            procedure.id = @name
+          end
+
           return procedure
         end
       end

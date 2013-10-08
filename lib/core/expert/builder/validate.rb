@@ -8,16 +8,18 @@
 
 require_relative '../../procedure/procedure'
 
-require_relative 'addprocedure'
-require_relative 'addstep'
-require_relative 'addparameter'
-require_relative 'addconstraint'
-require_relative 'modifyprocedure'
-require_relative 'modifystep'
-require_relative 'modifyparameter'
-require_relative 'modifyconstraint'
-require_relative 'modifymodel'
-require_relative 'nextroute'
+require_relative 'actions/addprocedure'
+require_relative 'actions/addstep'
+require_relative 'actions/addparameter'
+require_relative 'actions/addconstraint'
+require_relative 'actions/modifyprocedure'
+require_relative 'actions/modifystep'
+require_relative 'actions/modifyparameter'
+require_relative 'actions/modifyconstraint'
+require_relative 'actions/modifymodel'
+require_relative 'actions/nextroute'
+
+require_relative 'conditions/conditionexists'
 
 module Maadi
   module Expert
@@ -52,6 +54,11 @@ module Maadi
             node.element_children.each do |condition|
               case condition.name
                 when 'condition'
+                  case condition['type'].downcase
+                    when 'exists'
+                      @conditions.push  Maadi::Expert::Builder::Conditions::ConditionExists.new( condition )
+                    else
+                  end
                 else
               end
             end
@@ -106,27 +113,25 @@ module Maadi
         end
 
         def process( procedure, expert, model )
-          if procedure != nil
-            if procedure.is_a? Maadi::Procedure::Procedure
-              success = 0
-              items = nil
+          if Maadi::Procedure::Procedure.is_procedure?( procedure )
+            success = 0
+            items = nil
 
-              @conditions.each do |condition|
-                if condition.test( procedure, expert, model )
-                  success += 1
-                end
+            @conditions.each do |condition|
+              if condition.test( procedure, expert, model )
+                success += 1
               end
+            end
 
-              if success == @conditions.count
-                items = @on_success
-              else
-                items = @on_failure
-              end
+            if success == @conditions.count
+              items = @on_success
+            else
+              items = @on_failure
+            end
 
-              if items.count > 0
-                items.each do |item|
-                  procedure = item.process( procedure, expert, model )
-                end
+            if items.count > 0
+              items.each do |item|
+                procedure = item.process( procedure, expert, model )
               end
             end
           end
