@@ -65,10 +65,10 @@ module Maadi
       end
 
       def set_option( option, value )
-       if @options.keys.include?( option )
-         @options[option] = value
-         @ready = false
-       end
+        if @options.keys.include?( option )
+          @options[option] = value
+          @ready = false
+        end
       end
 
       def are_options_valid?
@@ -89,6 +89,6 @@ module Maadi
 
         return false
       end
-     end
+    end
   end
 end

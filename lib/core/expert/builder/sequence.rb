@@ -48,6 +48,8 @@ module Maadi
                 @items.push ModifyParameter.new( order )
               when 'modify-constraint'
                 @items.push ModifyConstraint.new( order )
+              when 'modify-model'
+                @items.push ModifyModel.new( order )
               when 'next-route'
                 @items.push NextRoute.new( order )
               when 'validate'

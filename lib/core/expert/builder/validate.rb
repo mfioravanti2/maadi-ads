@@ -103,6 +103,8 @@ module Maadi
                 list.push ModifyParameter.new( order )
               when 'modify-constraint'
                 list.push ModifyConstraint.new( order )
+              when 'modify-model'
+                list.push ModifyModel.new( order )
               when 'next-route'
                 list.push NextRoute.new( order )
               when 'validate'

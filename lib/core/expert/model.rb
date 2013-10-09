@@ -14,6 +14,21 @@ require_relative '../generic/generic'
 require_relative '../procedure/procedure'
 require_relative '../helpers'
 
+class String
+  def to_b
+    if ( self == true ) or ( self =~ ( /((t(rue|))|(y(es|))|1)$/i ) )
+      return true
+    end
+
+    if ( self == false ) or ( self =~ ( /((f(alse|))|(n(o|))|1)$/i ) )
+      return false
+    end
+
+    return nil
+  end
+end
+
+
 module Maadi
   module Expert
     module Models
@@ -23,6 +38,7 @@ module Maadi
           super(type)
 
           @values = Hash.new
+          @types = Hash.new
         end
 
         # prepare will setup the execution environment.  No tests will be executed but all required
@@ -42,9 +58,42 @@ module Maadi
           return @values.keys.include?( attribute )
         end
 
-        def set_value( attribute, value )
+        def set_value( attribute, type, value )
+          @types[attribute] = type
+
+          case type.downcase
+            when 'integer'
+              @values[attribute] = value.to_i
+            when 'float'
+              @values[attribute] = value.to_f
+            when 'bool'
+              @values[attribute] = value.to_b
+            else
+              @values[attribute] = value
+          end
+        end
+
+        def operate_on_value( attribute, type, operation, value )
           if @values.keys.include?( attribute )
-            @values[attribute] = value
+            case operation.downcase
+              when 'increment'
+                case type.downcase
+                  when 'integer'
+                    @values[attribute] += value.to_i
+                  when 'float'
+                    @values[attribute] += value.to_f
+                  else
+                end
+              when 'decrement'
+                case type.downcase
+                  when 'integer'
+                    @values[attribute] -= value.to_i
+                  when 'float'
+                    @values[attribute] -= value.to_f
+                  else
+                end
+              else
+            end
           end
         end
 

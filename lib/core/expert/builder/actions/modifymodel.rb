@@ -12,17 +12,28 @@ module Maadi
   module Expert
     module Builder
       class ModifyModel
-        attr_accessor :name
+        attr_accessor :attribute, :type, :operation, :value
 
         def initialize(node)
           if node != nil
-            @name = node['name']
+            @attribute = node['attribute']
+            @type = node['type']
+            @operation = node['operation']
+            @value = node['value']
           end
         end
 
         def process( procedure, expert, model )
-          if Maadi::Procedure::Procedure.is_procedure?( procedure )
-
+          if Maadi::Expert::Models::Model.is_model?( model )
+            case @operation.downcase
+              when 'specify'
+                model.set_value( @attribute, @type.upcase, @value )
+              when 'increment'
+                model.operate_on_value( @attribute, @type.upcase, @operation.upcase, @value )
+              when 'decrement'
+                model.operate_on_value( @attribute, @type.upcase, @operation.upcase, @value )
+              else
+            end
           end
 
           return procedure
