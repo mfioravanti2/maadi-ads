@@ -13,7 +13,7 @@ builder.set_option('BUILD-NAME', 'ADSStack')
 builder.set_option('USE-MODEL', 'FALSE')
 builder.prepare
 
-test = 'PUSH'
+test = 'DETAILS'
 
 procedure = builder.procedure( 'CREATE', nil, expert, model )
 procedure = builder.procedure( 'CREATE', procedure, expert, model )

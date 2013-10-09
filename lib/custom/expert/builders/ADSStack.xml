@@ -122,5 +122,81 @@
         </phase>
       </phases>
     </test>
+    <test name="SIZE">
+      <conditions>
+        <condition name="MODEL-EXISTS" query="MODEL" item="STACK-EXISTS" type="EXISTS" />
+      </conditions>
+      <phases default="SIZE-NEW">
+        <phase id="0" name="SIZE-NEW">
+          <sequence id="0" on_failure="EXIT">
+            <add-procedure name="SIZE-NEW" />
+          </sequence>
+          <sequence id="1" on_failure="EXIT">
+            <add-step to_procedure="SIZE-NEW" name="SIZE-WIP" target="application" look_for="LVALUE" command="" on_failure="TERM-PROC" />
+          </sequence>
+          <sequence id="2" on_failure="EXIT">
+            <modify-procedure attribute="name" value="SIZE-LAST" />
+            <next-route name="SIZE-LAST" />
+          </sequence>
+        </phase>
+        <phase id="1" name="SIZE-LAST">
+          <sequence id="0" on_failure="EXIT">
+            <validate type="FINAL">
+              <conditions />
+              <actions>
+                <action type="SUCCESS">
+                  <modify-procedure attribute="complete" value="done" />
+                  <modify-procedure attribute="status" value="success" />
+                  <modify-procedure attribute="name" value="SIZE" />
+                  <modify-step to_step="SIZE-WIP" attribute="name" value="SIZE" />
+                </action>
+                <action type="FAILURE">
+                  <modify-procedure attribute="complete" value="done" />
+                  <modify-procedure attribute="status" value="failed" />
+                </action>
+              </actions>
+            </validate>
+          </sequence>
+        </phase>
+      </phases>
+    </test>
+    <test name="DETAILS">
+      <conditions>
+        <condition name="MODEL-EXISTS" query="MODEL" item="STACK-EXISTS" type="EXISTS" />
+      </conditions>
+      <phases default="DETAILS-NEW">
+        <phase id="0" name="DETAILS-NEW">
+          <sequence id="0" on_failure="EXIT">
+            <add-procedure name="DETAILS-NEW" />
+          </sequence>
+          <sequence id="1" on_failure="EXIT">
+            <add-step to_procedure="DETAILS-NEW" name="DETAILS-WIP" target="application" look_for="LVALUE" command="" on_failure="TERM-PROC" />
+          </sequence>
+          <sequence id="2" on_failure="EXIT">
+            <modify-procedure attribute="name" value="DETAILS-LAST" />
+            <next-route name="DETAILS-LAST" />
+          </sequence>
+        </phase>
+        <phase id="1" name="CREATE-LAST">
+          <sequence id="0" on_failure="EXIT">
+            <validate type="FINAL">
+              <conditions />
+              <actions>
+                <action type="SUCCESS">
+                  <modify-procedure attribute="complete" value="done" />
+                  <modify-procedure attribute="status" value="success" />
+                  <modify-procedure attribute="name" value="DETAILS" />
+                  <modify-step to_step="DETAILS-WIP" attribute="name" value="DETAILS" />
+                </action>
+                <action type="FAILURE">
+                  <modify-procedure attribute="complete" value="done" />
+                  <modify-procedure attribute="status" value="failed" />
+                </action>
+              </actions>
+            </validate>
+          </sequence>
+        </phase>
+      </phases>
+    </test>
   </tests>
 </xml>
