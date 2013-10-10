@@ -27,7 +27,7 @@ module Maadi
       class Validate
         attr_accessor :type, :conditions, :on_success, :on_failure
 
-        def initialize(node)
+        def initialize( node, expert, model)
           @conditions = Array.new
           @on_success = Array.new
           @on_failure = Array.new
@@ -40,7 +40,7 @@ module Maadi
                 when 'conditions'
                   process_conditions( child )
                 when 'actions'
-                  process_actions( child )
+                  process_actions( child, expert, model )
                 else
               end
             end
@@ -65,7 +65,7 @@ module Maadi
           end
         end
 
-        def process_actions( node )
+        def process_actions( node, expert, model )
           if node != nil
             node.element_children.each do |action|
               case action.name
@@ -73,9 +73,9 @@ module Maadi
 
                   case action['type'].downcase
                     when 'success'
-                      add_items( action, @on_success )
+                      add_items( action, @on_success, expert, model )
                     when 'failure'
-                      add_items( action, @on_failure )
+                      add_items( action, @on_failure, expert, model )
                     else
                   end
                 else
@@ -84,7 +84,7 @@ module Maadi
           end
         end
 
-        def add_items( node, list )
+        def add_items( node, list, expert, model )
           node.element_children.each do |order|
             case order.name
               when 'add-procedure'
@@ -94,7 +94,7 @@ module Maadi
               when 'add-parameter'
                 list.push AddParameter.new( order )
               when 'add-constraint'
-                list.push AddConstraint.new( order )
+                list.push AddConstraint.new( order, expert, model )
               when 'modify-procedure'
                 list.push ModifyProcedure.new( order )
               when 'modify-step'
@@ -102,7 +102,7 @@ module Maadi
               when 'modify-parameter'
                 list.push ModifyParameter.new( order )
               when 'modify-constraint'
-                list.push ModifyConstraint.new( order )
+                list.push ModifyConstraint.new( order, expert, model )
               when 'modify-model'
                 list.push ModifyModel.new( order )
               when 'next-route'

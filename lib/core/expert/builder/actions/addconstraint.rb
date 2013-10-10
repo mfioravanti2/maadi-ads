@@ -8,22 +8,34 @@
 
 require_relative '../../../procedure/procedure'
 
+require_relative 'constraintparameter'
+
 require_relative '../../../../custom/procedure/ConstraintRangedInteger'
 
 module Maadi
   module Expert
     module Builder
       class AddConstraint
-        attr_accessor :to_procedure, :to_step, :to_parameter, :type, :node
+        attr_accessor :to_procedure, :to_step, :to_parameter, :type, :node, :parameters
 
-        def initialize(node)
+        def initialize( node, expert, model )
           @node = node
+          @parameters = Hash.new
 
           if @node != nil
             @to_procedure = @node['to_procedure']
             @to_step = @node['to_step']
             @to_parameter = @node['to_parameter']
             @type = @node['type']
+
+            node.element_children.each do |parameter|
+              case parameter.name
+                when 'constraint-parameter'
+                  param = Maadi::Expert::Builder::ConstraintParameter.new( parameter, expert, model )
+                  @parameters[param.name] = param
+                else
+              end
+            end
           end
         end
 
@@ -37,20 +49,7 @@ module Maadi
               if Maadi::Procedure::Parameter.is_parameter?( parameter, @to_parameter )
                 case @type.downcase
                   when 'ranged-integer'
-
-                    min_value = @node['min_range']
-                    if min_value.include?( 'OPTIONS:' ) && expert != nil
-                      key = min_value.sub( 'OPTION:', '' ).to_s
-                      min_value = expert.get_option( key )
-                    end
-
-                    max_value = @node['max_range']
-                    if max_value.include?( 'OPTIONS:' ) && expert != nil
-                      key = max_value.sub( 'OPTIONS:', '' ).to_s
-                      max_value = expert.get_option( key )
-                    end
-
-                    constraint = Maadi::Procedure::ConstraintRangedInteger.new( min_value, max_value  )
+                    constraint = Maadi::Procedure::ConstraintRangedInteger.new( @parameters['min_range'].value, @parameters['max_range'].value  )
                     parameter.constraint = constraint
                   else
                 end

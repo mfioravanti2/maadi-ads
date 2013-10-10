@@ -27,7 +27,7 @@ module Maadi
       class Sequence
         attr_accessor :id, :on_failure
 
-        def initialize(node)
+        def initialize( node, expert, model )
           @items = Array.new
 
           node.element_children.each do |order|
@@ -39,7 +39,7 @@ module Maadi
               when 'add-parameter'
                 @items.push AddParameter.new( order )
               when 'add-constraint'
-                @items.push AddConstraint.new( order )
+                @items.push AddConstraint.new( order, expert, model )
               when 'modify-procedure'
                 @items.push ModifyProcedure.new( order )
               when 'modify-step'
@@ -47,13 +47,13 @@ module Maadi
               when 'modify-parameter'
                 @items.push ModifyParameter.new( order )
               when 'modify-constraint'
-                @items.push ModifyConstraint.new( order )
+                @items.push ModifyConstraint.new( order, expert, model )
               when 'modify-model'
                 @items.push ModifyModel.new( order )
               when 'next-route'
                 @items.push NextRoute.new( order )
               when 'validate'
-                @items.push Validate.new( order )
+                @items.push Validate.new( order, expert, model )
               else
             end
           end

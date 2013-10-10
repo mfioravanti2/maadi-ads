@@ -16,7 +16,7 @@ module Maadi
       class Phase
         attr_accessor :id, :name, :sequences
 
-        def initialize(node)
+        def initialize(node, expert, model )
           @sequences = Array.new
 
           if node != nil
@@ -24,7 +24,7 @@ module Maadi
             @name = node['name']
 
             node.element_children.each do |sequence|
-              @sequences.push  Sequence.new(sequence)
+              @sequences.push  Sequence.new( sequence, expert, model )
             end
           end
         end

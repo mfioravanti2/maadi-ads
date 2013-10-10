@@ -78,7 +78,7 @@ module Maadi
         end
         phase_node = @test_nodes.at("test[@name='#{test}']/phases/phase[@name='#{phase}']")
         if phase_node != nil
-          phase = Maadi::Expert::Builder::Phase.new( phase_node )
+          phase = Maadi::Expert::Builder::Phase.new( phase_node, expert, model )
           procedure = phase.process( procedure, expert, model )
         end
 
