@@ -1,18 +1,20 @@
 
 
 #Loads a XML file and sets a variable with the specific XML node object.
-module Application
-  module UI
-    class XMLParser
+module Maadi
+  module Application
+    module UI
+      class XMLParser
 
-      def initialize(fileName)
-        @xMLObject = ''
+        def initialize(fileName)
+          @xMLObject = ''
 
-      end
+        end
 
 
-      def getXMLObject
-        return @xMLObject
+        def getXMLObject
+          return @xMLObject
+        end
       end
     end
   end

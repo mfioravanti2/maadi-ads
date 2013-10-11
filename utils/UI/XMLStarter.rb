@@ -5,31 +5,32 @@
 require_relative('XMLParser')
 require_relative('XMLUI')
 
+module Maadi
+  module Application
+    module UI
+      class XMLStarter
 
-module Application
-  module UI
-    class XMLStarter
+        def initialize(fileName)
 
-      def initialize(fileName)
+          #Set it to local directory if it is not passed anything
+          if fileName == nil
+            @fileName = 'test.xml'
+          end
 
-        #Set it to local directory if it is not passed anything
-        if fileName == nil
-          @fileName = 'test.xml'
+          #start up the process
+          createXMLParser()
+          createXMLUI()
+
         end
 
-        #start up the process
-        createXMLParser()
-        createXMLUI()
+        def createXMLParser
+          @xMLParser = Maadi::Application::UI::XMLParser.new(@fileName)
 
-      end
+        end
 
-      def createXMLParser
-        @xMLParser = Maadi::Application::UI::XMLParser.new(@fileName)
-
-      end
-
-      def createXMLUI
-        @createXMLUI = Maadi::Application::UI::XMLStarter.new(@xMLParser)
+        def createXMLUI
+          @createXMLUI = Maadi::Application::UI::XMLStarter.new(@xMLParser)
+        end
       end
     end
   end

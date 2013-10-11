@@ -1,23 +1,24 @@
 
+module Maadi
+  module Application
+    module UI
+      class XMLUI
 
-module Application
-  module UI
-    class XMLUI
 
+        def initialize (xMLObject)
 
-      def initialize (xMLObject)
+          #Takes an xmlObject and creates a UI piece from it.
+          @xmlObject = xMLObject
+          #Returns a UI piece
 
-        #Takes an xmlObject and creates a UI piece from it.
-        @xmlObject = xMLObject
-        #Returns a UI piece
+        end
+
+        def createUI
+
+        end
+
 
       end
-
-      def createUI
-
-      end
-
-
     end
   end
 end
