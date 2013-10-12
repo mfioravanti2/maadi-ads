@@ -1,6 +1,5 @@
 
 module Maadi
-  module Application
     module UI
       class XMLUI
 
@@ -19,6 +18,5 @@ module Maadi
 
 
       end
-    end
   end
 end
