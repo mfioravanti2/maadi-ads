@@ -1,21 +1,37 @@
 
 
+#Loads a XML file and sets a variable with the specific XML node object.
+
+require_relative '../../lib/core/generic/generic'
+
 require 'rubygems'
 require 'nokogiri'
 
-#Loads a XML file and sets a variable with the specific XML node object.
 module Maadi
-  module UI
-    class XMLParser
+  module Application
+    module UI
+      class XMLParser  < Maadi::Generic::Generic
 
-      def initialize(fileName)
-        @xMLObject = ''
+        def initialize(fileName)
+          if File.exists?( "test.xml" )
+            #Maadi::post_message(:More, "XMLParser loading files")
 
-      end
+            fXML = File.open( "test.xml" )
+            @xMLObject = Nokogiri::XML(fXML)
+            fXML.close
 
 
-      def getXMLObject
-        return @xMLObject
+          else
+            #Maadi::post_message(:Warn, "XMLParser (#{@type}) unable to access files")
+            return false
+          end
+
+        end
+
+
+        def getXMLObject
+          return @xMLObject
+        end
       end
     end
   end
