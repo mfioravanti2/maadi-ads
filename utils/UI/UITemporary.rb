@@ -1,43 +1,30 @@
 
-
-
 require 'green_shoes'
-module Maadi
-  module Application
-    module UI
-      class UITemporary
-        def initialize
+require 'nokogiri'
 
-          Shoes.app(title: "Maadi XML Editor", width: 600, height:400)  do
-
-            @numAttributes = ['Attribute1', 'Attribute2', 'Attribute3']
-            @editLines = []
-            i = 0
-            stack margin: 1 do
-              background gainsboro
-              subtitle "Basic XML editing support enabled"
-            end
-            while (i < @numAttributes.size)
-
-
-              flow do
-                para 'First Element'
-                line = edit_line  'Foo'
-                caption 'First attribute'
-                line2 = edit_line ' bar'
-                caption 'Ada'
-                @editLines.push(line)
-                @editLines.push(line2)
-              end
-              i = i + 1
-            end
-          end
-
-
-      end
-      end
+class UITemporary < Shoes::Widget
+  def initialize
+    stack stroke: red, fill: blue do
+      para 'stuff'
+      r = star(80, 65, 5, 60, 40)
+      r.style(stroke: blue, fill: black)
+      star(50, 60, 5, 25, 10)
+      star(110, 60, 5, 25, 10)
+      a = arc(80, 100, 100, 20, 90, 180)
     end
   end
 end
 
-foo = Maadi::Application::UI::UITemporary.new()
+Shoes.app do
+
+  fXML = File.open( "test.xml" )
+  @xMLObject = Nokogiri::XML(fXML)
+  fXML.close
+
+  flow do
+    @ui = UITemporary
+  end
+
+
+
+end
