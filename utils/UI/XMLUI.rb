@@ -45,9 +45,14 @@ module Maadi
 
              inscription node.name.to_s, width: 50
              edit1 = edit_line node.name.to_s , width:50
-             edit1.change do
-               p 'stuff changed man'
+             if node.is_a? (Nokogiri::XML::Attr)
+               edit1.text = node.value
+               edit1.change do
+                 node.parent.set_attribute(node.name.to_s, self.text)
+               end
+
              end
+
          end
 
       end
@@ -58,7 +63,7 @@ module Maadi
 Shoes.app :title => "Green Shoes XML Editor" do
 
   @rootFlow = flow do
-    para 'more stuff'
+    para 'The content below represents an XML File'
   end
 
   fXML = File.open( "test.xml" )
