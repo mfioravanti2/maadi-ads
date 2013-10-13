@@ -6,7 +6,7 @@ require 'nokogiri'
 Shoes.app :width => 1000, :height => 500 do
 
   flow :margin_left => 10 do
-    para "XMLElementName"
+    para "XMLElementName", width:200
     edit_line "A"
     edit_line "B"
 
