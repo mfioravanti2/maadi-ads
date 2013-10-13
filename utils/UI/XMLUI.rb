@@ -3,59 +3,79 @@ require_relative '../../lib/core/generic/generic'
 require 'rubygems'
 require 'nokogiri'
 require 'green_shoes'
-require_relative 'UITemporary'
+
 
 module Maadi
   module Application
     module UI
-      class XMLUI
+      class XMLUI < Shoes::Widget
 
 
 
-         def initialize(xMLObject)
-             p 'initialize: ' + xMLObject.name.to_s
-             @xMLObject = xMLObject
-             createUI
-         end
+         def initialize opts={}
 
-
-
-         def createUI
-
-
-           UITemporary
-
-
+             @xMLObject = opts[:xmlObj]
+             p 'initialize: ' + @xMLObject.name.to_s
          end
 
          def createUIElements (xmlElement)
+
            xmlElement.children.each do |node|
-             p node.name.to_s
+             flow :margin_left => 10 do
+               keyValuePair(node)
+               #Make all the children
+               xmlElement.attribute_nodes.each do |attribute|
+                 keyValuePair(attribute)
+               end
 
-             @rootFlow.app do
-               @rootFlow.append do
-                 flow do
-
-                   edit_line = node.name.to_s
-                   if node.is_a?(  Nokogiri::XML::Element )
-                     createUIElements(node)
-                   end
+               if node.is_a?(  Nokogiri::XML::Element )
+                 stack do
+                   createUIElements(node)
                  end
-
                end
 
              end
+
+
+
            end
          end
 
+         def keyValuePair(node)
+
+             inscription node.name.to_s, width: 50
+             edit1 = edit_line node.name.to_s , width:50
+             edit1.change do
+               p 'stuff changed man'
+             end
+         end
 
       end
 
 
+
+
+Shoes.app :title => "Green Shoes XML Editor" do
+
+  @rootFlow = flow do
+    para 'more stuff'
+  end
+
+  fXML = File.open( "test.xml" )
+  xmlObj = Nokogiri::XML(fXML)
+  fXML.close
+
+
+  p 'File grabbed: ' + xmlObj.name.to_s
+
+  @interface=xmlui({:xmlObj=>xmlObj})
+
+  @interface.createUIElements(xmlObj)
+  para 'Finished'
+end
+
     end
   end
 end
-
-
 
 
