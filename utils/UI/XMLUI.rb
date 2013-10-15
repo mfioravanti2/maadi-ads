@@ -8,6 +8,19 @@ require 'green_shoes'
 module Maadi
   module Application
     module UI
+
+      class UIXMLElementNode
+
+        def initialize (xmlElement)
+
+          if xmlElement.is_a? (Nokogiri::XML::Element)
+
+          end
+
+
+        end
+
+      end
       class XMLUI < Shoes::Widget
 
 
@@ -27,7 +40,7 @@ module Maadi
                xmlElement.attribute_nodes.each do |attribute|
                  keyValuePair(attribute)
                end
-               childrenFlow = Array.new
+
                if node.is_a?(  Nokogiri::XML::Element )
                  stack do
                    createUIElements(node)
@@ -36,22 +49,29 @@ module Maadi
 
                button1 = button 'show'
                button1.click do
-                 if button1.text().equal?('show')
-                  parent.show
-                  button1.text = 'hide'
+                 if button1.text == "show"
+                   p 'Inside toggle'
+                   p button1.parent
+                   button1.parent.contents.each do |child|
+                     p child.to_s
+                     child.show
+                   end
+                  #button1.text = "hide"
                  else
-                  parent.toggle
-                  button1.text = 'show'
+                  #parent.toggle
+                  #button1.text = 'show'
                  end
                end
 
               end
 
-             if xmlElement.name.to_s.equal?'xml'
-             elsif xmlElement.name.to_s.equal?'document'
-             elsif xmlElement.name.to_s.equal?'tests'
+             if xmlElement.name.to_s == "xml"
+               p 'hit'
+             elsif xmlElement.name.to_s == "document"
+             elsif xmlElement.name.to_s == "tests"
              else
-               #flow1.toggle
+               p 'Toggling for: ' + xmlElement.name.to_s
+               flow1.toggle
              end
 
            end
