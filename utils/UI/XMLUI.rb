@@ -12,17 +12,19 @@ module Maadi
 
       class XMLUI < Shoes::Widget
 
-         attr_accessor :elements, :xmlObject, :saveButton, :loadButton, :xmlFile, :mainFlow
+         attr_accessor :elements, :xmlObject, :saveButton, :loadButton, :xmlFile, :mainFlow, :first
 
          def initialize opts={}
              @xMLObject = opts[:xmlObj]
              @xmlFile = opts[:xmlFile]
 
+             @first = 0
              #Setup buttons
              setupButtons
 
              #create UI elements
              @elements = createUIElements(@xMLObject)
+
          end
 
          def setupButtons
@@ -31,14 +33,14 @@ module Maadi
 
            @saveButton.click do
              p 'Trying to save file: ' + @xMLObject.name.to_s
-             File.open('test.xml', 'w') { |f| f.print(@xMLObject.to_xml) }
-             p 'Trying to close file: ' + @xMLObject.name.to_s
-             @xmlFile.close
+             f = File.open('test.xml', 'w') { |f| f.print(@xMLObject.to_xml) }
+
            end
 
            @loadButton.click do
              filePath = ask_open_file
 
+             p 'Filepath: ' + filePath
              if filePath == ""
                alert 'You need to enter a file name!'
              elsif !filePath.include?(".xml")
@@ -54,8 +56,8 @@ module Maadi
                  @xmlObject = nil
                  @xmlObject = Nokogiri::XML(@xmlFile)
 
-                 @elements.teardown
                  @mainFlow.clear
+                 @elements.teardown
                  @elements = createUIElements(@xMLObject)
 
 
@@ -72,27 +74,49 @@ module Maadi
 
            p 'XMLElement ' + xmlElement.name.to_s
            wrapper = nil
-           @mainFlow = flow :margin_left => 10 do
 
+           if @first == 0
+             @first == 1
+             @mainFlow = flow :margin_left => 10 do
 
-             wrapper = xmlelementwrapper :xmlElement=> xmlElement
+               wrapper = xmlelementwrapper :xmlElement=> xmlElement
 
-             xmlElement.children.each do |node|
+               xmlElement.children.each do |node|
 
-               if node.is_a? ( Nokogiri::XML::Element)
-                  element = createUIElements(node)
-                  element.hideSelf()
-                  wrapper.addXMLElement(element)
+                 if node.is_a? ( Nokogiri::XML::Element)
+                   element = createUIElements(node)
+                   element.hideSelf()
+                   wrapper.addXMLElement(element)
+                 end
                end
              end
 
+             return wrapper
+
+           else
+
+             #Bad fix me later
+             flow :margin_left => 10 do
+
+               wrapper = xmlelementwrapper :xmlElement=> xmlElement
+
+               xmlElement.children.each do |node|
+
+                 if node.is_a? ( Nokogiri::XML::Element)
+                   element = createUIElements(node)
+                   element.hideSelf()
+                   wrapper.addXMLElement(element)
+                 end
+               end
+             end
+
+             return wrapper
+           end
 
 
 
            end
 
-           return wrapper
-          end
 
       end
 
