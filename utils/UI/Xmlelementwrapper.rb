@@ -2,6 +2,7 @@ require 'rubygems'
 require 'nokogiri'
 require 'green_shoes'
 
+require_relative 'Xmlattributewrapper'
 module Maadi
   module Application
     module UI
@@ -19,12 +20,11 @@ module Maadi
 
          #Make all the children
          xmlElement.attribute_nodes.each do |attribute|
-           keyValuePair(attribute)
+           xmlAttributeWraps.push(createXMLAttribute(attribute))
          end
 
 
          #Handle button action
-
 
 
        end
@@ -53,19 +53,9 @@ module Maadi
          @xmlAttributeWraps.push(xmlAttributeWrap)
        end
 
-       def keyValuePair(node)
+       def createXMLAttribute(node)
+         return xmlattributewrapper :xmlAttribute =>node
 
-         inscription node.name.to_s, width: 50
-         edit1 = edit_line node.name.to_s , width:50
-         p 'Attr: ' + node.name.to_s + ' value:' + node.value
-         if node.is_a? (Nokogiri::XML::Attr)
-           edit1.text = node.value
-           edit1.change do
-             node.parent.set_attribute(node.name.to_s, self.text)
-
-           end
-
-         end
 
        end
 

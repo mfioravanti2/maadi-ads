@@ -4,7 +4,7 @@ require 'rubygems'
 require 'nokogiri'
 require 'green_shoes'
 require_relative 'Xmlelementwrapper'
-require_relative 'XMLAttributeWrapper'
+require_relative 'Xmlattributewrapper'
 
 module Maadi
   module Application
