@@ -26,10 +26,8 @@ module Maadi
            wrapper = nil
            flow :margin_left => 10 do
 
-             text1 = inscription xmlElement.name.to_s, width:75
-             button1 = button 'show'
 
-             wrapper = xmlelementwrapper :xmlElement=> xmlElement, :text => text1, :button => button1
+             wrapper = xmlelementwrapper :xmlElement=> xmlElement
 
              xmlElement.children.each do |node|
 

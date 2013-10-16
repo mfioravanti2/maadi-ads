@@ -11,16 +11,33 @@ module Maadi
        attr_accessor :xmlElement, :text, :button, :xmlAttributeWraps, :xmlElementWraps
        def initialize opts={}
          @xmlElement = opts[:xmlElement]
-         @text = opts[:text]
-         @button = opts[:button]
          @xmlElementWraps = Array.new()
 
          @xmlAttributeWraps = Array.new()
 
+         @text = inscription xmlElement.name.to_s, width:75
 
          #Make all the children
          xmlElement.attribute_nodes.each do |attribute|
-           xmlAttributeWraps.push(createXMLAttribute(attribute))
+           xmlAttrWrap =  createXMLAttribute(attribute)
+           xmlAttrWrap.hideSelfsd
+           xmlAttributeWraps.push(xmlAttrWrap)
+         end
+
+         @check = check
+
+         @check.click do
+          if @check.checked?
+
+            @xmlAttributeWraps.each do |child|
+              child.showSelf
+            end
+
+          else
+            @xmlAttributeWraps.each do |child|
+              child.hideSelf
+            end
+          end
          end
 
 
