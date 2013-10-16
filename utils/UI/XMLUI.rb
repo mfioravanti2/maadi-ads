@@ -32,7 +32,9 @@ module Maadi
              xmlElement.children.each do |node|
 
                if node.is_a? ( Nokogiri::XML::Element)
-                  wrapper.addXMLElement(createUIElements(node))
+                  element = createUIElements(node)
+                  element.hideSelf()
+                  wrapper.addXMLElement(element)
                end
              end
 
