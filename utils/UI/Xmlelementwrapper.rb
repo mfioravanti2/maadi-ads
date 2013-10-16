@@ -20,7 +20,7 @@ module Maadi
          #Make all the children
          xmlElement.attribute_nodes.each do |attribute|
            xmlAttrWrap =  createXMLAttribute(attribute)
-           xmlAttrWrap.hideSelfsd
+           xmlAttrWrap.hideSelf
            xmlAttributeWraps.push(xmlAttrWrap)
          end
 
