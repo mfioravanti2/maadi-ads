@@ -61,8 +61,8 @@ module Maadi
          return @text
        end
 
-       def getButton
-         return button
+       def getCheck
+         return @check
        end
 
        def getXMLElements
@@ -84,8 +84,16 @@ module Maadi
 
        def hideSelf
           @check.hide
+          @check.checked = false;
           @text.hide
+          @xmlAttributeWraps.each do |child|
+            child.hideSelf
+          end
 
+          #iterate over Elements and hide
+          @xmlElementWraps.each do |child|
+            child.hideSelf
+          end
 
        end
 
