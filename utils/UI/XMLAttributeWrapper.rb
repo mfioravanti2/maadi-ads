@@ -37,8 +37,8 @@ module Maadi
         end
 
         def hideSelf
-          @text.toggle
-          @editLine.toggle
+          @text.hide
+          @editLine.hide
         end
 
       end
