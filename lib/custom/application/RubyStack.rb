@@ -94,7 +94,7 @@ module Maadi
                           end
                         else
                           lValue = rValue = 'POP Failed, Stack not instantiated'
-                          ;Type = 'TEXT'
+                          lType = 'TEXT'
                           bSuccess = false
                           bError = true
                         end
