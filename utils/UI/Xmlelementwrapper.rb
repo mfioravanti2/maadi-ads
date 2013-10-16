@@ -102,6 +102,20 @@ module Maadi
          @text.show
        end
 
+        def teardown
+          @check.remove
+          @text.remove
+
+          @xmlAttributeWraps.each do |child|
+            child.teardown
+          end
+
+          #iterate over Elements and hide
+          @xmlElementWraps.each do |child|
+            child.teardown
+          end
+
+        end
       end
 
     end

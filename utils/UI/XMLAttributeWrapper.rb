@@ -15,7 +15,7 @@ module Maadi
           @editLine = edit_line @xmlAttribute.value.to_s , width:50
           p 'Attr: ' + @xmlAttribute.name.to_s + ' value:' + @xmlAttribute.value
           @editLine.change do
-            @xmlAttribute.parent.set_attribute(@xmlAttribute.parent.name.to_s, self.text)
+            @xmlAttribute.parent[@xmlAttribute.name.to_s] =  @editLine.text
           end
         end
 
@@ -39,6 +39,12 @@ module Maadi
         def hideSelf
           @text.hide
           @editLine.hide
+        end
+
+        def teardown
+          @text.remove
+          @editLine.remove
+
         end
 
       end
