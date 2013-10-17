@@ -48,6 +48,17 @@ module Maadi
             end
           end
         end
+
+        def self.is_constraint_operator?( operator )
+          if operator != nil
+            if operator.is_a?( Maadi::Expert::Builder::ConstraintOperator )
+              return true
+            end
+          end
+
+          return false
+        end
+
       end
     end
   end

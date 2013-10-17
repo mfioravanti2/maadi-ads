@@ -15,7 +15,7 @@ builder.prepare
 
 def show( procedure )
   if procedure != nil
-    puts "Procedure named #{procedure.id} (Status: #{ ( procedure.is_complete? ) ? 'DONE' : 'WIP'}, #{ ( procedure.has_failed? ) ? 'SUCCESS' : 'FAILED'})."
+    puts "\nPROCEDURE: #{procedure.id} (Status: #{ ( procedure.is_complete? ) ? 'DONE' : 'WIP'}, #{ ( procedure.has_failed? ) ? 'SUCCESS' : 'FAILED'})."
 
     procedure.steps.each do |step|
       puts "\tSTEP: #{step.id} (Looking for #{step.look_for})"
@@ -29,20 +29,28 @@ def show( procedure )
   end
 end
 
-test = 'PUSH'
+tests = %w(CREATE PUSH ATINDEX)
 
-procedure = builder.procedure( 'CREATE', nil, expert, model )
-procedure = builder.procedure( 'CREATE', procedure, expert, model )
+tests.each do |test|
+  puts "\n\n**** NEXT PROCEDURE ****\n"
+  puts "MODEL: STACK-EXISTS=#{model.get_value('STACK-EXISTS')}, STACK-SIZE=#{model.get_value('STACK-SIZE')}"
 
-procedure = builder.procedure( test, nil, expert, model )
+  procedure = builder.procedure( test, nil, expert, model )
 
-if test == 'PUSH'
-  procedure.get_step( 'PUSH-WIP' ).get_parameter( '[RVALUE]' ).populate_value
+  if %w(PUSH ATINDEX).include?(test)
+    procedure.steps.each do |step|
+      step.parameters.each do |parameter|
+        if parameter.constraint != nil
+          parameter.populate_value
+        end
+      end
+    end
+  end
+
+  show( procedure )
+  procedure = builder.procedure( test, procedure, expert, model )
+  show( procedure )
 end
-
-show( procedure )
-procedure = builder.procedure( test, procedure, expert, model )
-show( procedure )
 
 expert.teardown
 builder.teardown

@@ -102,9 +102,9 @@
             <add-parameter to_procedure="ATINDEX-NEW" to_step="ATINDEX-WIP" name="[INDEX]" />
           </sequence>
           <sequence id="3" on_failure="EXIT">
-            <add-constraint to_procedure="ATINDEX-NEW" to_step="ATINDEX-WIP" to_parameter="[RVALUE]" type="RANGED-INTEGER">
+            <add-constraint to_procedure="ATINDEX-NEW" to_step="ATINDEX-WIP" to_parameter="[INDEX]" type="RANGED-INTEGER">
               <constraint-parameter name="min_range" source="SPECIFIED" value="0" type="INTEGER" />
-              <constraint-parameter name="max_range" source="MODEL" value="STACK_SIZE" type="INTEGER">
+              <constraint-parameter name="max_range" source="MODEL" value="STACK-SIZE" type="INTEGER">
                 <operator name="DECREMENT" source="SPECIFIED" type="INTEGER" value="1" />
               </constraint-parameter>
             </add-constraint>

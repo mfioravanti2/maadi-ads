@@ -55,13 +55,52 @@ module Maadi
 
             node.element_children.each do |operator|
               case operator.name
-                when 'constraint-parameter'
-                  @operators.push Maadi::Expert::Builder::ConstraintOperator.new( node, expert, model )
+                when 'operator'
+                  @operators.push Maadi::Expert::Builder::ConstraintOperator.new( operator, expert, model )
                 else
               end
             end
+
+            @operators.each do |operator|
+              process( operator )
+            end
           end
         end
+
+        def process( operator )
+          if Maadi::Expert::Builder::ConstraintOperator.is_constraint_operator?( operator )
+            case operator.name.downcase
+              when 'increment'
+                case @type.downcase
+                  when 'integer'
+                    @value += operator.value.to_i
+                  when 'float'
+                    @value += operator.value.to_f
+                  else
+                end
+              when 'decrement'
+                case @type.downcase
+                  when 'integer'
+                    @value -= operator.value.to_i
+                  when 'float'
+                    @value -= operator.value.to_f
+                  else
+                end
+              else
+            end
+          end
+        end
+
+        def self.is_constraint_parameter?( parameter )
+          if parameter != nil
+            if parameter.is_a?( Maadi::Expert::Builder::ConstraintParameter )
+              return true
+            end
+          end
+
+          return false
+        end
+
       end
     end
   end

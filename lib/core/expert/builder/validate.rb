@@ -45,8 +45,6 @@ module Maadi
               end
             end
           end
-
-          puts "Conditions #{@conditions.count}, Actions['Success'] #{@on_success.count}, Actions['Failure'] #{@on_failure.count}"
         end
 
         def process_conditions( node )
