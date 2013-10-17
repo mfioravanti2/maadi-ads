@@ -1,12 +1,10 @@
 # Author : Mark Fioravanti (mfioravanti1994@my.fit.edu)
 #          Florida Institute of Technology
 # Course : CSE5400 Special Topics - High Volume Automated Testing
-# Date   : 01/18/2013
-# File   : application.rb
+# Date   : 10/16/2013
+# File   : ADSStack.rb
 #
-# Summary: The application is a general interface for real software under test,
-#          this class should be extended to implement the calls that would be expected
-#          to occur by executing a test procedure.
+# Summary: This is the Expert for an ADSStack
 
 require_relative 'factory'
 require_relative '../../core/helpers'
