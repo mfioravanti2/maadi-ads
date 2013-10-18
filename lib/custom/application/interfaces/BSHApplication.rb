@@ -106,11 +106,6 @@ module Maadi
       end
 
 
-      #Returns the supported domains.
-      def supported_domains
-        return %w(ADS-STACK ALGEBRAICADS-STACK)
-      end
-
       #Runs the code by printing the operationalString to STDIN, flushes the pipe, and gathers results
       #from STDOUT and STDERR
       #

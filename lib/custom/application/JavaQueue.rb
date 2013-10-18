@@ -28,6 +28,11 @@ module Maadi
         @rQueue = nil    #Instead of representing an instantiated object, represents if the queue has been constructed
       end
 
+      #Returns the supported domains.
+      def supported_domains
+        return %w(ADS-STACK ALGEBRAICADS-STACK)
+      end
+
       #Returns true if the step id is "Step" and is the correct type of step for a Queue.
       #False otherwise
       def supports_step?(step)

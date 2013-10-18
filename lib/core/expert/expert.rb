@@ -138,6 +138,33 @@ module Maadi
 
         return false
       end
+
+      # determine if the item passed is a procedure
+      # procedure (Any), determine if the object is a Maadi::Procedure::Procedure
+      # return (bool) true if, the object is a Maadi::Procedure::Procedure
+      def is_procedure?( procedure )
+        if procedure != nil
+          if procedure.is_a?( Maadi::Procedure::Procedure )
+            return true
+          end
+        end
+
+        return false
+      end
+
+      # determine if the item passed is a step
+      # step (Any), determine if the object is a Maadi::Procedure::Step
+      # return (bool) true if, the object is a Maadi::Procedure::Step
+      def is_step?( step )
+        if step != nil
+          if step.is_a?( Maadi::Procedure::Step )
+            return true
+          end
+        end
+
+        return false
+      end
+
     end
   end
 end

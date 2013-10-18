@@ -1,17 +1,15 @@
 require 'rubygems'
 
-require_relative '../lib/custom/expert/models/ADSStack'
-require_relative '../lib/core/expert/builder'
 require_relative '../lib/custom/factories'
 
-expert = Maadi::Expert::Expert.factory('ADSStack2')
-expert.set_option('BUILD-NAME', 'ADSStack')
+expert = Maadi::Expert::Expert.factory('ADSAxiomaticStack')
+expert.set_option('BUILD-NAME', 'ADSAxiomaticStack')
 expert.set_option('USE-BUILDER', 'TRUE')
 expert.set_option('MODEL-NAME', 'ADSStack')
 expert.set_option('USE-MODEL', 'TRUE')
 expert.prepare
 
-tests = %w(CREATE PUSH ATINDEX)
+tests = %w(CREATE SIZE NEWSTACKSIZE)
 
 tests.each do |test|
   puts "\n\n**** NEXT PROCEDURE ****\n"
@@ -19,7 +17,7 @@ tests.each do |test|
 
   procedure = expert.procedure( test, nil )
 
-  if %w(PUSH ATINDEX).include?(test)
+  if %w(PUSH PUSHPOP PUSHPOPSIZE ATINDEX NEWSTACKINDEX NEWSTACKSIZE).include?(test)
     procedure.steps.each do |step|
       step.parameters.each do |parameter|
         if parameter.constraint != nil

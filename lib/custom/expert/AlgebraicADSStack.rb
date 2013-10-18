@@ -46,6 +46,10 @@ module Maadi
         #axoim: (new stack()).size() = 0
         @options['NEWSTACKSIZE_RATIO'] = 1
 
+        @notes['PUSHPOP_RATIO'] = 'Relative Ratio for PUSH, POP sequence of commands (0 or less, ignore command type)'
+        @notes['PUSHPOPSIZE_RATIO'] = 'Relative Ratio for PUSH, POP, SIZE commands (0 or less, ignore command type)'
+        @notes['NEWSTACKINDEX_RATIO'] = 'Relative Ratio for CREATE, INDEX commands (0 or less, ignore command type)'
+        @notes['NEWSTACKSIZE_RATIO'] = 'Relative Ratio for CREATE, SIZE commands (0 or less, ignore command type)'
       end
 
       # prepare will setup the execution environment.  No tests will be executed but all required
@@ -174,7 +178,6 @@ module Maadi
 
 
       end
-
 
 
       #build a Stack Push Pop Size procedure

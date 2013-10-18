@@ -11,10 +11,10 @@ require_relative '../../core/helpers'
 
 module Maadi
   module Expert
-    class ADSStack < Expert
+    class ADSAxiomaticStack < Expert
 
       def initialize
-        super('ADSStack')
+        super('ADSAxiomaticStack')
 
         @tests = Array.new
         @has_stack = false
@@ -27,21 +27,31 @@ module Maadi
         @options['SIZE_RATIO'] = 1
         @options['DETAILS_RATIO'] = 1
 
+
+        @options['PUSHPOP_RATIO'] = 1                              #axiom: stack = stack.pop(stack.push(Object))
+        @options['PUSHPOPSIZE_RATIO'] = 1                          #axiom: stack.size() = stack.pop(stack.push(Object)).size()
+        @options['NEWSTACKINDEX_RATIO'] = 1                        #axoim:  (new stack()).index(0) = error
+        @options['NEWSTACKSIZE_RATIO'] = 1                         #axoim: (new stack()).size() = 0
+
         #@options['MAX_INTEGER'] = 1024                            # Smaller size for debugging
-        @options['MAX_INTEGER'] = (2**(0.size * 8 -2) -1)         # Select the maximum size for a Fixnum
+        @options['MAX_INTEGER'] = (2**(0.size * 8 -2) -1)          # Select the maximum size for a Fixnum
 
         @notes['CREATE_RATIO'] = 'Relative Ratio for CREATE commands (0 or less, ignore command type)'
         @notes['PUSH_RATIO'] = 'Relative Ratio for PUSH commands (0 or less, ignore command type)'
         @notes['POP_RATIO'] = 'Relative Ratio for POP commands (0 or less, ignore command type)'
         @notes['ATINDEX_RATIO'] = 'Relative Ratio for AT INDEX commands (0 or less, ignore command type)'
         @notes['SIZE_RATIO'] = 'Relative Ratio for SIZE commands (0 or less, ignore command type)'
+        @notes['PUSHPOP_RATIO'] = 'Relative Ratio for PUSH, POP sequence of commands (0 or less, ignore command type)'
+        @notes['PUSHPOPSIZE_RATIO'] = 'Relative Ratio for PUSH, POP, SIZE commands (0 or less, ignore command type)'
+        @notes['NEWSTACKINDEX_RATIO'] = 'Relative Ratio for CREATE, INDEX commands (0 or less, ignore command type)'
+        @notes['NEWSTACKSIZE_RATIO'] = 'Relative Ratio for CREATE, SIZE commands (0 or less, ignore command type)'
 
         @notes['MAX_INTEGER'] = 'Maximum size of integers to attempt push on to the stack'
       end
 
       # returns (String) which the the domain that this expert specializes in
       def domain
-        return 'ADS-STACK'
+        return 'ADS-AXIOMATIC-STACK'
       end
 
       # prepare will setup the execution environment.  No tests will be executed but all required
@@ -66,7 +76,6 @@ module Maadi
       # tests become available or are not longer available.
       def tests
         if @model != nil
-          #puts "MODEL: STACK-EXISTS=#{@model.get_value('STACK-EXISTS')}, STACK-SIZE=#{@model.get_value('STACK-SIZE')}"
 
           if @model.get_value('STACK-EXISTS') == true
             return @tests

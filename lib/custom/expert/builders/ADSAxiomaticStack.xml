@@ -1,6 +1,6 @@
 <xml>
   <tests>
-   <test name="CREATE">
+    <test name="CREATE">
       <phases default="CREATE-NEW">
         <phase id="0" name="CREATE-NEW">
           <sequence id="0" on_failure="EXIT">
@@ -240,6 +240,211 @@
                   <modify-procedure attribute="status" value="success" />
                   <modify-procedure attribute="name" value="DETAILS" />
                   <modify-step to_step="DETAILS-WIP" attribute="name" value="DETAILS" />
+                </action>
+                <action type="FAILURE">
+                  <modify-procedure attribute="complete" value="done" />
+                  <modify-procedure attribute="status" value="failed" />
+                </action>
+              </actions>
+            </validate>
+          </sequence>
+        </phase>
+      </phases>
+    </test>
+    <test name="PUSHPOP">
+      <conditions>
+        <condition name="MODEL-EXISTS" query="MODEL" item="STACK-EXISTS" type="EXISTS" />
+      </conditions>
+      <phases default="PUSHPOP-NEW">
+        <phase id="0" name="PUSHPOP-NEW">
+          <sequence id="0" on_failure="EXIT">
+            <add-procedure name="PUSHPOP-NEW" />
+          </sequence>
+          <sequence id="1" on_failure="EXIT">
+            <add-step to_procedure="PUSHPOP-NEW" name="PUSH-WIP" target="application" look_for="COMPLETED" command="" on_failure="TERM-PROC" />
+          </sequence>
+          <sequence id="2" on_failure="EXIT">
+            <add-parameter to_procedure="PUSHPOP-NEW" to_step="PUSH-WIP" name="[RVALUE]" />
+          </sequence>
+          <sequence id="3" on_failure="EXIT">
+            <add-constraint to_procedure="PUSHPOP-NEW" to_step="PUSH-WIP" to_parameter="[RVALUE]" type="RANGED-INTEGER" >
+              <constraint-parameter name="min_range" source="SPECIFIED" value="0" type="INTEGER" />
+              <constraint-parameter name="max_range" source="EXPERT" value="MAX_INTEGER" type="INTEGER" />
+            </add-constraint>
+          </sequence>
+          <sequence id="4" on_failure="EXIT">
+            <add-step to_procedure="PUSHPOP-NEW" name="POP-WIP" target="application" look_for="LVALUE" command="" on_failure="TERM-PROC" />
+          </sequence>
+          <sequence id="5" on_failure="EXIT">
+            <modify-procedure attribute="name" value="PUSHPOP-LAST" />
+            <next-route name="PUSHPOP-LAST" />
+          </sequence>
+        </phase>
+        <phase id="1" name="PUSHPOP-LAST">
+          <sequence id="0" on_failure="EXIT">
+            <validate type="FINAL">
+              <conditions>
+                <condition type="EXISTS" look_for='PARAMETER' objects="PROCEDURE:STEP:PARAMETER" keys="PUSHPOP-LAST:PUSH-WIP:[RVALUE]" />
+              </conditions>
+              <actions>
+                <action type="SUCCESS">
+                  <modify-procedure attribute="complete" value="done" />
+                  <modify-procedure attribute="status" value="success" />
+                  <modify-procedure attribute="name" value="PUSHPOP" />
+                  <modify-step to_step="PUSH-WIP" attribute="name" value="PUSH" />
+                  <modify-step to_step="POP-WIP" attribute="name" value="POP" />
+                </action>
+                <action type="FAILURE">
+                  <modify-procedure attribute="complete" value="done" />
+                  <modify-procedure attribute="status" value="failed" />
+                </action>
+              </actions>
+            </validate>
+          </sequence>
+        </phase>
+      </phases>
+    </test>
+    <test name="PUSHPOPSIZE">
+      <conditions>
+        <condition name="MODEL-EXISTS" query="MODEL" item="STACK-EXISTS" type="EXISTS" />
+      </conditions>
+      <phases default="PUSHPOPSIZE-NEW">
+        <phase id="0" name="PUSHPOPSIZE-NEW">
+          <sequence id="0" on_failure="EXIT">
+            <add-procedure name="PUSHPOPSIZE-NEW" />
+          </sequence>
+          <sequence id="1" on_failure="EXIT">
+            <add-step to_procedure="PUSHPOPSIZE-NEW" name="PUSH-WIP" target="application" look_for="COMPLETED" command="" on_failure="TERM-PROC" />
+          </sequence>
+          <sequence id="2" on_failure="EXIT">
+            <add-parameter to_procedure="PUSHPOPSIZE-NEW" to_step="PUSH-WIP" name="[RVALUE]" />
+          </sequence>
+          <sequence id="3" on_failure="EXIT">
+            <add-constraint to_procedure="PUSHPOPSIZE-NEW" to_step="PUSH-WIP" to_parameter="[RVALUE]" type="RANGED-INTEGER" >
+              <constraint-parameter name="min_range" source="SPECIFIED" value="0" type="INTEGER" />
+              <constraint-parameter name="max_range" source="EXPERT" value="MAX_INTEGER" type="INTEGER" />
+            </add-constraint>
+          </sequence>
+          <sequence id="4" on_failure="EXIT">
+            <add-step to_procedure="PUSHPOPSIZE-NEW" name="POP-WIP" target="application" look_for="LVALUE" command="" on_failure="TERM-PROC" />
+          </sequence>
+          <sequence id="1" on_failure="EXIT">
+            <add-step to_procedure="PUSHPOPSIZE-NEW" name="SIZE-WIP" target="application" look_for="LVALUE" command="" on_failure="TERM-PROC" />
+          </sequence>
+          <sequence id="5" on_failure="EXIT">
+            <modify-procedure attribute="name" value="PUSHPOPSIZE-LAST" />
+            <next-route name="PUSHPOPSIZE-LAST" />
+          </sequence>
+        </phase>
+        <phase id="1" name="PUSHPOPSIZE-LAST">
+          <sequence id="0" on_failure="EXIT">
+            <validate type="FINAL">
+              <conditions>
+                <condition type="EXISTS" look_for='PARAMETER' objects="PROCEDURE:STEP:PARAMETER" keys="PUSHPOPSIZE-LAST:PUSH-WIP:[RVALUE]" />
+              </conditions>
+              <actions>
+                <action type="SUCCESS">
+                  <modify-procedure attribute="complete" value="done" />
+                  <modify-procedure attribute="status" value="success" />
+                  <modify-procedure attribute="name" value="PUSHPOPSIZE" />
+                  <modify-step to_step="PUSH-WIP" attribute="name" value="PUSH" />
+                  <modify-step to_step="POP-WIP" attribute="name" value="POP" />
+                  <modify-step to_step="SIZE-WIP" attribute="name" value="SIZE" />
+                </action>
+                <action type="FAILURE">
+                  <modify-procedure attribute="complete" value="done" />
+                  <modify-procedure attribute="status" value="failed" />
+                </action>
+              </actions>
+            </validate>
+          </sequence>
+        </phase>
+      </phases>
+    </test>
+    <test name="NEWSTACKINDEX">
+      <phases default="NEWSTACKINDEX-NEW">
+        <phase id="0" name="NEWSTACKINDEX-NEW">
+          <sequence id="0" on_failure="EXIT">
+            <add-procedure name="NEWSTACKINDEX-NEW" />
+          </sequence>
+          <sequence id="1" on_failure="EXIT">
+            <add-step to_procedure="NEWSTACKINDEX-NEW" name="CREATE-WIP" target="application" look_for="COMPLETED" command="" on_failure="TERM-PROC" />
+          </sequence>
+          <sequence id="2" on_failure="EXIT">
+            <add-step to_procedure="NEWSTACKINDEX-NEW" name="ATINDEX-WIP" target="application" look_for="LVALUE" command="" on_failure="TERM-PROC" />
+          </sequence>
+          <sequence id="3" on_failure="EXIT">
+            <add-parameter to_procedure="NEWSTACKINDEX-NEW" to_step="ATINDEX-WIP" name="[INDEX]" />
+          </sequence>
+          <sequence id="4" on_failure="EXIT">
+            <add-constraint to_procedure="NEWSTACKINDEX-NEW" to_step="ATINDEX-WIP" to_parameter="[INDEX]" type="RANGED-INTEGER">
+              <constraint-parameter name="min_range" source="SPECIFIED" value="0" type="INTEGER" />
+              <constraint-parameter name="max_range" source="MODEL" value="STACK-SIZE" type="INTEGER">
+                <operator name="DECREMENT" source="SPECIFIED" type="INTEGER" value="1" />
+              </constraint-parameter>
+            </add-constraint>
+          </sequence>
+          <sequence id="2" on_failure="EXIT">
+            <modify-procedure attribute="name" value="NEWSTACKINDEX-LAST" />
+            <next-route name="NEWSTACKINDEX-LAST" />
+          </sequence>
+        </phase>
+        <phase id="1" name="NEWSTACKINDEX-LAST">
+          <sequence id="0" on_failure="EXIT">
+            <validate type="FINAL">
+              <conditions>
+                <condition type="EXISTS" look_for='PARAMETER' objects="PROCEDURE:STEP:PARAMETER" keys="NEWSTACKINDEX-LAST:ATINDEX-WIP:[INDEX]" />
+              </conditions>
+              <actions>
+                <action type="SUCCESS">
+                  <modify-procedure attribute="complete" value="done" />
+                  <modify-procedure attribute="status" value="success" />
+                  <modify-procedure attribute="name" value="NEWSTACKINDEX" />
+                  <modify-step to_step="CREATE-WIP" attribute="name" value="NULCONSTRUCT" />
+                  <modify-step to_step="ATINDEX-WIP" attribute="name" value="ATINDEX" />
+                  <modify-model attribute="STACK-EXISTS" type="BOOL" operation="SPECIFY" value="TRUE" />
+                  <modify-model attribute="STACK-SIZE" type="INTEGER" operation="SPECIFY" value="0" />
+                </action>
+                <action type="FAILURE">
+                  <modify-procedure attribute="complete" value="done" />
+                  <modify-procedure attribute="status" value="failed" />
+                </action>
+              </actions>
+            </validate>
+          </sequence>
+        </phase>
+      </phases>
+    </test>
+    <test name="NEWSTACKSIZE">
+      <phases default="NEWSTACKSIZE-NEW">
+        <phase id="0" name="NEWSTACKSIZE-NEW">
+          <sequence id="0" on_failure="EXIT">
+            <add-procedure name="NEWSTACKSIZE-NEW" />
+          </sequence>
+          <sequence id="1" on_failure="EXIT">
+            <add-step to_procedure="NEWSTACKSIZE-NEW" name="CREATE-WIP" target="application" look_for="COMPLETED" command="" on_failure="TERM-PROC" />
+          </sequence>
+          <sequence id="1" on_failure="EXIT">
+            <add-step to_procedure="NEWSTACKSIZE-NEW" name="SIZE-WIP" target="application" look_for="LVALUE" command="" on_failure="TERM-PROC" />
+          </sequence>
+          <sequence id="2" on_failure="EXIT">
+            <modify-procedure attribute="name" value="NEWSTACKSIZE-LAST" />
+            <next-route name="NEWSTACKSIZE-LAST" />
+          </sequence>
+        </phase>
+        <phase id="1" name="NEWSTACKSIZE-LAST">
+          <sequence id="0" on_failure="EXIT">
+            <validate type="FINAL">
+              <conditions />
+              <actions>
+                <action type="SUCCESS">
+                  <modify-procedure attribute="complete" value="done" />
+                  <modify-procedure attribute="status" value="success" />
+                  <modify-procedure attribute="name" value="NULCONSTRUCT" />
+                  <modify-step to_step="CREATE-WIP" attribute="name" value="NULCONSTRUCT" />
+                  <modify-step to_step="SIZE-WIP" attribute="name" value="SIZE" />
+                  <modify-model attribute="STACK-EXISTS" type="BOOL" operation="SPECIFY" value="TRUE" />
+                  <modify-model attribute="STACK-SIZE" type="INTEGER" operation="SPECIFY" value="0" />
                 </action>
                 <action type="FAILURE">
                   <modify-procedure attribute="complete" value="done" />

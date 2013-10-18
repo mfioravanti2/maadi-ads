@@ -29,6 +29,11 @@ module Maadi
         @rStack = nil
       end
 
+      #Returns the supported domains.
+      def supported_domains
+        return %w(ADS-STACK ADS-AXIOMATIC-STACK ALGEBRAICADS-STACK)
+      end
+
       #Returns true if the step id is "Step" and is the correct type of step for a Stack.
       #False otherwise
       def supports_step?(step)
