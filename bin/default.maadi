@@ -10,14 +10,9 @@ set collector LogFile LogFile-Log
 # reduce the log level of the SQLite3 collector
 #set collector option SQLite3-Log LOG_LEVEL PARTIAL
 
-set expert AlgebraicADSStack Stack-Exp
-set expert option CREATE_RATIO 0
-set expert option PUSHPOP_RATIO 4
-set expert option PUSH_RATIO 20
-set expert option POP_RATIO 4
-set expert option SIZE_RATIO 4
-set expert option ATINDEX_RATIO 5
-set expert option DETAILS_RATIO 3
+# Load the Expert for an ADS Stack
+load expert-ads-stack.maadi
+
 set organizer RandomSelection RS-Organizer
 set monitor Example ExMon
 

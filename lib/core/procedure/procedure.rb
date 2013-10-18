@@ -93,6 +93,20 @@ module Maadi
         return nil
       end
 
+      def show
+        puts "\nPROCEDURE: #{@id} (Status: #{ ( is_complete? ) ? 'DONE' : 'WIP'}, #{ ( has_failed? ) ? 'FAILED' : 'SUCCESS'})."
+
+        @steps.each do |step|
+          puts "\tSTEP: #{step.id} (Looking for #{step.look_for})"
+          step.parameters.each do |parameter|
+            puts "\t\tPARAMETER: #{parameter.label} = #{parameter.value}"
+            if parameter.constraint != nil
+              puts "\t\t\tCONSTRAINT: #{parameter.constraint.display}"
+            end
+          end
+        end
+      end
+
       def Procedure::is_procedure?( procedure, with_id = '' )
         if procedure != nil
           if procedure.is_a?( Maadi::Procedure::Procedure )

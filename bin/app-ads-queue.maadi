@@ -1,0 +1,14 @@
+# This is the default profile, it is executed
+# every time the Maadi program is started.
+#
+# any Maadi command can be entered into this
+# profile.  Lines that start with # are not
+# executed (they are treated as comments).
+
+# select the Ruby implementation of a queue application
+set application RubyQueue RubyQueue1
+
+# select the Java implementation of a queue application
+set application JavaQueue JavaQueue
+#set application option JavaQueue ROOTPATH "C:\Users\Mr. Fluffy Pants\RubymineProjects\maadi-ads\utils/java"
+set application option JavaQueue ROOTPATH D:/code/ruby/maadi-ads/utils/java

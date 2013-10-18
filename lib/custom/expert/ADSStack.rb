@@ -21,13 +21,8 @@ module Maadi
   module Expert
     class ADSStack < Expert
 
-      def initialize (type)
-
-        if(type == nil)
-          super('ADSStack')
-        else
-          super(type)
-        end
+      def initialize
+        super('ADSStack')
 
         @tests = Array.new
         @has_stack = false
@@ -61,20 +56,17 @@ module Maadi
       # resources and services will be prepared to execution.
       # return (bool) true if all of the components are read.
       def prepare
-        if (@tests== nil)
-          @tests = Array.new
-        end
+        super
 
-        items = %w(CREATE PUSH POP ATINDEX SIZE DETAILS)
-        items.each do |item|
+        @test_list = @builder.tests
+
+        @test_list.each do |item|
           if @options["#{item}_RATIO"].to_i >= 1
             1.upto(@options["#{item}_RATIO"].to_i) do
               @tests.push item
             end
           end
         end
-
-        super
       end
 
       # returns (Array of Strings) which lists all of the tests that the
@@ -82,9 +74,19 @@ module Maadi
       # tests become available or are not longer available.  The Stack expert is
       # partially stateful wrt constructing databases and tables.
       def tests
-        unless @has_stack
-          return %w(CREATE)
+        if @model != nil
+          #puts "MODEL: STACK-EXISTS=#{@model.get_value('STACK-EXISTS')}, STACK-SIZE=#{@model.get_value('STACK-SIZE')}"
+
+          if @model.get_value('STACK-EXISTS') == true
+            return @tests
+          end
         end
+
+        return %w(CREATE)
+
+        #unless @has_stack
+        #  return %w(CREATE)
+        #end
 
         # all of the possible options, not all have been implemented.
         #%w( CREATE PUSH POP ATINDEX SIZE )
@@ -129,320 +131,9 @@ module Maadi
       #                                         to be instantiated
       # return (Maadi::Procedure::Procedure) the procedure that was constructed based on current information
       def procedure( test, procedure )
-        unless is_procedure?( procedure )
-          procedure = build_skeleton( test )
+        if @builder != nil
+          return @builder.procedure( test, procedure, self, @model )
         end
-
-        case test.downcase
-          when 'create'
-            return manage_create( procedure )
-          when 'push'
-            return manage_push( procedure )
-          when 'pop'
-            return manage_pop( procedure )
-          when 'atindex'
-            return manage_atindex( procedure )
-          when 'size'
-            return manage_size( procedure )
-          when 'details'
-            return manage_details(procedure)
-          else
-        end
-
-        return procedure
-      end
-
-      def build_skeleton( test )
-        procedure = Maadi::Procedure::Procedure.new( test + '-NEW')
-        return procedure
-      end
-
-      def build_add_redirect( procedure, step, next_step, failed = false )
-        unless is_procedure?( procedure ) and is_step?( step )
-          return procedure
-        end
-
-        procedure.id = next_step
-
-        if failed
-          procedure.failed
-        end
-
-        return procedure
-      end
-
-      # build a STACK CONSTRUCTOR procedure
-      # this will allow the construction of a new STACK with either NULL or NON-NULL CONSTRUCTORS
-      def manage_create( procedure )
-        unless is_procedure?( procedure )
-          return procedure
-        end
-
-        case procedure.id
-          when 'CREATE-NEW'
-            return build_create_new( 'CREATE-LAST' )
-          when 'CREATE-LAST'
-            return build_create_finalize( procedure, procedure.steps[0] )
-          else
-        end
-
-        return procedure
-      end
-
-      def build_step( test, look_for, command, on_failure )
-        parameters = Array.new
-        step = Maadi::Procedure::Step.new(test + '-WIP', 'application', look_for, command, parameters, on_failure)
-        return step
-      end
-
-      def build_create_new( next_step )
-        procedure = build_skeleton( 'CREATE' )
-        step = build_step('CREATE', 'COMPLETED', '', 'TERM-PROC' )
-
-        procedure.add_step( step )
-        procedure.id = next_step
-
-        return procedure
-      end
-
-      def build_create_finalize( procedure, step )
-        unless is_procedure?( procedure ) and is_step?( step )
-          return procedure
-        end
-
-        step.id = 'NULCONSTRUCT'
-        procedure.id = 'NULCONSTRUCT'
-        @has_stack = true
-
-        procedure.done
-
-        return procedure
-      end
-
-      # build a STACK PUSH procedure
-      # this will allow a value to be pushed onto a stack.
-      def manage_push( procedure )
-        unless is_procedure?( procedure )
-          return procedure
-        end
-
-        case procedure.id
-          when 'PUSH-NEW'
-            return build_push_new( 'PUSH-LAST' )
-          when 'PUSH-LAST'
-            return build_push_finalize( procedure, procedure.steps[0] )
-          else
-        end
-
-        return procedure
-      end
-
-      def build_push_new( next_step )
-        procedure = build_skeleton( 'PUSH' )
-        step = build_step('PUSH', 'LVALUE', '', 'TERM-PROC' )
-
-        constraint =  Maadi::Procedure::ConstraintRangedInteger.new( 1, @options['MAX_INTEGER'] )
-        step.parameters.push Maadi::Procedure::Parameter.new('[RVALUE]', constraint )
-
-        procedure.add_step( step )
-        procedure.id = next_step
-
-        return procedure
-      end
-
-      def build_push_finalize( procedure, step )
-        unless is_procedure?( procedure ) and is_step?( step )
-          return procedure
-        end
-
-        step.id = 'PUSH'
-        procedure.id = 'PUSH'
-
-        rvalue = step.get_parameter_value( '[RVALUE]' )
-        if rvalue != ''
-          @stack_size += 1
-          procedure.done
-        else
-          procedure.failed
-        end
-
-        return procedure
-      end
-
-      # build a STACK POP procedure
-      # this will allow a value to be popped from a stack.
-      def manage_pop( procedure )
-        unless is_procedure?( procedure )
-          return procedure
-        end
-
-        case procedure.id
-          when 'POP-NEW'
-            return build_pop_new( 'POP-LAST' )
-          when 'POP-LAST'
-            return build_pop_finalize( procedure, procedure.steps[0] )
-          else
-        end
-
-        return procedure
-      end
-
-      def build_pop_new( next_step )
-        procedure = build_skeleton( 'POP' )
-        step = build_step('POP', 'LVALUE', '', 'TERM-PROC' )
-
-        procedure.add_step( step )
-        procedure.id = next_step
-
-        return procedure
-      end
-
-      def build_pop_finalize( procedure, step )
-        unless is_procedure?( procedure ) and is_step?( step )
-          return procedure
-        end
-
-        step.id = 'POP'
-        procedure.id = 'POP'
-
-        if ( @stack_size > 0 )
-          @stack_size -= 1
-        end
-        procedure.done
-
-        return procedure
-      end
-
-      # build a STACK AT INDEX procedure
-      # this will allow a value to be pushed onto a stack.
-      def manage_atindex( procedure )
-        unless is_procedure?( procedure )
-          return procedure
-        end
-
-        case procedure.id
-          when 'ATINDEX-NEW'
-            return build_at_index_new( 'ATINDEX-LAST' )
-          when 'ATINDEX-LAST'
-            return build_at_index_finalize( procedure, procedure.steps[0] )
-          else
-        end
-
-        return procedure
-      end
-
-      def build_at_index_new( next_step )
-        procedure = build_skeleton( 'ATINDEX' )
-        step = build_step('ATINDEX', 'LVALUE', '', 'TERM-PROC' )
-
-        constraint =  Maadi::Procedure::ConstraintRangedInteger.new( 0, @stack_size - 1 )
-        step.parameters.push Maadi::Procedure::Parameter.new('[INDEX]', constraint )
-
-        procedure.add_step( step )
-        procedure.id = next_step
-
-        return procedure
-      end
-
-      def build_at_index_finalize( procedure, step )
-        unless is_procedure?( procedure ) and is_step?( step )
-          return procedure
-        end
-
-        step.id = 'ATINDEX'
-        procedure.id = 'ATINDEX'
-
-        at_index = step.get_parameter_value( '[INDEX]' )
-        if at_index != ''
-          @stack_size += 1
-          procedure.done
-        else
-          procedure.failed
-        end
-
-        return procedure
-      end
-
-      # build a STACK SIZE procedure
-      # this will allow a value to be popped from a stack.
-      def manage_size( procedure )
-        unless is_procedure?( procedure )
-          return procedure
-        end
-
-        case procedure.id
-          when 'SIZE-NEW'
-            return build_size_new( 'SIZE-LAST' )
-          when 'SIZE-LAST'
-            return build_size_finalize( procedure, procedure.steps[0] )
-          else
-        end
-
-        return procedure
-      end
-
-      def build_size_new( next_step )
-        procedure = build_skeleton( 'SIZE' )
-        step = build_step('SIZE', 'LVALUE', '', 'TERM-PROC' )
-
-        procedure.add_step( step )
-        procedure.id = next_step
-
-        return procedure
-      end
-
-      def build_size_finalize( procedure, step )
-        unless is_procedure?( procedure ) and is_step?( step )
-          return procedure
-        end
-
-        step.id = 'SIZE'
-        procedure.id = 'SIZE'
-        procedure.done
-
-        return procedure
-      end
-
-      #build a new stack size procedure
-      def manage_details (procedure)
-
-        unless is_procedure?( procedure )
-          return procedure
-        end
-
-        case procedure.id
-          when 'DETAILS-NEW'
-            return build_details_new('DETAILS-LAST')
-          when 'DETAILS-LAST'
-            return build_details_finalize( procedure, procedure.steps )
-          else
-        end
-
-        return procedure
-
-
-      end
-
-      def build_details_new( next_step )
-        procedure = build_skeleton( 'DETAILS' )
-        step = build_step('DETAILS', 'LVALUE', '', 'TERM-PROC' )
-
-        procedure.add_step( step )
-        procedure.id = next_step
-
-        procedure.id = next_step
-        return procedure
-      end
-
-      def build_details_finalize( procedure, steps )
-        unless is_procedure?( procedure ) and is_step?( steps[0] )
-          return procedure
-        end
-
-        steps[0].id = 'DETAILS'
-
-        procedure.id = 'DETAILS'
-        procedure.done
 
         return procedure
       end

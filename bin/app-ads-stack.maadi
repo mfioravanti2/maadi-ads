@@ -6,15 +6,9 @@
 # executed (they are treated as comments).
 
 # select the Ruby implementation of a stack application
-#set application RubyStack RubyStack1
-set application RubyQueue RubyQueue1
+set application RubyStack RubyStack1
 
 # select the Java implementation of a stack application
-#set application JavaStack JavaStack
+set application JavaStack JavaStack
 #set application option JavaStack ROOTPATH "C:\Users\Mr. Fluffy Pants\RubymineProjects\maadi-ads\utils/java"
-#set application option JavaStack ROOTPATH D:/code/ruby/maadi-ads/utils/java
-
-# select the Java implementation of a stack application
-set application JavaQueue JavaQueue
-#set application option JavaQueue ROOTPATH "C:\Users\Mr. Fluffy Pants\RubymineProjects\maadi-ads\utils/java"
-set application option JavaQueue ROOTPATH D:/code/ruby/maadi-ads/utils/java
+set application option JavaStack ROOTPATH D:/code/ruby/maadi-ads/utils/java

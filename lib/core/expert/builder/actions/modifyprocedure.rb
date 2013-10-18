@@ -32,9 +32,9 @@ module Maadi
                 end
               when 'status'
                 if @value.downcase == 'success'
-                  procedure.failed
-                else
                   procedure.not_failed
+                else
+                  procedure.failed
                 end
               else
             end

@@ -51,7 +51,7 @@ module Maadi
           if File.exists?( "../lib/custom/expert/builders/#{@options['BUILD-NAME']}.xml" )
             Maadi::post_message(:More, "Expert (#{@type}) preparing Procedure Builder")
 
-            @builder = Builder.new()
+            @builder = Builder::Builder.new()
             @builder.set_option( 'BUILD-NAME', @options['BUILD-NAME'] )
 
             @builder.prepare

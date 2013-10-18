@@ -27,7 +27,9 @@ module Maadi
 
         #Call the super class so that it will grab all the
         # defaults of super's operations.
-        super('AlgebraicADSStack')
+        super
+        @type = 'AlgebraicADSStack'
+        @instance_name = "#{@type}#{1 + rand(20)}"
 
         #Options originally from  ADSStack are taken care of above.
         #Will need extra specification for experts.

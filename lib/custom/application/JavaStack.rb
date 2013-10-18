@@ -18,7 +18,7 @@ module Maadi
     class JavaStack < BSHApplication
 
       #The constructor. Sets up default values and confirms that the BSH interpreter exists
-      def initialize (type)
+      def initialize
         super('JavaStack')
 
         #Current user information

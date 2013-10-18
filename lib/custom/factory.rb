@@ -34,54 +34,54 @@ module Maadi
     def Factory::manufacture( type, product, messaging = true )
 
       if product.instance_of?( String )
-          Dir[$bin_path + type + '/*.rb'].each do |file|
-            if  ( file =~ /\.rb$/i ) && !( file =~ /factory\.rb$/i )
-              file_name = File.basename(file, '.*')
+        Dir[$bin_path + type + '/*.rb'].each do |file|
+          if  ( file =~ /\.rb$/i ) && !( file =~ /factory\.rb$/i )
+            file_name = File.basename(file, '.*')
 
-              if file_name.downcase == product.downcase
+            if file_name.downcase == product.downcase
+              require_relative type + '/' + file_name
+
+              begin
+                class_name = Object.const_get('Maadi').const_get(type).const_get(file_name)
+                class_obj = class_name.new()
+
+                Maadi::post_message(:More, "Factory created class #{class_obj.class}") if messaging
+
+                return class_obj
+              rescue
+                Maadi::post_message(:Warn, "Unable to dynamically create Maadi::#{type}::#{file_name}") if messaging
+              end
+            end
+          end
+        end
+      elsif product.instance_of?( Array )
+        listing = Array.new
+
+        Dir[$bin_path + type + '/*.rb'].each do |file|
+          if  ( file =~ /\.rb$/i ) && !( file =~ /factory\.rb$/i )
+            file_name = File.basename(file, '.*')
+
+            product.each do |item|
+              if file_name.downcase == item.downcase
                 require_relative type + '/' + file_name
 
                 begin
-                  class_name = Object.const_get('Maadi').const_get(type).const_get(file_name)
+                  class_name = Object.const_get('Maadi').const_get(type).const_get(file_name) if messaging
                   class_obj = class_name.new()
 
-                  Maadi::post_message(:More, "Factory created class #{class_obj.class}") if messaging
+                  Maadi::post_message(:More, "Factory created class #{class_obj.class}")
 
-                  return class_obj
+                  listing.push( class_obj )
                 rescue
                   Maadi::post_message(:Warn, "Unable to dynamically create Maadi::#{file_name}") if messaging
                 end
               end
             end
+
           end
-      elsif product.instance_of?( Array )
-          listing = Array.new
+        end
 
-          Dir[$bin_path + type + '/*.rb'].each do |file|
-            if  ( file =~ /\.rb$/i ) && !( file =~ /factory\.rb$/i )
-              file_name = File.basename(file, '.*')
-
-              product.each do |item|
-                if file_name.downcase == item.downcase
-                 require_relative type + '/' + file_name
-
-                  begin
-                    class_name = Object.const_get('Maadi').const_get(type).const_get(file_name) if messaging
-                    class_obj = class_name.new()
-
-                    Maadi::post_message(:More, "Factory created class #{class_obj.class}")
-
-                    listing.push( class_obj )
-                  rescue
-                    Maadi::post_message(:Warn, "Unable to dynamically create Maadi::#{file_name}") if messaging
-                  end
-                end
-              end
-
-            end
-          end
-
-          return listing
+        return listing
       end
 
       return nil

@@ -87,26 +87,19 @@ module Maadi
       # select and generate the next test case
       # return (Procedure) a completed test procedure
       def next_test
+
         tests = @expert.tests
         item = @organizer.select_test( tests )
         procedure = @expert.procedure( item, nil )
 
         count = 1
         while !procedure.is_complete?
-          #puts "GENERATOR: #{procedure.id}"
           @organizer.populate_parameters!( procedure )
           procedure = @expert.procedure( item, procedure )
 
           if procedure.has_failed?
             #puts 'Procedure FAILED!!! (Unknown Organizer/Expert failure)'
-            #@expert.show
-            #puts "id: #{procedure.id}, steps: #{procedure.steps.length}"
-            #procedure.steps.each do |step|
-            #  puts "step: #{step.command} (#{step.parameters.length} available parameters)"
-            #  step.parameters.each do |parameter|
-            #    puts "* parameter: #{parameter.label} =  #{parameter.value}"
-            #  end
-            #end
+            #procedure.show
             break
           end
 

@@ -45,7 +45,7 @@ module Maadi
           @test_nodes.each do |test|
             @tests.push test['name']
           end
-          puts @tests.inspect
+          #puts @tests.inspect
 
         else
           Maadi::post_message(:Warn, "Builder (#{@type}) unable to access files")
@@ -60,7 +60,7 @@ module Maadi
       # return (Array of Strings) with each element representing the name of
       # a test that this domain expert can generate
       def tests
-        return Array.new
+        return @tests
       end
 
       # create a specific test procedure that can be executed against an application.
