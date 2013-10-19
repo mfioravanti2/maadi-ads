@@ -15,7 +15,7 @@ module Maadi
          attr_accessor :elements, :xmlObject, :saveButton, :loadButton, :xmlFile, :mainFlow, :first
 
          def initialize opts={}
-             @xMLObject = opts[:xmlObj]
+             @xmlObject = opts[:xmlObj]
              @xmlFile = opts[:xmlFile]
 
              @first = 0
@@ -23,7 +23,7 @@ module Maadi
              setupButtons
 
              #create UI elements
-             @elements = createUIElements(@xMLObject)
+             @elements = createUIElements(@xmlObject)
 
          end
 
@@ -58,7 +58,7 @@ module Maadi
 
                  @mainFlow.clear
                  @elements.teardown
-                 @elements = createUIElements(@xMLObject)
+                 @elements = createUIElements(@xmlObject)
 
 
                  @xmlFile.close
