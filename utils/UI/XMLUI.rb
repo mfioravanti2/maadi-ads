@@ -1,3 +1,13 @@
+# Author : Scott Forest Hull II (shull2013@my.fit.edu)
+#          Florida Institute of Technology
+# Course : CSE5400 Special Topics - High Volume Automated Testing
+# Date   : 10/19/2013
+# File   : XMLUI.rb
+#
+# Summary: Represents two components:  The root Shoes.app
+#          and the XMLUI main widget class.  This class
+#          dynamically creates a UI from an XML file.
+
 require_relative '../../lib/core/generic/generic'
 
 require 'rubygems'
@@ -7,16 +17,16 @@ require_relative 'Xmlelementwrapper'
 require_relative 'Xmlattributewrapper'
 
 module Maadi
-  module Application
     module UI
-
       class XMLUI < Shoes::Widget
 
-         attr_accessor :elements, :xmlObject, :saveButton, :loadButton, :xmlFile, :mainFlow, :first
+        #Attributes
+         attr_accessor :elements, :xmlObject, :saveButton, :loadButton, :mainFlow, :first
 
+         #The constructor.  Takes one argument
+         #xmlObj - a root Nokogiri XML Object
          def initialize opts={}
              @xmlObject = opts[:xmlObj]
-             @xmlFile = opts[:xmlFile]
 
              @first = 0
              #Setup buttons
@@ -27,61 +37,69 @@ module Maadi
 
          end
 
+         #Creates save and load buttons
          def setupButtons
            @saveButton  = button 'SaveFile'
            @loadButton = button 'LoadFile'
 
+           #Create a save button
            @saveButton.click do
-             p 'Trying to save file: ' + @xMLObject.name.to_s
-             f = File.open('test.xml', 'w') { |f| f.print(@xMLObject.to_xml) }
+
+             #Get the file.  Overwrites file if necessary
+             f = File.open('test.xml', 'w') { |f| f.print(@xmlObject.to_xml) }
 
            end
 
+           #Create a load button
            @loadButton.click do
+             p 'Asking to open a file'
+             #Ask the user for a file path.
              filePath = ask_open_file
 
-             p 'Filepath: ' + filePath
-             if filePath == ""
-               alert 'You need to enter a file name!'
+             if filePath == nil
+               alert 'File not loaded:  no file selected.'
              elsif !filePath.include?(".xml")
-              alert 'That is not an xml file'
+              alert 'File not loaded: not an xml file.'
              else
                #see if the file exists
 
-
+               #Verify if the file exists
                if !File.exists?(filePath)
-                 alert 'File doesnt exist!'
+                 alert 'File not loaded: file does not exist!'
                else
-                 @xmlFile = File.open( filePath.to_s )
-                 @xmlObject = nil
-                 @xmlObject = Nokogiri::XML(@xmlFile)
 
+                 #open the file and store the object
+                 file = File.open( filePath.to_s )
+                 @xmlObject = nil
+                 @xmlObject = Nokogiri::XML(file)
+
+                 #Clear out the UI and reload
                  @mainFlow.clear
                  @elements.teardown
                  @elements = createUIElements(@xmlObject)
 
-
-                 @xmlFile.close
+                 #Close the file
+                 file.close
                end
              end
-
-
-
            end
          end
 
+         #Creates the Internal UI.
+         #xmlElement - the Nokogiri XMLElement class
          def createUIElements (xmlElement)
 
-           p 'XMLElement ' + xmlElement.name.to_s
-           wrapper = nil
+           if xmlElement.is_a? ( Nokogiri::XML::Node)
+            p 'XMLElement ' + xmlElement.name.to_s
+            wrapper = nil
 
-           if @first == 0
-             @first == 1
-             @mainFlow = flow :margin_left => 10 do
+             if @first == 0
+              @first == 1
+              @mainFlow = flow :margin_left => 10 do
 
-               wrapper = xmlelementwrapper :xmlElement=> xmlElement
+              wrapper = xmlelementwrapper :xmlElement=> xmlElement
 
-               xmlElement.children.each do |node|
+              xmlElement.children.each do |node|
 
                  if node.is_a? ( Nokogiri::XML::Element)
                    element = createUIElements(node)
@@ -113,18 +131,17 @@ module Maadi
              return wrapper
            end
 
-
-
-           end
+          end
+         end
 
 
       end
 
-
+      #Root shoes app
       Shoes.app :title => "Green Shoes XML Editor" do
 
 
-
+        #Open a file to start her up.
         @fXML = File.open( "test.xml" )
         @xmlObj = Nokogiri::XML(@fXML)
         @fXML.close
@@ -136,8 +153,8 @@ module Maadi
           para 'The content below represents an XML File'
 
 
-
-          @interface=xmlui({:xmlObj=>@xmlObj, :xmlFile=>@fXML})
+          #Create the XML UI sub pieces
+          @interface=xmlui({:xmlObj=>@xmlObj})
 
         end
 
@@ -145,7 +162,6 @@ module Maadi
       end
 
     end
-  end
 end
 
 
