@@ -97,8 +97,10 @@ module Maadi
               @first == 1
               @mainFlow = flow :margin_left => 10 do
 
+              #Create a xmlelementwrapper widget.
               wrapper = xmlelementwrapper :xmlElement=> xmlElement
 
+              #For each child, if it is an xml element recursively add to UI
               xmlElement.children.each do |node|
 
                  if node.is_a? ( Nokogiri::XML::Element)
@@ -113,11 +115,13 @@ module Maadi
 
            else
 
-             #Bad fix me later
+             #This is bad.  We should make some kind of function for this - SFH
              flow :margin_left => 10 do
 
+               #Create a xmlelementwrapper widget.
                wrapper = xmlelementwrapper :xmlElement=> xmlElement
 
+               #For each child, if it is an xml element recursively add to UI
                xmlElement.children.each do |node|
 
                  if node.is_a? ( Nokogiri::XML::Element)
