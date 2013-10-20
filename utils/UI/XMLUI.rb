@@ -109,7 +109,7 @@ module Maadi
                    wrapper.addXMLElement(element)
                  end
                end
-             end
+              end
 
              return wrapper
 

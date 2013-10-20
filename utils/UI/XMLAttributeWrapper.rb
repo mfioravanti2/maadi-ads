@@ -58,7 +58,7 @@ module Maadi
           @editLine.hide
         end
 
-        #A deconstructor
+        #Deconstructor
         def teardown
           @text.remove
           @editLine.remove

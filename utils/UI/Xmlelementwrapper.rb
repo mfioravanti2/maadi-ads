@@ -7,18 +7,16 @@
 # Summary: A wrapper for holding data and ui widgets
 #          regarding representations for xml elements.
 
-
-require 'rubygems'
 require 'nokogiri'
 require 'green_shoes'
 
 require_relative 'Xmlattributewrapper'
 module Maadi
-    module UI
-      class Xmlelementwrapper < Shoes::Widget
+  module UI
+    class Xmlelementwrapper  < Shoes::Widget
 
         #Attributes
-       attr_accessor :xmlElement, :text, :button, :xmlAttributeWraps, :xmlElementWraps
+       attr_accessor :xmlElement, :text, :button, :xmlAttributeWraps, :xmlElementWraps, :addRemoveButton
 
        #The constructor
        #xmlElement - the Nokogiri representation of an XML element.
@@ -31,6 +29,9 @@ module Maadi
           @xmlElementWraps = Array.new()
           @xmlAttributeWraps = Array.new()
 
+          #Create addRemoveButton for XMLElement
+          setupAddAndRemoveButtons
+
           #Create the text widget
           @text = inscription @xmlElement.name.to_s, width:75
 
@@ -41,7 +42,7 @@ module Maadi
             xmlAttributeWraps.push(xmlAttrWrap)
           end
 
-          #Create a check box
+          #Create a check box and add and remove buttons
           @check = check
 
           #If clicked, hide the information or show
@@ -71,9 +72,46 @@ module Maadi
             end
           end
 
+
           p 'XMLElement node created for: ' + @xmlElement.name.to_s
          else
         end
+       end
+
+       #Setup the XML Element add and remove buttons
+       def setupAddAndRemoveButtons ()
+         @addRemoveButton = list_box items: ["", "+", "-"], width: 30
+
+         @addRemoveButton.change do
+           if @addRemoveButton.text == "+"
+             prompt = ask ("Please enter a new child element.")
+
+
+           elsif @addRemoveButton.text == "-"
+
+             #create list of xml names
+             i = 0
+             name = ""
+             nameList = Array.new
+             @xmlElementWraps.each do |child|
+               tempName = "\n"+ i.to_s + ". " + child.getXMLElement.name.to_s
+               name = name + tempName
+               i = i + 1
+               nameList.push(tempName)
+             end
+
+             prompt = ask "Which element would you like to delete?  Please enter a number\n and the full name listed below:" + name, width: 200, height:500
+
+             index = nameList.find_index(prompt)
+
+             if (index > -1)
+               #Remove stuff
+
+             end
+
+           end
+         end
+
        end
 
        #Returns the xmlElement attribute.
@@ -118,6 +156,7 @@ module Maadi
 
        #Hides the widget
        def hideSelf
+          @addRemoveButton.hide
           @check.hide
           @check.checked = false;
           @text.hide
@@ -136,6 +175,7 @@ module Maadi
        def showSelf
          @check.show
          @text.show
+         @addRemoveButton.show
        end
 
        #A deconstructor method
