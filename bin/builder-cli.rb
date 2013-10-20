@@ -2,6 +2,12 @@ require 'rubygems'
 
 require_relative '../lib/custom/factories'
 
+dbsql = Maadi::Collector::Collector.factory('SQLite3')
+dbfile = Maadi::Collector::Collector.factory('LogFile')
+
+dbsql.prepare
+dbfile.prepare
+
 expert = Maadi::Expert::Expert.factory('ADSAxiomaticStack')
 expert.set_option('BUILD-NAME', 'ADSAxiomaticStack')
 expert.set_option('USE-BUILDER', 'TRUE')
@@ -9,7 +15,7 @@ expert.set_option('MODEL-NAME', 'ADSStack')
 expert.set_option('USE-MODEL', 'TRUE')
 expert.prepare
 
-tests = %w(CREATE SIZE NEWSTACKSIZE)
+tests = %w(CREATE SIZE NEWSTACKSIZE PUSH PUSHPOPSIZE PUSHPOPSIZE)
 
 tests.each do |test|
   puts "\n\n**** NEXT PROCEDURE ****\n"
@@ -28,8 +34,14 @@ tests.each do |test|
   end
 
   procedure.show
+  dbsql.log_procedure( procedure )
+  dbfile.log_procedure( procedure )
   procedure = expert.procedure( test, procedure )
   procedure.show
+  dbfile.log_procedure( procedure )
 end
 
 expert.teardown
+
+dbsql.teardown
+dbfile.teardown

@@ -206,6 +206,7 @@ module Maadi
               is_ok = true
             rescue ::SQLite3::Exception => e
               Maadi::post_message(:Warn, "Repository (#{@type}:#{@instance_name}) encountered an INSERT Procedure error (#{e.message}).")
+              return
             end
 
             if is_ok && prId != -1
@@ -235,6 +236,7 @@ module Maadi
                   is_ok = true
                 rescue ::SQLite3::Exception => e
                   Maadi::post_message(:Warn, "Repository (#{@type}:#{@instance_name}) encountered an INSERT Step error (#{e.message}).")
+                  return
                 end
 
                 if is_ok && stId != -1
@@ -259,18 +261,14 @@ module Maadi
                       is_ok = true
                     rescue ::SQLite3::Exception => e
                       Maadi::post_message(:Warn, "Repository (#{@type}:#{@instance_name}) encountered an INSERT Parameter error (#{e.message}).")
+                      return
                     end
-
-                    break if !is_ok
 
                     if parameter.key_id == -1
                       parameter.key_id = paId
                     end
                   end
                 end
-
-                # if we have encountered any INSERT errors, do not attempt to process any more INSERTs
-                break if !is_ok
               end
             end
           end
