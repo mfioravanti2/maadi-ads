@@ -2,7 +2,7 @@
 #          Florida Institute of Technology
 # Course : CSE5400 Special Topics - High Volume Automated Testing
 # Date   : 10/16/2013
-# File   : ADSStack.rb
+# File   : ADSQueue.rb
 #
 # Summary: This is a Model for a Stack
 

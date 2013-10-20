@@ -1,0 +1,460 @@
+<xml>
+  <tests>
+    <test name="CREATE">
+      <phases default="CREATE-NEW">
+        <phase id="0" name="CREATE-NEW">
+          <sequence id="0" on_failure="EXIT">
+            <add-procedure name="CREATE-NEW" />
+          </sequence>
+          <sequence id="1" on_failure="EXIT">
+            <add-step to_procedure="CREATE-NEW" name="CREATE-WIP" target="application" look_for="COMPLETED" command="" on_failure="TERM-PROC" />
+          </sequence>
+          <sequence id="2" on_failure="EXIT">
+            <modify-procedure attribute="name" value="CREATE-LAST" />
+            <next-route name="CREATE-LAST" />
+          </sequence>
+        </phase>
+        <phase id="1" name="CREATE-LAST">
+          <sequence id="0" on_failure="EXIT">
+            <validate type="FINAL">
+              <conditions />
+              <actions>
+                <action type="SUCCESS">
+                  <modify-procedure attribute="complete" value="done" />
+                  <modify-procedure attribute="status" value="success" />
+                  <modify-procedure attribute="name" value="NULCONSTRUCT" />
+                  <modify-step to_step="CREATE-WIP" attribute="name" value="NULCONSTRUCT" />
+                  <modify-model attribute="QUEUE-EXISTS" type="BOOL" operation="SPECIFY" value="TRUE" />
+                  <modify-model attribute="QUEUE-SIZE" type="INTEGER" operation="SPECIFY" value="0" />
+                </action>
+                <action type="FAILURE">
+                  <modify-procedure attribute="complete" value="done" />
+                  <modify-procedure attribute="status" value="failed" />
+                </action>
+              </actions>
+            </validate>
+          </sequence>
+        </phase>
+      </phases>
+    </test>
+    <test name="ENQUEUE">
+      <conditions>
+        <condition name="MODEL-EXISTS" query="MODEL" item="QUEUE-EXISTS" type="EXISTS" />
+      </conditions>
+      <phases default="ENQUEUE-NEW">
+        <phase id="0" name="ENQUEUE-NEW">
+          <sequence id="0" on_failure="EXIT">
+            <add-procedure name="ENQUEUE-NEW" />
+          </sequence>
+          <sequence id="1" on_failure="EXIT">
+            <add-step to_procedure="ENQUEUE-NEW" name="ENQUEUE-WIP" target="application" look_for="COMPLETED" command="" on_failure="TERM-PROC" />
+          </sequence>
+          <sequence id="2" on_failure="EXIT">
+            <add-parameter to_procedure="ENQUEUE-NEW" to_step="ENQUEUE-WIP" name="[RVALUE]" />
+          </sequence>
+          <sequence id="3" on_failure="EXIT">
+            <add-constraint to_procedure="ENQUEUE-NEW" to_step="ENQUEUE-WIP" to_parameter="[RVALUE]" type="RANGED-INTEGER" >
+              <constraint-parameter name="min_range" source="SPECIFIED" value="0" type="INTEGER" />
+              <constraint-parameter name="max_range" source="EXPERT" value="MAX_INTEGER" type="INTEGER" />
+            </add-constraint>
+          </sequence>
+          <sequence id="4" on_failure="EXIT">
+            <modify-procedure attribute="name" value="ENQUEUE-LAST" />
+            <next-route name="ENQUEUE-LAST" />
+          </sequence>
+        </phase>
+        <phase id="1" name="ENQUEUE-LAST">
+          <sequence id="0" on_failure="EXIT">
+            <validate type="FINAL">
+              <conditions>
+                <condition type="EXISTS" look_for='PARAMETER' objects="PROCEDURE:STEP:PARAMETER" keys="ENQUEUE-LAST:ENQUEUE-WIP:[RVALUE]" />
+              </conditions>
+              <actions>
+                <action type="SUCCESS">
+                  <modify-procedure attribute="complete" value="done" />
+                  <modify-procedure attribute="status" value="success" />
+                  <modify-procedure attribute="name" value="ENQUEUE" />
+                  <modify-step to_step="ENQUEUE-WIP" attribute="name" value="ENQUEUE" />
+                  <modify-model attribute="QUEUE-SIZE" type="INTEGER" operation="INCREMENT" value="1" />
+                </action>
+                <action type="FAILURE">
+                  <modify-procedure attribute="complete" value="done" />
+                  <modify-procedure attribute="status" value="failed" />
+                </action>
+              </actions>
+            </validate>
+          </sequence>
+        </phase>
+      </phases>
+    </test>
+    <test name="ATINDEX">
+      <conditions>
+      </conditions>
+      <phases default="ATINDEX-NEW">
+        <phase id="0" name="ATINDEX-NEW">
+          <sequence id="0" on_failure="EXIT">
+            <add-procedure name="ATINDEX-NEW" />
+          </sequence>
+          <sequence id="1" on_failure="EXIT">
+            <add-step to_procedure="ATINDEX-NEW" name="ATINDEX-WIP" target="application" look_for="LVALUE" command="" on_failure="TERM-PROC" />
+          </sequence>
+          <sequence id="2" on_failure="EXIT">
+            <add-parameter to_procedure="ATINDEX-NEW" to_step="ATINDEX-WIP" name="[INDEX]" />
+          </sequence>
+          <sequence id="3" on_failure="EXIT">
+            <add-constraint to_procedure="ATINDEX-NEW" to_step="ATINDEX-WIP" to_parameter="[INDEX]" type="RANGED-INTEGER">
+              <constraint-parameter name="min_range" source="SPECIFIED" value="0" type="INTEGER" />
+              <constraint-parameter name="max_range" source="MODEL" value="QUEUE-SIZE" type="INTEGER">
+                <operator name="DECREMENT" source="SPECIFIED" type="INTEGER" value="1" />
+              </constraint-parameter>
+            </add-constraint>
+          </sequence>
+          <sequence id="4" on_failure="EXIT">
+            <modify-procedure attribute="name" value="ATINDEX-LAST" />
+            <next-route name="ATINDEX-LAST" />
+          </sequence>
+        </phase>
+        <phase id="1" name="ATINDEX-LAST">
+          <sequence id="0" on_failure="EXIT">
+            <validate type="FINAL">
+              <conditions>
+                <condition type="EXISTS" look_for='PARAMETER' objects="PROCEDURE:STEP:PARAMETER" keys="ATINDEX-LAST:ATINDEX-WIP:[INDEX]" />
+              </conditions>
+              <actions>
+                <action type="SUCCESS">
+                  <modify-procedure attribute="complete" value="done" />
+                  <modify-procedure attribute="status" value="success" />
+                  <modify-procedure attribute="name" value="ATINDEX" />
+                  <modify-step to_step="ATINDEX-WIP" attribute="name" value="ATINDEX" />
+                </action>
+                <action type="FAILURE">
+                  <modify-procedure attribute="complete" value="done" />
+                  <modify-procedure attribute="status" value="failed" />
+                </action>
+              </actions>
+            </validate>
+          </sequence>
+        </phase>
+      </phases>
+    </test>
+    <test name="DEQUEUE">
+      <conditions>
+        <condition name="MODEL-EXISTS" query="MODEL" item="QUEUE-EXISTS" type="EXISTS" />
+      </conditions>
+      <phases default="DEQUEUE-NEW">
+        <phase id="0" name="DEQUEUE-NEW">
+          <sequence id="0" on_failure="EXIT">
+            <add-procedure name="DEQUEUE-NEW" />
+          </sequence>
+          <sequence id="1" on_failure="EXIT">
+            <add-step to_procedure="DEQUEUE-NEW" name="DEQUEUE-WIP" target="application" look_for="LVALUE" command="" on_failure="TERM-PROC" />
+          </sequence>
+          <sequence id="4" on_failure="EXIT">
+            <modify-procedure attribute="name" value="DEQUEUE-LAST" />
+            <next-route name="DEQUEUE-LAST" />
+          </sequence>
+        </phase>
+        <phase id="1" name="DEQUEUE-LAST">
+          <sequence id="0" on_failure="EXIT">
+            <validate type="FINAL">
+              <actions>
+                <action type="SUCCESS">
+                  <modify-procedure attribute="complete" value="done" />
+                  <modify-procedure attribute="status" value="success" />
+                  <modify-procedure attribute="name" value="DEQUEUE" />
+                  <modify-step to_step="DEQUEUE-WIP" attribute="name" value="DEQUEUE" />
+                  <modify-model attribute="QUEUE-SIZE" type="INTEGER" operation="DECREMENT" value="1" />
+                </action>
+                <action type="FAILURE">
+                  <modify-procedure attribute="complete" value="done" />
+                  <modify-procedure attribute="status" value="failed" />
+                </action>
+              </actions>
+            </validate>
+          </sequence>
+        </phase>
+      </phases>
+    </test>
+    <test name="SIZE">
+      <conditions>
+        <condition name="MODEL-EXISTS" query="MODEL" item="QUEUE-EXISTS" type="EXISTS" />
+      </conditions>
+      <phases default="SIZE-NEW">
+        <phase id="0" name="SIZE-NEW">
+          <sequence id="0" on_failure="EXIT">
+            <add-procedure name="SIZE-NEW" />
+          </sequence>
+          <sequence id="1" on_failure="EXIT">
+            <add-step to_procedure="SIZE-NEW" name="SIZE-WIP" target="application" look_for="LVALUE" command="" on_failure="TERM-PROC" />
+          </sequence>
+          <sequence id="2" on_failure="EXIT">
+            <modify-procedure attribute="name" value="SIZE-LAST" />
+            <next-route name="SIZE-LAST" />
+          </sequence>
+        </phase>
+        <phase id="1" name="SIZE-LAST">
+          <sequence id="0" on_failure="EXIT">
+            <validate type="FINAL">
+              <conditions />
+              <actions>
+                <action type="SUCCESS">
+                  <modify-procedure attribute="complete" value="done" />
+                  <modify-procedure attribute="status" value="success" />
+                  <modify-procedure attribute="name" value="SIZE" />
+                  <modify-step to_step="SIZE-WIP" attribute="name" value="SIZE" />
+                </action>
+                <action type="FAILURE">
+                  <modify-procedure attribute="complete" value="done" />
+                  <modify-procedure attribute="status" value="failed" />
+                </action>
+              </actions>
+            </validate>
+          </sequence>
+        </phase>
+      </phases>
+    </test>
+    <test name="DETAILS">
+      <conditions>
+        <condition name="MODEL-EXISTS" query="MODEL" item="QUEUE-EXISTS" type="EXISTS" />
+      </conditions>
+      <phases default="DETAILS-NEW">
+        <phase id="0" name="DETAILS-NEW">
+          <sequence id="0" on_failure="EXIT">
+            <add-procedure name="DETAILS-NEW" />
+          </sequence>
+          <sequence id="1" on_failure="EXIT">
+            <add-step to_procedure="DETAILS-NEW" name="DETAILS-WIP" target="application" look_for="LVALUE" command="" on_failure="TERM-PROC" />
+          </sequence>
+          <sequence id="2" on_failure="EXIT">
+            <modify-procedure attribute="name" value="DETAILS-LAST" />
+            <next-route name="DETAILS-LAST" />
+          </sequence>
+        </phase>
+        <phase id="1" name="DETAILS-LAST">
+          <sequence id="0" on_failure="EXIT">
+            <validate type="FINAL">
+              <conditions />
+              <actions>
+                <action type="SUCCESS">
+                  <modify-procedure attribute="complete" value="done" />
+                  <modify-procedure attribute="status" value="success" />
+                  <modify-procedure attribute="name" value="DETAILS" />
+                  <modify-step to_step="DETAILS-WIP" attribute="name" value="DETAILS" />
+                </action>
+                <action type="FAILURE">
+                  <modify-procedure attribute="complete" value="done" />
+                  <modify-procedure attribute="status" value="failed" />
+                </action>
+              </actions>
+            </validate>
+          </sequence>
+        </phase>
+      </phases>
+    </test>
+    <test name="ENQUEUEDEQUEUE">
+      <conditions>
+        <condition name="MODEL-EXISTS" query="MODEL" item="QUEUE-EXISTS" type="EXISTS" />
+      </conditions>
+      <phases default="ENQUEUEDEQUEUE-NEW">
+        <phase id="0" name="ENQUEUEDEQUEUE-NEW">
+          <sequence id="0" on_failure="EXIT">
+            <add-procedure name="ENQUEUEDEQUEUE-NEW" />
+          </sequence>
+          <sequence id="1" on_failure="EXIT">
+            <add-step to_procedure="ENQUEUEDEQUEUE-NEW" name="ENQUEUE-WIP" target="application" look_for="COMPLETED" command="" on_failure="TERM-PROC" />
+          </sequence>
+          <sequence id="2" on_failure="EXIT">
+            <add-parameter to_procedure="ENQUEUEDEQUEUE-NEW" to_step="ENQUEUE-WIP" name="[RVALUE]" />
+          </sequence>
+          <sequence id="3" on_failure="EXIT">
+            <add-constraint to_procedure="ENQUEUEDEQUEUE-NEW" to_step="ENQUEUE-WIP" to_parameter="[RVALUE]" type="RANGED-INTEGER" >
+              <constraint-parameter name="min_range" source="SPECIFIED" value="0" type="INTEGER" />
+              <constraint-parameter name="max_range" source="EXPERT" value="MAX_INTEGER" type="INTEGER" />
+            </add-constraint>
+          </sequence>
+          <sequence id="4" on_failure="EXIT">
+            <add-step to_procedure="ENQUEUEDEQUEUE-NEW" name="DEQUEUE-WIP" target="application" look_for="LVALUE" command="" on_failure="TERM-PROC" />
+          </sequence>
+          <sequence id="5" on_failure="EXIT">
+            <modify-procedure attribute="name" value="ENQUEUEDEQUEUE-LAST" />
+            <next-route name="ENQUEUEDEQUEUE-LAST" />
+          </sequence>
+        </phase>
+        <phase id="1" name="ENQUEUEDEQUEUE-LAST">
+          <sequence id="0" on_failure="EXIT">
+            <validate type="FINAL">
+              <conditions>
+                <condition type="EXISTS" look_for='PARAMETER' objects="PROCEDURE:STEP:PARAMETER" keys="ENQUEUEDEQUEUE-LAST:ENQUEUE-WIP:[RVALUE]" />
+              </conditions>
+              <actions>
+                <action type="SUCCESS">
+                  <modify-procedure attribute="complete" value="done" />
+                  <modify-procedure attribute="status" value="success" />
+                  <modify-procedure attribute="name" value="ENQUEUEDEQUEUE" />
+                  <modify-step to_step="ENQUEUE-WIP" attribute="name" value="ENQUEUE" />
+                  <modify-step to_step="DEQUEUE-WIP" attribute="name" value="DEQUEUE" />
+                </action>
+                <action type="FAILURE">
+                  <modify-procedure attribute="complete" value="done" />
+                  <modify-procedure attribute="status" value="failed" />
+                </action>
+              </actions>
+            </validate>
+          </sequence>
+        </phase>
+      </phases>
+    </test>
+    <test name="ENQUEUEDEQUEUESIZE">
+      <conditions>
+        <condition name="MODEL-EXISTS" query="MODEL" item="QUEUE-EXISTS" type="EXISTS" />
+      </conditions>
+      <phases default="ENQUEUEDEQUEUESIZE-NEW">
+        <phase id="0" name="ENQUEUEDEQUEUESIZE-NEW">
+          <sequence id="0" on_failure="EXIT">
+            <add-procedure name="ENQUEUEDEQUEUESIZE-NEW" />
+          </sequence>
+          <sequence id="1" on_failure="EXIT">
+            <add-step to_procedure="ENQUEUEDEQUEUESIZE-NEW" name="ENQUEUE-WIP" target="application" look_for="COMPLETED" command="" on_failure="TERM-PROC" />
+          </sequence>
+          <sequence id="2" on_failure="EXIT">
+            <add-parameter to_procedure="ENQUEUEDEQUEUESIZE-NEW" to_step="ENQUEUE-WIP" name="[RVALUE]" />
+          </sequence>
+          <sequence id="3" on_failure="EXIT">
+            <add-constraint to_procedure="ENQUEUEDEQUEUESIZE-NEW" to_step="ENQUEUE-WIP" to_parameter="[RVALUE]" type="RANGED-INTEGER" >
+              <constraint-parameter name="min_range" source="SPECIFIED" value="0" type="INTEGER" />
+              <constraint-parameter name="max_range" source="EXPERT" value="MAX_INTEGER" type="INTEGER" />
+            </add-constraint>
+          </sequence>
+          <sequence id="4" on_failure="EXIT">
+            <add-step to_procedure="ENQUEUEDEQUEUESIZE-NEW" name="DEQUEUE-WIP" target="application" look_for="LVALUE" command="" on_failure="TERM-PROC" />
+          </sequence>
+          <sequence id="1" on_failure="EXIT">
+            <add-step to_procedure="ENQUEUEDEQUEUESIZE-NEW" name="SIZE-WIP" target="application" look_for="LVALUE" command="" on_failure="TERM-PROC" />
+          </sequence>
+          <sequence id="5" on_failure="EXIT">
+            <modify-procedure attribute="name" value="ENQUEUEDEQUEUESIZE-LAST" />
+            <next-route name="ENQUEUEDEQUEUESIZE-LAST" />
+          </sequence>
+        </phase>
+        <phase id="1" name="ENQUEUEDEQUEUESIZE-LAST">
+          <sequence id="0" on_failure="EXIT">
+            <validate type="FINAL">
+              <conditions>
+                <condition type="EXISTS" look_for='PARAMETER' objects="PROCEDURE:STEP:PARAMETER" keys="ENQUEUEDEQUEUESIZE-LAST:ENQUEUE-WIP:[RVALUE]" />
+              </conditions>
+              <actions>
+                <action type="SUCCESS">
+                  <modify-procedure attribute="complete" value="done" />
+                  <modify-procedure attribute="status" value="success" />
+                  <modify-procedure attribute="name" value="ENQUEUEDEQUEUESIZE" />
+                  <modify-step to_step="ENQUEUE-WIP" attribute="name" value="ENQUEUE" />
+                  <modify-step to_step="DEQUEUE-WIP" attribute="name" value="DEQUEUE" />
+                  <modify-step to_step="SIZE-WIP" attribute="name" value="SIZE" />
+                </action>
+                <action type="FAILURE">
+                  <modify-procedure attribute="complete" value="done" />
+                  <modify-procedure attribute="status" value="failed" />
+                </action>
+              </actions>
+            </validate>
+          </sequence>
+        </phase>
+      </phases>
+    </test>
+    <test name="NEWQUEUEINDEX">
+      <phases default="NEWQUEUEINDEX-NEW">
+        <phase id="0" name="NEWQUEUEINDEX-NEW">
+          <sequence id="0" on_failure="EXIT">
+            <add-procedure name="NEWQUEUEINDEX-NEW" />
+          </sequence>
+          <sequence id="1" on_failure="EXIT">
+            <add-step to_procedure="NEWQUEUEINDEX-NEW" name="CREATE-WIP" target="application" look_for="COMPLETED" command="" on_failure="TERM-PROC" />
+          </sequence>
+          <sequence id="2" on_failure="EXIT">
+            <add-step to_procedure="NEWQUEUEINDEX-NEW" name="ATINDEX-WIP" target="application" look_for="LVALUE" command="" on_failure="TERM-PROC" />
+          </sequence>
+          <sequence id="3" on_failure="EXIT">
+            <add-parameter to_procedure="NEWQUEUEINDEX-NEW" to_step="ATINDEX-WIP" name="[INDEX]" />
+          </sequence>
+          <sequence id="4" on_failure="EXIT">
+            <add-constraint to_procedure="NEWQUEUEINDEX-NEW" to_step="ATINDEX-WIP" to_parameter="[INDEX]" type="RANGED-INTEGER">
+              <constraint-parameter name="min_range" source="SPECIFIED" value="0" type="INTEGER" />
+              <constraint-parameter name="max_range" source="MODEL" value="QUEUE-SIZE" type="INTEGER">
+                <operator name="DECREMENT" source="SPECIFIED" type="INTEGER" value="1" />
+              </constraint-parameter>
+            </add-constraint>
+          </sequence>
+          <sequence id="2" on_failure="EXIT">
+            <modify-procedure attribute="name" value="NEWQUEUEINDEX-LAST" />
+            <next-route name="NEWQUEUEINDEX-LAST" />
+          </sequence>
+        </phase>
+        <phase id="1" name="NEWQUEUEINDEX-LAST">
+          <sequence id="0" on_failure="EXIT">
+            <validate type="FINAL">
+              <conditions>
+                <condition type="EXISTS" look_for='PARAMETER' objects="PROCEDURE:STEP:PARAMETER" keys="NEWQUEUEINDEX-LAST:ATINDEX-WIP:[INDEX]" />
+              </conditions>
+              <actions>
+                <action type="SUCCESS">
+                  <modify-procedure attribute="complete" value="done" />
+                  <modify-procedure attribute="status" value="success" />
+                  <modify-procedure attribute="name" value="NEWQUEUEINDEX" />
+                  <modify-step to_step="CREATE-WIP" attribute="name" value="NULCONSTRUCT" />
+                  <modify-step to_step="ATINDEX-WIP" attribute="name" value="ATINDEX" />
+                  <modify-model attribute="QUEUE-EXISTS" type="BOOL" operation="SPECIFY" value="TRUE" />
+                  <modify-model attribute="QUEUE-SIZE" type="INTEGER" operation="SPECIFY" value="0" />
+                </action>
+                <action type="FAILURE">
+                  <modify-procedure attribute="complete" value="done" />
+                  <modify-procedure attribute="status" value="failed" />
+                </action>
+              </actions>
+            </validate>
+          </sequence>
+        </phase>
+      </phases>
+    </test>
+    <test name="NEWQUEUESIZE">
+      <phases default="NEWQUEUESIZE-NEW">
+        <phase id="0" name="NEWQUEUESIZE-NEW">
+          <sequence id="0" on_failure="EXIT">
+            <add-procedure name="NEWQUEUESIZE-NEW" />
+          </sequence>
+          <sequence id="1" on_failure="EXIT">
+            <add-step to_procedure="NEWQUEUESIZE-NEW" name="CREATE-WIP" target="application" look_for="COMPLETED" command="" on_failure="TERM-PROC" />
+          </sequence>
+          <sequence id="1" on_failure="EXIT">
+            <add-step to_procedure="NEWQUEUESIZE-NEW" name="SIZE-WIP" target="application" look_for="LVALUE" command="" on_failure="TERM-PROC" />
+          </sequence>
+          <sequence id="2" on_failure="EXIT">
+            <modify-procedure attribute="name" value="NEWQUEUESIZE-LAST" />
+            <next-route name="NEWQUEUESIZE-LAST" />
+          </sequence>
+        </phase>
+        <phase id="1" name="NEWQUEUESIZE-LAST">
+          <sequence id="0" on_failure="EXIT">
+            <validate type="FINAL">
+              <conditions />
+              <actions>
+                <action type="SUCCESS">
+                  <modify-procedure attribute="complete" value="done" />
+                  <modify-procedure attribute="status" value="success" />
+                  <modify-procedure attribute="name" value="NULCONSTRUCT" />
+                  <modify-step to_step="CREATE-WIP" attribute="name" value="NULCONSTRUCT" />
+                  <modify-step to_step="SIZE-WIP" attribute="name" value="SIZE" />
+                  <modify-model attribute="QUEUE-EXISTS" type="BOOL" operation="SPECIFY" value="TRUE" />
+                  <modify-model attribute="QUEUE-SIZE" type="INTEGER" operation="SPECIFY" value="0" />
+                </action>
+                <action type="FAILURE">
+                  <modify-procedure attribute="complete" value="done" />
+                  <modify-procedure attribute="status" value="failed" />
+                </action>
+              </actions>
+            </validate>
+          </sequence>
+        </phase>
+      </phases>
+    </test>
+  </tests>
+</xml>
