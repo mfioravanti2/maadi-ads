@@ -41,6 +41,8 @@ module Maadi
         @notes['POP_RATIO'] = 'Relative Ratio for POP commands (0 or less, ignore command type)'
         @notes['ATINDEX_RATIO'] = 'Relative Ratio for AT INDEX commands (0 or less, ignore command type)'
         @notes['SIZE_RATIO'] = 'Relative Ratio for SIZE commands (0 or less, ignore command type)'
+        @notes['DETAILS_RATIO'] = 'Relative Ratio for DETAILS commands (0 or less, ignore command type)'
+
         @notes['PUSHPOP_RATIO'] = 'Relative Ratio for PUSH, POP sequence of commands (0 or less, ignore command type)'
         @notes['PUSHPOPSIZE_RATIO'] = 'Relative Ratio for PUSH, POP, SIZE commands (0 or less, ignore command type)'
         @notes['NEWSTACKINDEX_RATIO'] = 'Relative Ratio for CREATE, INDEX commands (0 or less, ignore command type)'
