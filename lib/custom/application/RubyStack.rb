@@ -170,7 +170,7 @@ module Maadi
                       when 'DETAILS'
                         if @rStack != nil
                           lValue = @rStack.to_s
-                          lValue = 'TEXT'
+                          lType = 'TEXT'
 
                           bSuccess = true
                           bError = false
