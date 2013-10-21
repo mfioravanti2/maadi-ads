@@ -55,7 +55,7 @@ module Maadi
                 bError = false
 
                 if @rQueue != nil
-                  Maadi::post_message(:Info, "#{@type}:#{@instance_name} Pre-#{step.id} Stack: ' #{@rQueue.inspect.to_s}",3)
+                  Maadi::post_message(:Info, "#{@type}:#{@instance_name} Pre-#{step.id} Queue: ' #{@rQueue.inspect.to_s}",3)
                 end
 
                 begin
@@ -277,7 +277,7 @@ module Maadi
 
                   #Print some meaningful information
                   if @rQueue != nil
-                    Maadi::post_message(:Info, "#{@type}:#{@instance_name} Post-#{step.id} Stack: ' #{@rQueue.inspect.to_s}",3)
+                    Maadi::post_message(:Info, "#{@type}:#{@instance_name} Post-#{step.id} Queue: ' #{@rQueue.inspect.to_s}",3)
                   end
                   if lValue != -1
                     Maadi::post_message(:Info, "#{@type}:#{@instance_name} #{step.id} lValue: ' #{lValue.to_s}",3)
