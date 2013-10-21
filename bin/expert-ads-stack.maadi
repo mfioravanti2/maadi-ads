@@ -1,16 +1,14 @@
 # setup the Expert for a Stack and configure the ratios accordingly
 #set expert ADSStack Stack-Exp
 set expert ADSAxiomaticStack Stack-Exp
-#set expert option BUILD-NAME ADSStack
-set expert option BUILD-NAME ADSAxiomaticStack
-set expert option USE-BUILDER TRUE
-set expert option MODEL-NAME ADSStack
-set expert option USE-MODEL TRUE
 
 set expert option CREATE_RATIO 0
-set expert option PUSHPOP_RATIO 4
 set expert option PUSH_RATIO 20
 set expert option POP_RATIO 4
 set expert option SIZE_RATIO 4
+set expert option PEEK_RATIO 0
+set expert option TOP_RATIO 0
+set expert option BOTTOM_RATIO 0
 set expert option ATINDEX_RATIO 5
 set expert option DETAILS_RATIO 3
+set expert option PUSHPOP_RATIO 4

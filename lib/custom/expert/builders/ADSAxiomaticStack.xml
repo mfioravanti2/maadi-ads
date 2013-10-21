@@ -213,6 +213,120 @@
         </phase>
       </phases>
     </test>
+    <test name="PEEK">
+      <conditions>
+        <condition name="MODEL-EXISTS" query="MODEL" item="STACK-EXISTS" type="EXISTS" />
+      </conditions>
+      <phases default="PEEK-NEW">
+        <phase id="0" name="PEEK-NEW">
+          <sequence id="0" on_failure="EXIT">
+            <add-procedure name="PEEK-NEW" />
+          </sequence>
+          <sequence id="1" on_failure="EXIT">
+            <add-step to_procedure="PEEK-NEW" name="PEEK-WIP" target="application" look_for="LVALUE" command="" on_failure="TERM-PROC" />
+          </sequence>
+          <sequence id="2" on_failure="EXIT">
+            <modify-procedure attribute="name" value="PEEK-LAST" />
+            <next-route name="PEEK-LAST" />
+          </sequence>
+        </phase>
+        <phase id="1" name="PEEK-LAST">
+          <sequence id="0" on_failure="EXIT">
+            <validate type="FINAL">
+              <conditions />
+              <actions>
+                <action type="SUCCESS">
+                  <modify-procedure attribute="complete" value="done" />
+                  <modify-procedure attribute="status" value="success" />
+                  <modify-procedure attribute="name" value="PEEK" />
+                  <modify-step to_step="PEEK-WIP" attribute="name" value="PEEK" />
+                </action>
+                <action type="FAILURE">
+                  <modify-procedure attribute="complete" value="done" />
+                  <modify-procedure attribute="status" value="failed" />
+                </action>
+              </actions>
+            </validate>
+          </sequence>
+        </phase>
+      </phases>
+    </test>
+    <test name="TOP">
+      <conditions>
+        <condition name="MODEL-EXISTS" query="MODEL" item="STACK-EXISTS" type="EXISTS" />
+      </conditions>
+      <phases default="TOP-NEW">
+        <phase id="0" name="TOP-NEW">
+          <sequence id="0" on_failure="EXIT">
+            <add-procedure name="TOP-NEW" />
+          </sequence>
+          <sequence id="1" on_failure="EXIT">
+            <add-step to_procedure="TOP-NEW" name="TOP-WIP" target="application" look_for="LVALUE" command="" on_failure="TERM-PROC" />
+          </sequence>
+          <sequence id="2" on_failure="EXIT">
+            <modify-procedure attribute="name" value="TOP-LAST" />
+            <next-route name="TOP-LAST" />
+          </sequence>
+        </phase>
+        <phase id="1" name="TOP-LAST">
+          <sequence id="0" on_failure="EXIT">
+            <validate type="FINAL">
+              <conditions />
+              <actions>
+                <action type="SUCCESS">
+                  <modify-procedure attribute="complete" value="done" />
+                  <modify-procedure attribute="status" value="success" />
+                  <modify-procedure attribute="name" value="TOP" />
+                  <modify-step to_step="TOP-WIP" attribute="name" value="TOP" />
+                </action>
+                <action type="FAILURE">
+                  <modify-procedure attribute="complete" value="done" />
+                  <modify-procedure attribute="status" value="failed" />
+                </action>
+              </actions>
+            </validate>
+          </sequence>
+        </phase>
+      </phases>
+    </test>
+    <test name="BOTTOM">
+      <conditions>
+        <condition name="MODEL-EXISTS" query="MODEL" item="STACK-EXISTS" type="EXISTS" />
+      </conditions>
+      <phases default="BOTTOM-NEW">
+        <phase id="0" name="BOTTOM-NEW">
+          <sequence id="0" on_failure="EXIT">
+            <add-procedure name="BOTTOM-NEW" />
+          </sequence>
+          <sequence id="1" on_failure="EXIT">
+            <add-step to_procedure="BOTTOM-NEW" name="BOTTOM-WIP" target="application" look_for="LVALUE" command="" on_failure="TERM-PROC" />
+          </sequence>
+          <sequence id="2" on_failure="EXIT">
+            <modify-procedure attribute="name" value="BOTTOM-LAST" />
+            <next-route name="BOTTOM-LAST" />
+          </sequence>
+        </phase>
+        <phase id="1" name="BOTTOM-LAST">
+          <sequence id="0" on_failure="EXIT">
+            <validate type="FINAL">
+              <conditions />
+              <actions>
+                <action type="SUCCESS">
+                  <modify-procedure attribute="complete" value="done" />
+                  <modify-procedure attribute="status" value="success" />
+                  <modify-procedure attribute="name" value="BOTTOM" />
+                  <modify-step to_step="BOTTOM-WIP" attribute="name" value="BOTTOM" />
+                </action>
+                <action type="FAILURE">
+                  <modify-procedure attribute="complete" value="done" />
+                  <modify-procedure attribute="status" value="failed" />
+                </action>
+              </actions>
+            </validate>
+          </sequence>
+        </phase>
+      </phases>
+    </test>
     <test name="DETAILS">
       <conditions>
         <condition name="MODEL-EXISTS" query="MODEL" item="STACK-EXISTS" type="EXISTS" />

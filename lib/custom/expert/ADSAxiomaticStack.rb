@@ -20,13 +20,20 @@ module Maadi
         @has_stack = false
         @stack_size = 0
 
+        @options['USE-BUILDER'] = 'TRUE'
+        @options['BUILD-NAME'] = 'ADSAxiomaticStack'
+        @options['USE-MODEL'] = 'TRUE'
+        @options['MODEL-NAME'] = 'ADSStack'
+
         @options['CREATE_RATIO'] = 1
         @options['PUSH_RATIO'] = 1
         @options['POP_RATIO'] = 1
         @options['ATINDEX_RATIO'] = 1
         @options['SIZE_RATIO'] = 1
+        @options['PEEK_RATIO'] = 1
+        @options['TOP_RATIO'] = 1
+        @options['BOTTOM_RATIO'] = 1
         @options['DETAILS_RATIO'] = 1
-
 
         @options['PUSHPOP_RATIO'] = 1                              #axiom: stack = stack.pop(stack.push(Object))
         @options['PUSHPOPSIZE_RATIO'] = 1                          #axiom: stack.size() = stack.pop(stack.push(Object)).size()
@@ -41,6 +48,9 @@ module Maadi
         @notes['POP_RATIO'] = 'Relative Ratio for POP commands (0 or less, ignore command type)'
         @notes['ATINDEX_RATIO'] = 'Relative Ratio for AT INDEX commands (0 or less, ignore command type)'
         @notes['SIZE_RATIO'] = 'Relative Ratio for SIZE commands (0 or less, ignore command type)'
+        @notes['PEEK_RATIO'] = 'Relative Ratio for PEEK commands (0 or less, ignore command type)'
+        @notes['TOP_RATIO'] = 'Relative Ratio for TOP commands (0 or less, ignore command type)'
+        @notes['BOTTOM_RATIO'] = 'Relative Ratio for BOTTOM commands (0 or less, ignore command type)'
         @notes['DETAILS_RATIO'] = 'Relative Ratio for DETAILS commands (0 or less, ignore command type)'
 
         @notes['PUSHPOP_RATIO'] = 'Relative Ratio for PUSH, POP sequence of commands (0 or less, ignore command type)'

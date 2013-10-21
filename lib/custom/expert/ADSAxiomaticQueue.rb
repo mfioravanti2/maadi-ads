@@ -20,11 +20,19 @@ module Maadi
         @has_stack = false
         @stack_size = 0
 
+        @options['USE-BUILDER'] = 'TRUE'
+        @options['BUILD-NAME'] = 'ADSAxiomaticQueue'
+        @options['USE-MODEL'] = 'TRUE'
+        @options['MODEL-NAME'] = 'ADSQueue'
+
         @options['CREATE_RATIO'] = 1
         @options['ENQUEUE_RATIO'] = 1
         @options['DEQUEUE_RATIO'] = 1
         @options['ATINDEX_RATIO'] = 1
         @options['SIZE_RATIO'] = 1
+        @options['PEEK_RATIO'] = 1
+        @options['FRONT_RATIO'] = 1
+        @options['BACK_RATIO'] = 1
         @options['DETAILS_RATIO'] = 1
 
         @options['ENQUEUEDEQUEUE_RATIO'] = 1                              #axiom: stack = stack.pop(stack.push(Object))
@@ -40,6 +48,9 @@ module Maadi
         @notes['DEQUEUE_RATIO'] = 'Relative Ratio for DEQUEUE commands (0 or less, ignore command type)'
         @notes['ATINDEX_RATIO'] = 'Relative Ratio for AT INDEX commands (0 or less, ignore command type)'
         @notes['SIZE_RATIO'] = 'Relative Ratio for SIZE commands (0 or less, ignore command type)'
+        @notes['PEEK_RATIO'] = 'Relative Ratio for PEEK commands (0 or less, ignore command type)'
+        @notes['FRONT_RATIO'] = 'Relative Ratio for FRONT commands (0 or less, ignore command type)'
+        @notes['BACK_RATIO'] = 'Relative Ratio for BACK commands (0 or less, ignore command type)'
         @notes['DETAILS_RATIO'] = 'Relative Ratio for DETAILS commands (0 or less, ignore command type)'
 
         @notes['ENQUEUEDEQUEUE_RATIO'] = 'Relative Ratio for ENQUEUE, DEQUEUE sequence of commands (0 or less, ignore command type)'
