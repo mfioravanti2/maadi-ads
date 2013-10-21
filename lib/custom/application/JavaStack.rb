@@ -24,7 +24,7 @@ module Maadi
         #Current user information
         @options['STACKCLASSPATH'] = 'stack'
         @options['STACKNAME'] = 'stack' + @instance_name
-        @options['CLASSNAME'] = 'MyStack'
+        @options['CLASSNAME'] = 'CustomStack'
 
         @rStack = nil
       end
