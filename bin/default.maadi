@@ -10,14 +10,16 @@ set collector LogFile LogFile-Log
 # reduce the log level of the SQLite3 collector
 #set collector option SQLite3-Log LOG_LEVEL PARTIAL
 
-# Load the Expert for an ADS Stack
+# Load the Expert for an ADS Stack or Queue
 load expert-ads-stack.maadi
+#load expert-ads-queue.maadi
 
 set organizer RandomSelection RS-Organizer
 set monitor Example ExMon
 
 # Load the MySQL applications and configuration
 load app-ads-stack.maadi
+#load app-ads-queue.maadi
 
 set scheduler FIFO Queue
 #set analyzer Comparison Comp

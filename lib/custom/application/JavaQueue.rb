@@ -30,14 +30,14 @@ module Maadi
 
       #Returns the supported domains.
       def supported_domains
-        return %w(ADS-STACK ALGEBRAICADS-STACK ADS-QUEUE ADS-AXIOMATIC-QUEUE ALGEBRAICADS-QUEUE)
+        return %w(ADS-QUEUE ADS-AXIOMATIC-QUEUE ALGEBRAICADS-QUEUE)
       end
 
       #Returns true if the step id is "Step" and is the correct type of step for a Queue.
       #False otherwise
       def supports_step?(step)
         if Maadi::Procedure::Step.is_step?( step )
-          return %w(PUSH POP SIZE ATINDEX NULCONSTRUCT NONNULCONSTRUCT DETAILS).include?( step.id )
+          return %w(ENQUEUE DEQUEUE SIZE ATINDEX NULCONSTRUCT NONNULCONSTRUCT DETAILS).include?( step.id )
         end
 
         return false
@@ -78,7 +78,7 @@ module Maadi
                 begin
                   case step.id
                     #Case for when a push is called
-                    when 'PUSH'
+                    when 'ENQUEUE'
                       #Get the value to add to the push
                       rValue = step.get_parameter_value('[RVALUE]')
 
@@ -99,14 +99,14 @@ module Maadi
                       else
 
                         #Error:  the queue was not instantiated!
-                        lValue = rValue = 'PUSH Failed, ' + @options['CLASSNAME'] + ' not instantiated'
+                        lValue = rValue = 'ENQUEUE Failed, ' + @options['CLASSNAME'] + ' not instantiated'
                         lType = rType = 'TEXT'
 
                         bSuccess = false
                         bError = true
                       end
 
-                    when 'POP'
+                    when 'DEQUEUE'
                       #Make sure the queue is initialized.
                       if @rQueue != nil
                         #Need to check for size first
@@ -117,7 +117,7 @@ module Maadi
                         cmdResultsArray = runOperation('', lValueOPString, '')
 
                         if cmdResultsArray.at(2).to_i == 0
-                          lValue = rValue = 'POP Failed, Queue is empty'
+                          lValue = rValue = 'DEQUEUE Failed, Queue is empty'
                           lType = rType = 'TEXT'
 
                           bSuccess = false
@@ -140,7 +140,7 @@ module Maadi
                           bError = false
                         end
                       else
-                        lValue = rValue = 'POP Failed, ' + @options['CLASSNAME'] + ' not instantiated'
+                        lValue = rValue = 'DEQUEUE Failed, ' + @options['CLASSNAME'] + ' not instantiated'
                         lType = rType = 'TEXT'
 
                         bSuccess = false

@@ -13,7 +13,7 @@ module Maadi
       end
 
       def supported_domains
-        return %w(ADS-STACK ALGEBRAICADS-STACK ADS-QUEUE ADS-AXIOMATIC-QUEUE ALGEBRAICADS-QUEUE)
+        return %w(ADS-QUEUE ADS-AXIOMATIC-QUEUE ALGEBRAICADS-QUEUE)
       end
 
       def prepare
@@ -29,7 +29,7 @@ module Maadi
 
       def supports_step?( step )
         if Maadi::Procedure::Step.is_step?( step )
-          return %w(PUSH POP SIZE ATINDEX NULCONSTRUCT NONNULCONSTRUCT DETAILS).include?( step.id )
+          return %w(ENQUEUE DEQUEUE SIZE ATINDEX NULCONSTRUCT NONNULCONSTRUCT DETAILS).include?( step.id )
         end
 
         return false
@@ -60,7 +60,7 @@ module Maadi
 
                 begin
                   case step.id
-                    when 'PUSH'
+                    when 'ENQUEUE'
                       rValue = step.get_parameter_value('[RVALUE]')
 
                       if @rQueue != nil
@@ -71,13 +71,13 @@ module Maadi
                         bSuccess = true
                         bError = false
                       else
-                        lValue = rValue = 'PUSH Failed, Queue not instantiated'
+                        lValue = rValue = 'ENQEUE Failed, Queue not instantiated'
                         lType = rType = 'TEXT'
 
                         bSuccess = false
                         bError = true
                       end
-                    when 'POP'
+                    when 'DEQUEUE'
                       if @rQueue != nil
                         if @rQueue.size > 0
                           lValue = @rQueue.pop
@@ -88,14 +88,14 @@ module Maadi
                           bSuccess = true
                           bError = false
                         else
-                          lValue = rValue = 'POP Failed, Queue is empty'
+                          lValue = rValue = 'DEQUEUE Failed, Queue is empty'
                           lType = rType = 'TEXT'
 
                           bSuccess = false
                           bError = true
                         end
                       else
-                        lValue = rValue = 'POP Failed, Queue not instantiated'
+                        lValue = rValue = 'DEQUEUE Failed, Queue not instantiated'
                         lType = rType = 'TEXT'
 
                         bSuccess = false

@@ -12,3 +12,4 @@ set application RubyQueue RubyQueue1
 set application JavaQueue JavaQueue
 #set application option JavaQueue ROOTPATH "C:\Users\Mr. Fluffy Pants\RubymineProjects\maadi-ads\utils/java"
 set application option JavaQueue ROOTPATH D:/code/ruby/maadi-ads/utils/java
+
