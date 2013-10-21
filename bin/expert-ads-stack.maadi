@@ -6,9 +6,9 @@ set expert option CREATE_RATIO 0
 set expert option PUSH_RATIO 20
 set expert option POP_RATIO 4
 set expert option SIZE_RATIO 4
-set expert option PEEK_RATIO 0
-set expert option TOP_RATIO 0
-set expert option BOTTOM_RATIO 0
+set expert option PEEK_RATIO 1
+set expert option TOP_RATIO 1
+set expert option BOTTOM_RATIO 1
 set expert option ATINDEX_RATIO 5
 set expert option DETAILS_RATIO 3
 set expert option PUSHPOP_RATIO 4

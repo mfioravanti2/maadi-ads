@@ -38,7 +38,7 @@ module Maadi
       #False otherwise
       def supports_step?(step)
         if Maadi::Procedure::Step.is_step?( step )
-          return %w(PUSH POP SIZE ATINDEX NULCONSTRUCT NONNULCONSTRUCT DETAILS).include?( step.id )
+          return %w(PUSH POP SIZE ATINDEX NULCONSTRUCT NONNULCONSTRUCT DETAILS PEEK TOP BOTTOM).include?( step.id )
         end
 
         return false
@@ -286,7 +286,160 @@ module Maadi
                         bSuccess = false
                         bError = true
                       end
+
+                    when 'PEEK'
+
+                      if @rStack != nil
+                        #Need to check for size first
+                        lValueOPString = "System.out.println(" + @options['STACKNAME'] + ".size());\n"
+
+
+                        #First run the operation to check the size. If the size is zero, then flag error and exit
+                        cmdResultsArray = runOperation('', lValueOPString, '')
+
+                        #get the size
+                        tempSize = cmdResultsArray.at(2).to_i
+
+                        if  tempSize == 0
+
+                          #If the stack is empty, then there is no point to index something.
+                          lValue = rValue = 'PEEK Failed, Stack is empty'
+                          lType = rType = 'TEXT'
+
+                          bSuccess = false
+                          bError = true
+
+                        else
+
+                          #Everything is good, continue onward.
+                          rValueOPString = "System.out.println(" + @options['STACKNAME'] + ".atIndex(0));\n"
+                          lValueOPString = "System.out.println(" + @options['STACKNAME'] + ".size());\n"
+
+                          #Run the operation
+                          cmdResultsArray = runOperation('', lValueOPString, rValueOPString)
+
+                          #Set lValue - index 2 (STDOUT)
+                          lValue = cmdResultsArray.at(2)
+                          lType = 'INTEGER'
+
+                          #Set rValue = index 4 (STDOUT)
+                          rValue = cmdResultsArray.at(4)
+                          rType = 'INTEGER'
+
+                          bSuccess = true
+                          bError = false
+                        end
+
+                      else
+                        lValue = rValue = 'PEEK Failed, ' + @options['CLASSNAME'] + ' not instantiated'
+                        lType = rType = 'TEXT'
+
+                        bSuccess = false
+                        bError = true
+                      end
+
+                    when 'TOP'
+
+                      if @rStack != nil
+                        #Need to check for size first
+                        lValueOPString = "System.out.println(" + @options['STACKNAME'] + ".size());\n"
+
+
+                        #First run the operation to check the size. If the size is zero, then flag error and exit
+                        cmdResultsArray = runOperation('', lValueOPString, '')
+
+                        #get the size
+                        tempSize = cmdResultsArray.at(2).to_i
+
+                        if  tempSize == 0
+
+                          #If the stack is empty, then there is no point to index something.
+                          lValue = rValue = 'TOP Failed, Stack is empty'
+                          lType = rType = 'TEXT'
+
+                          bSuccess = false
+                          bError = true
+
+                        else
+
+                          #Everything is good, continue onward.
+                          rValueOPString = "System.out.println(" + @options['STACKNAME'] + ".atIndex(0));\n"
+                          lValueOPString = "System.out.println(" + @options['STACKNAME'] + ".size());\n"
+
+                          #Run the operation
+                          cmdResultsArray = runOperation('', lValueOPString, rValueOPString)
+
+                          #Set lValue - index 2 (STDOUT)
+                          lValue = cmdResultsArray.at(2)
+                          lType = 'INTEGER'
+
+                          #Set rValue = index 4 (STDOUT)
+                          rValue = cmdResultsArray.at(4)
+                          rType = 'INTEGER'
+
+                          bSuccess = true
+                          bError = false
+                        end
+
+                      else
+                        lValue = rValue = 'TOP Failed, ' + @options['CLASSNAME'] + ' not instantiated'
+                        lType = rType = 'TEXT'
+
+                        bSuccess = false
+                        bError = true
+                      end
+
+                    when 'BOTTOM'
+
+                      if @rStack != nil
+                        #Need to check for size first
+                        lValueOPString = "System.out.println(" + @options['STACKNAME'] + ".size());\n"
+
+
+                        #First run the operation to check the size. If the size is zero, then flag error and exit
+                        cmdResultsArray = runOperation('', lValueOPString, '')
+
+                        #get the size
+                        tempSize = cmdResultsArray.at(2).to_i
+
+                        if  tempSize == 0
+
+                          #If the stack is empty, then there is no point to index something.
+                          lValue = rValue = 'BOTTOM Failed, Stack is empty'
+                          lType = rType = 'TEXT'
+
+                          bSuccess = false
+                          bError = true
+
+                        else
+                          #Everything is good, continue onward.
+                          rValueOPString = "System.out.println(" + @options['STACKNAME'] + ".atIndex("+ @options['STACKNAME'] + ".size() -1));\n"
+                          lValueOPString = "System.out.println(" + @options['STACKNAME'] + ".size());\n"
+                          #Run the operation
+                          cmdResultsArray = runOperation('', lValueOPString, rValueOPString)
+                          #Set lValue - index 2 (STDOUT)
+                          lValue = cmdResultsArray.at(2)
+                          lType = 'INTEGER'
+
+                          #Set rValue = index 4 (STDOUT)
+                          rValue = cmdResultsArray.at(4)
+                          rType = 'INTEGER'
+
+                          bSuccess = true
+                          bError = false
+                          p 'End stuff'
+                        end
+
+                      else
+                        lValue = rValue = 'BOTTOM Failed, ' + @options['CLASSNAME'] + ' not instantiated'
+                        lType = rType = 'TEXT'
+
+                        bSuccess = false
+                        bError = true
+                      end
                   end
+
+
 
                   #Print some meaningful information
                   Maadi::post_message(:Info, "#{@type}:#{@instance_name} #{step.id} Operation String: ' #{operationString.to_s}",3)

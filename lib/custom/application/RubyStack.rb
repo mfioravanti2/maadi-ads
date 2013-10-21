@@ -29,7 +29,7 @@ module Maadi
 
       def supports_step?( step )
         if Maadi::Procedure::Step.is_step?( step )
-          return %w(PUSH POP SIZE ATINDEX NULCONSTRUCT NONNULCONSTRUCT DETAILS).include?( step.id )
+          return %w(PUSH POP SIZE ATINDEX NULCONSTRUCT NONNULCONSTRUCT DETAILS PEEK TOP BOTTOM).include?( step.id )
         end
 
         return false
@@ -181,7 +181,83 @@ module Maadi
                           bSuccess = false
                           bError = true
                         end
+                      when 'PEEK'
 
+                        if @rStack != nil
+                          if @rStack.size > 0
+
+                            rValue = @rStack[0]
+                            rType = 'INTEGER'
+                            lValue = @rStack.size
+                            lType = 'INTEGER'
+
+                            bSuccess = true
+                            bError = false
+
+                          else
+                            lValue = rValue = 'PEEK Failed, Stack is empty'
+                            lType = rType = 'TEXT'
+                            bSuccess = false
+                            bError = true
+                          end
+                        else
+                          lValue = rValue = 'PEEK Failed, Stack not instantiated'
+                          lType = rType = 'TEXT'
+                          bSuccess = false
+                          bError = true
+                        end
+
+                      when 'TOP'
+
+                        if @rStack != nil
+                          if @rStack.size > 0
+
+                            rValue = @rStack[0]
+                            rType = 'INTEGER'
+                            lValue = @rStack.size
+                            lType = 'INTEGER'
+
+                            bSuccess = true
+                            bError = false
+
+                          else
+                            lValue = rValue = 'TOP Failed, Stack is empty'
+                            lType = rType = 'TEXT'
+                            bSuccess = false
+                            bError = true
+                          end
+                        else
+                          lValue = rValue = 'TOP Failed, Stack not instantiated'
+                          lType = rType = 'TEXT'
+                          bSuccess = false
+                          bError = true
+                        end
+
+                      when 'BOTTOM'
+
+                        if @rStack != nil
+                          if @rStack.size > 0
+
+                            rValue = @rStack[(@rStack.size-1)]
+                            rType = 'INTEGER'
+                            lValue = @rStack.size
+                            lType = 'INTEGER'
+
+                            bSuccess = true
+                            bError = false
+
+                          else
+                            lValue = rValue = 'BOTTOM Failed, Stack is empty'
+                            lType = rType = 'TEXT'
+                            bSuccess = false
+                            bError = true
+                          end
+                        else
+                          lValue = rValue = 'BOTTOM Failed, Stack not instantiated'
+                          lType = rType = 'TEXT'
+                          bSuccess = false
+                          bError = true
+                        end
                       else
                     end
 
