@@ -29,7 +29,7 @@ module Maadi
 
       def supports_step?( step )
         if Maadi::Procedure::Step.is_step?( step )
-          return %w(ENQUEUE DEQUEUE SIZE ATINDEX NULCONSTRUCT NONNULCONSTRUCT DETAILS).include?( step.id )
+          return %w(ENQUEUE DEQUEUE SIZE ATINDEX NULCONSTRUCT NONNULCONSTRUCT DETAILS PEEK FRONT BACK).include?( step.id )
         end
 
         return false
@@ -195,7 +195,83 @@ module Maadi
                         bSuccess = false
                         bError = true
                       end
+                    when 'PEEK'
 
+                      if @rQueue != nil
+                        if @rQueue.size > 0
+
+                          rValue = Array(@rQueue)[0]
+                          rType = 'INTEGER'
+                          lValue = @rQueue.size
+                          lType = 'INTEGER'
+
+                          bSuccess = true
+                          bError = false
+
+                        else
+                          lValue = rValue = 'PEEK Failed, Queue is empty'
+                          lType = rType = 'TEXT'
+                          bSuccess = false
+                          bError = true
+                        end
+                      else
+                        lValue = rValue = 'PEEK Failed, Queue not instantiated'
+                        lType = rType = 'TEXT'
+                        bSuccess = false
+                        bError = true
+                      end
+
+                    when 'FRONT'
+
+                      if @rQueue != nil
+                        if @rQueue.size > 0
+
+                          rValue = Array(@rQueue)[0]
+                          rType = 'INTEGER'
+                          lValue = @rQueue.size
+                          lType = 'INTEGER'
+
+                          bSuccess = true
+                          bError = false
+
+                        else
+                          lValue = rValue = 'FRONT Failed, Queue is empty'
+                          lType = rType = 'TEXT'
+                          bSuccess = false
+                          bError = true
+                        end
+                      else
+                        lValue = rValue = 'FRONT Failed, Queue not instantiated'
+                        lType = rType = 'TEXT'
+                        bSuccess = false
+                        bError = true
+                      end
+
+                    when 'BACK'
+
+                      if @rQueue != nil
+                        if @rQueue.size > 0
+
+                          rValue =  Array(@rQueue)[(@rQueue.size-1)]
+                          rType = 'INTEGER'
+                          lValue = @rQueue.size
+                          lType = 'INTEGER'
+
+                          bSuccess = true
+                          bError = false
+
+                        else
+                          lValue = rValue = 'BACK Failed, Queue is empty'
+                          lType = rType = 'TEXT'
+                          bSuccess = false
+                          bError = true
+                        end
+                      else
+                        lValue = rValue = 'BACK Failed, Queue not instantiated'
+                        lType = rType = 'TEXT'
+                        bSuccess = false
+                        bError = true
+                      end
                     else
                   end
 

@@ -7,8 +7,8 @@ set expert option CREATE_RATIO 0
 set expert option ENQUEUE_RATIO 20
 set expert option DEQUEUE_RATIO 4
 set expert option SIZE_RATIO 4
-set expert option PEEK_RATIO 0
-set expert option FRONT_RATIO 0
-set expert option BACK_RATIO 0
+set expert option PEEK_RATIO 1
+set expert option FRONT_RATIO 1
+set expert option BACK_RATIO 1
 set expert option ATINDEX_RATIO 5
 set expert option DETAILS_RATIO 3

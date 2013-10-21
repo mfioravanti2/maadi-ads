@@ -37,7 +37,7 @@ module Maadi
       #False otherwise
       def supports_step?(step)
         if Maadi::Procedure::Step.is_step?( step )
-          return %w(ENQUEUE DEQUEUE SIZE ATINDEX NULCONSTRUCT NONNULCONSTRUCT DETAILS).include?( step.id )
+          return %w(ENQUEUE DEQUEUE SIZE ATINDEX NULCONSTRUCT NONNULCONSTRUCT DETAILS PEEK FRONT BACK).include?( step.id )
         end
 
         return false
@@ -45,7 +45,7 @@ module Maadi
 
 
       #Executes a procedure (a collection of steps) that are valid to the
-      # execution of a ADS-STACK domain.
+      # execution of a ADS-QUEUE domain.
       #
       #Parameters:
       #test_id - an identification of a collection of steps
@@ -273,6 +273,156 @@ module Maadi
                         bError = false
                       else
                         lValue = rValue = 'DETAILS Failed, ' + @options['CLASSNAME'] + ' not instantiated'
+                        lType = rType = 'TEXT'
+
+                        bSuccess = false
+                        bError = true
+                      end
+
+                    when 'PEEK'
+
+                      if @rQueue != nil
+                        #Need to check for size first
+                        lValueOPString = "System.out.println(" + @options['QUEUENAME'] + ".size());\n"
+
+
+                        #First run the operation to check the size. If the size is zero, then flag error and exit
+                        cmdResultsArray = runOperation('', lValueOPString, '')
+
+                        #get the size
+                        tempSize = cmdResultsArray.at(2).to_i
+
+                        if  tempSize == 0
+
+                          #If the queue is empty, then there is no point to index something.
+                          lValue = rValue = 'PEEK Failed, Queue is empty'
+                          lType = rType = 'TEXT'
+
+                          bSuccess = false
+                          bError = true
+
+                        else
+
+                          #Everything is good, continue onward.
+                          rValueOPString = "System.out.println(" + @options['QUEUENAME'] + ".atIndex(0));\n"
+                          lValueOPString = "System.out.println(" + @options['QUEUENAME'] + ".size());\n"
+
+                          #Run the operation
+                          cmdResultsArray = runOperation('', lValueOPString, rValueOPString)
+
+                          #Set lValue - index 2 (STDOUT)
+                          lValue = cmdResultsArray.at(2)
+                          lType = 'INTEGER'
+
+                          #Set rValue = index 4 (STDOUT)
+                          rValue = cmdResultsArray.at(4)
+                          rType = 'INTEGER'
+
+                          bSuccess = true
+                          bError = false
+                        end
+
+                      else
+                        lValue = rValue = 'PEEK Failed, ' + @options['CLASSNAME'] + ' not instantiated'
+                        lType = rType = 'TEXT'
+
+                        bSuccess = false
+                        bError = true
+                      end
+
+                    when 'FRONT'
+
+                      if @rQueue != nil
+                        #Need to check for size first
+                        lValueOPString = "System.out.println(" + @options['QUEUENAME'] + ".size());\n"
+
+
+                        #First run the operation to check the size. If the size is zero, then flag error and exit
+                        cmdResultsArray = runOperation('', lValueOPString, '')
+
+                        #get the size
+                        tempSize = cmdResultsArray.at(2).to_i
+
+                        if  tempSize == 0
+
+                          #If the queue is empty, then there is no point to index something.
+                          lValue = rValue = 'FRONT Failed, Queue is empty'
+                          lType = rType = 'TEXT'
+
+                          bSuccess = false
+                          bError = true
+
+                        else
+
+                          #Everything is good, continue onward.
+                          rValueOPString = "System.out.println(" + @options['QUEUENAME'] + ".atIndex(0));\n"
+                          lValueOPString = "System.out.println(" + @options['QUEUENAME'] + ".size());\n"
+
+                          #Run the operation
+                          cmdResultsArray = runOperation('', lValueOPString, rValueOPString)
+
+                          #Set lValue - index 2 (STDOUT)
+                          lValue = cmdResultsArray.at(2)
+                          lType = 'INTEGER'
+
+                          #Set rValue = index 4 (STDOUT)
+                          rValue = cmdResultsArray.at(4)
+                          rType = 'INTEGER'
+
+                          bSuccess = true
+                          bError = false
+                        end
+
+                      else
+                        lValue = rValue = 'FRONT Failed, ' + @options['CLASSNAME'] + ' not instantiated'
+                        lType = rType = 'TEXT'
+
+                        bSuccess = false
+                        bError = true
+                      end
+
+                    when 'BACK'
+
+                      if @rQueue != nil
+                        #Need to check for size first
+                        lValueOPString = "System.out.println(" + @options['QUEUENAME'] + ".size());\n"
+
+
+                        #First run the operation to check the size. If the size is zero, then flag error and exit
+                        cmdResultsArray = runOperation('', lValueOPString, '')
+
+                        #get the size
+                        tempSize = cmdResultsArray.at(2).to_i
+
+                        if  tempSize == 0
+
+                          #If the queue is empty, then there is no point to index something.
+                          lValue = rValue = 'BACK Failed, Queue is empty'
+                          lType = rType = 'TEXT'
+
+                          bSuccess = false
+                          bError = true
+
+                        else
+                          #Everything is good, continue onward.
+                          rValueOPString = "System.out.println(" + @options['QUEUENAME'] + ".atIndex("+ @options['QUEUENAME'] + ".size() -1));\n"
+                          lValueOPString = "System.out.println(" + @options['QUEUENAME'] + ".size());\n"
+                          #Run the operation
+                          cmdResultsArray = runOperation('', lValueOPString, rValueOPString)
+                          #Set lValue - index 2 (STDOUT)
+                          lValue = cmdResultsArray.at(2)
+                          lType = 'INTEGER'
+
+                          #Set rValue = index 4 (STDOUT)
+                          rValue = cmdResultsArray.at(4)
+                          rType = 'INTEGER'
+
+                          bSuccess = true
+                          bError = false
+                        end
+
+                      else
+                        lValue = rValue = 'BACK Failed, ' + @options['CLASSNAME'] + ' not instantiated'
                         lType = rType = 'TEXT'
 
                         bSuccess = false
