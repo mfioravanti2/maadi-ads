@@ -16,16 +16,17 @@ module Maadi
     class Xmlelementwrapper  < Shoes::Widget
 
         #Attributes
-       attr_accessor :xmlElement, :text, :button, :xmlAttributeWraps, :xmlElementWraps, :addRemoveButton
+       attr_accessor :xmlElement, :text, :button, :xmlAttributeWraps, :xmlElementWraps, :addRemoveButton, :doc, :rootFlow
 
        #The constructor
        #xmlElement - the Nokogiri representation of an XML element.
        def initialize opts={}
 
-         if opts[:xmlElement].is_a? ( Nokogiri::XML::Node)
+         if opts[:xmlElement].is_a? ( Nokogiri::XML::Node) and opts[:doc].is_a? ( Nokogiri::XML::Node)
 
            #Create an XML element
           @xmlElement = opts[:xmlElement]
+          @doc = opts[:doc]
           @xmlElementWraps = Array.new()
           @xmlAttributeWraps = Array.new()
 
@@ -86,6 +87,32 @@ module Maadi
            if @addRemoveButton.text == "+"
              prompt = ask ("Please enter a new child element.")
 
+             if prompt != nil and @rootFlow != nil
+               #Create the node
+               node = Nokogiri::XML::Node.new(prompt, @doc)
+               #Add to Nokogiri XML Element
+               @xmlElement << node
+
+               #Create a wrapper and add it to the flow
+               wrapper = nil
+               @rootFlow.append do
+                 #create a new class and add it
+                 wrapper = xmlelementwrapper :xmlElement=> node, :doc=>@doc
+
+                 #create a new flow for the children
+                 flow1 = flow :margin_left => 10 do
+                   #Do nothing
+                 end
+                 wrapper.setFlow(flow1)
+
+                 #Add created child to wrapper
+                 addXMLElement(wrapper)
+               end
+
+               #Reset the text
+               @addRemoveButton.text = "";
+
+             end
 
            elsif @addRemoveButton.text == "-"
 
@@ -94,19 +121,32 @@ module Maadi
              name = ""
              nameList = Array.new
              @xmlElementWraps.each do |child|
-               tempName = "\n"+ i.to_s + ". " + child.getXMLElement.name.to_s
-               name = name + tempName
+               tempName = i.to_s + ". " + child.getXMLElement.name.to_s
+               name = name + "\n" + tempName
                i = i + 1
                nameList.push(tempName)
              end
 
+             #Ask the user to input the xml element to remove
              prompt = ask "Which element would you like to delete?  Please enter a number\n and the full name listed below:" + name, width: 200, height:500
+             p 'The prompt is: ' + prompt
+             p 'The prompt is: ' + prompt
+             p 'The prompt is: ' + prompt
+             p 'The prompt is: ' + prompt
+             p 'The prompt is: ' + prompt
+             p 'The prompt is: ' + prompt
 
-             index = nameList.find_index(prompt)
+             #get the index.  If it exists, then time to remove
+             i = 0
+             @xmlElementWraps.each do |child|
+                if prompt == (i.to_s + ". " + child.getXMLElement.name.to_s)
 
-             if (index > -1)
-               #Remove stuff
+                  p 'Tearing down: ' + child.getXMLElement.name.to_s
+                  child.teardown
 
+
+                end
+                i = i + 1
              end
 
            end
@@ -178,10 +218,15 @@ module Maadi
          @addRemoveButton.show
        end
 
+       def setFlow (flow)
+         @rootFlow = flow
+       end
+
        #A deconstructor method
         def teardown
           @check.remove
           @text.remove
+          @addRemoveButton.remove
 
           @xmlAttributeWraps.each do |child|
             child.teardown
