@@ -129,27 +129,34 @@ module Maadi
 
              #Ask the user to input the xml element to remove
              prompt = ask "Which element would you like to delete?  Please enter a number\n and the full name listed below:" + name, width: 200, height:500
-             p 'The prompt is: ' + prompt
-             p 'The prompt is: ' + prompt
-             p 'The prompt is: ' + prompt
-             p 'The prompt is: ' + prompt
-             p 'The prompt is: ' + prompt
-             p 'The prompt is: ' + prompt
 
              #get the index.  If it exists, then time to remove
              i = 0
-             @xmlElementWraps.each do |child|
-                if prompt == (i.to_s + ". " + child.getXMLElement.name.to_s)
+             if prompt != nil
+               childToRemove = nil
+              @xmlElementWraps.each do |child|
+                  if prompt == (i.to_s + ". " + child.getXMLElement.name.to_s)
 
-                  p 'Tearing down: ' + child.getXMLElement.name.to_s
-                  child.teardown
+                    child.teardown
+                    childToRemove = child
+                    @xmlElement.children.each do |xmlchild|
+                      if prompt == (i.to_s + ". " + xmlchild.name.to_s )
+                        #@xmlElement.delete(xmlchild)
+                        xmlchild.remove
+                      end
+                    end
 
+                  end
+                  #Increment i
+                  i = i + 1
+              end
 
-                end
-                i = i + 1
+               #Remove the child
+               if childToRemove != nil
+                @xmlElementWraps.delete(childToRemove)
+               end
              end
-
-           end
+             end
          end
 
        end
