@@ -75,9 +75,12 @@ module Maadi
               @xmlObject = Nokogiri::XML(file)
 
               #Clear out the UI and reload
-              @mainFlow.clear
               @elements.teardown
-              @elements = createUIElements(@xmlObject)
+              @mainFlow.clear
+              @mainFlow = flow do
+                #create UI elements
+                @elements = createUIElements(@xmlObject)
+              end
 
               #Close the file
               file.close
