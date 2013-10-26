@@ -8,14 +8,10 @@ dbfile = Maadi::Collector::Collector.factory('LogFile')
 dbsql.prepare
 dbfile.prepare
 
-expert = Maadi::Expert::Expert.factory('ADSAxiomaticStack')
-expert.set_option('BUILD-NAME', 'ADSAxiomaticStack')
-expert.set_option('USE-BUILDER', 'TRUE')
-expert.set_option('MODEL-NAME', 'ADSStack')
-expert.set_option('USE-MODEL', 'TRUE')
+expert = Maadi::Expert::Expert.factory('ADSAxiomaticQueue')
 expert.prepare
 
-tests = %w(CREATE SIZE NEWSTACKSIZE PUSH PUSHPOPSIZE PUSHPOPSIZE)
+tests = %w(CREATE ENQUEUE PEEK FRONT BACK)
 
 tests.each do |test|
   puts "\n\n**** NEXT PROCEDURE ****\n"
@@ -23,7 +19,8 @@ tests.each do |test|
 
   procedure = expert.procedure( test, nil )
 
-  if %w(PUSH PUSHPOP PUSHPOPSIZE ATINDEX NEWSTACKINDEX NEWSTACKSIZE).include?(test)
+  if procedure != nil
+  if %w(ENQUEUE ENQUEUEDEQUEUE ENQUEUEDEQUEUESIZE PUSH PUSHPOP PUSHPOPSIZE ATINDEX NEWSTACKINDEX NEWSTACKSIZE).include?(test)
     procedure.steps.each do |step|
       step.parameters.each do |parameter|
         if parameter.constraint != nil
@@ -39,6 +36,7 @@ tests.each do |test|
   procedure = expert.procedure( test, procedure )
   procedure.show
   dbfile.log_procedure( procedure )
+  end
 end
 
 expert.teardown

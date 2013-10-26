@@ -24,7 +24,7 @@ module Maadi
       def initialize
         super('Builder')
 
-        @tests = Array.new
+        @tests = Hash.new
 
         @options['BUILD-NAME'] = ''
         @notes['BUILD-NAME'] = 'XML file which contains the build script'
@@ -43,7 +43,28 @@ module Maadi
 
           @test_nodes = doc.xpath('//tests/test')
           @test_nodes.each do |test|
-            @tests.push test['name']
+            @tests[ test['name'] ] = test
+
+            if test.attributes.keys.include?('type') and test.attributes.keys.include?( 'source' )
+              if test['type'].downcase == 'external'
+                if File.exists?( "../lib/custom/expert/builders/#{test['source']}.xml" )
+                  eXML = File.open( "../lib/custom/expert/builders/#{test['source']}.xml" )
+                  ext = Nokogiri::XML( eXML )
+                  eXML.close
+
+                  ext_node = ext.at("//tests/test[@name='#{test['name']}']")
+                  if ext_node != nil
+                    @tests[ test['name'] ] = ext_node
+                  else
+                    Maadi::post_message(:Warn, "Builder (#{@type}) unable to locate test in #{test['name']} file #{test['source']}.xml")
+                    return false
+                  end
+                else
+                  Maadi::post_message(:Warn, "Builder (#{@type}) unable to access file #{test['source']}.xml for test #{test['name']}")
+                  return false
+                end
+              end
+            end
           end
           #puts @tests.inspect
 
@@ -60,7 +81,7 @@ module Maadi
       # return (Array of Strings) with each element representing the name of
       # a test that this domain expert can generate
       def tests
-        return @tests
+        return @tests.keys
       end
 
       # create a specific test procedure that can be executed against an application.
@@ -68,18 +89,28 @@ module Maadi
       # parameters (Array of Parameters) array of selected parameters for the desired test
       # return (Procedure) return complete test procedure that is ready to be executed.
       def procedure( test, procedure, expert, model )
-        if @test_nodes == nil
+        unless @tests.keys.include?( test )
+          Maadi::post_message(:Warn, "Builder (#{@type}) unable to find test #{test}")
           return procedure
         end
 
-        phase = @test_nodes.at("test[@name='#{test}']/phases")['default']
-        if procedure != nil
-          phase = procedure.id
-        end
-        phase_node = @test_nodes.at("test[@name='#{test}']/phases/phase[@name='#{phase}']")
-        if phase_node != nil
-          phase = Maadi::Expert::Builder::Phase.new( phase_node, expert, model )
-          procedure = phase.process( procedure, expert, model )
+        #puts "Looking for #{test}"
+        node = @tests[test].at("phases")
+        if node != nil
+          #puts "Test is in HashMap"
+          phase = @tests[test].at("phases")['default']
+          if procedure != nil
+            phase = procedure.id
+          end
+          #puts "Looking for phase #{phase}"
+          phase_node = @tests[test].at("phases/phase[@name='#{phase}']")
+          if phase_node != nil
+            #puts "Building test with phase #{phase_node['name']}"
+            phase = Maadi::Expert::Builder::Phase.new( phase_node, expert, model )
+            procedure = phase.process( procedure, expert, model )
+          end
+        else
+          Maadi::post_message(:Warn, "Builder (#{@type}) unable to find test #{test} templates")
         end
 
         return procedure
