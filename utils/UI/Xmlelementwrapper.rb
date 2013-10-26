@@ -16,7 +16,7 @@ module Maadi
     class Xmlelementwrapper  < Shoes::Widget
 
         #Attributes
-       attr_accessor :xmlElement, :text, :button, :xmlAttributeWraps, :xmlElementWraps, :addRemoveButton, :doc, :rootFlow
+       attr_accessor :xmlElement, :text, :button, :xmlAttributeWraps, :xmlElementWraps, :addRemoveElementButton, :addRemoveAttributeButton, :doc, :rootFlow
 
        #The constructor
        #xmlElement - the Nokogiri representation of an XML element.
@@ -31,16 +31,19 @@ module Maadi
           @xmlAttributeWraps = Array.new()
 
           #Create addRemoveButton for XMLElement
-          setupAddAndRemoveButtons
+          setupAddAndRemoveElementButtons
 
           #Create the text widget
           @text = inscription @xmlElement.name.to_s, width:75
+
+          #Create addRemoveButton for XMLAttributes
+          setupAddAndRemoveAttrButtons
 
           #Make all the children
           @xmlElement.attribute_nodes.each do |attribute|
             xmlAttrWrap =  createXMLAttribute(attribute)
             xmlAttrWrap.hideSelf
-            xmlAttributeWraps.push(xmlAttrWrap)
+            @xmlAttributeWraps.push(xmlAttrWrap)
           end
 
           #Create a check box and add and remove buttons
@@ -79,12 +82,91 @@ module Maadi
         end
        end
 
-       #Setup the XML Element add and remove buttons
-       def setupAddAndRemoveButtons ()
-         @addRemoveButton = list_box items: ["", "+", "-"], width: 30
+       #Setup the XML Attribute add and remove buttons
+       def setupAddAndRemoveAttrButtons()
+         @addRemoveAttributeButton = list_box items: ["", "+", "-"], width: 30
 
-         @addRemoveButton.change do
-           if @addRemoveButton.text == "+"
+         @addRemoveAttributeButton.change do
+           if @addRemoveAttributeButton.text == "+"
+             prompt = ask ("Please enter a new child Attribute.")
+
+             if prompt != nil and @rootFlow != nil
+               #Create the node
+               #node = Nokogiri::XML::Node.new(prompt, @doc)
+               #Add to Nokogiri XML Element
+               @xmlElement[prompt] = 'value'
+
+               #Get the node
+               node = @xmlElement.attribute(prompt)
+
+               #Create a wrapper and add it to the flow
+               p @rootFlow.parent.to_s
+               @rootFlow.parent.append do
+                 #create a new class and add it
+                 xmlAttrWrap = createXMLAttribute(node)
+                 xmlAttrWrap.showSelf
+                 @xmlAttributeWraps.push(xmlAttrWrap)
+               end
+               #Reset the text
+               @addRemoveAttributeButton.text = "";
+             end
+
+           elsif @addRemoveAttributeButton.text == "-"
+
+             #create list of xml names
+             i = 0
+             name = ""
+             nameList = Array.new
+             @xmlAttributeWraps.each do |child|
+               tempName = i.to_s + ". " + child.getXmlAttribute.name.to_s
+               name = name + "\n" + tempName
+               i = i + 1
+               nameList.push(tempName)
+             end
+
+             #Ask the user to input the xml element to remove
+             prompt = ask "Which Attribute would you like to delete?  Please enter a number\n and the full name listed below:" + name, width: 200, height:500
+
+             #get the index.  If it exists, then time to remove
+             i = 0
+             if prompt != nil
+               childToRemove = nil
+               @xmlAttributeWraps.each do |child|
+                 if prompt == (i.to_s + ". " + child.getXmlAttribute.name.to_s)
+
+                   #Tear down the ui of the child
+                   child.teardown
+                   childToRemove = child
+                   @xmlElement.attribute_nodes().each do |xmlchild|
+                     if prompt == (i.to_s + ". " + xmlchild.name.to_s )
+                       #remove the child from the xml object
+                       xmlchild.remove
+                     end
+                   end
+
+                 end
+                 #Increment i
+                 i = i + 1
+               end
+
+               #Remove the child
+               if childToRemove != nil
+                 @xmlAttributeWraps.delete(childToRemove)
+               end
+
+               #Reset the text
+               @addRemoveAttributeButton.text = "";
+             end
+           end
+         end
+       end
+
+       #Setup the XML Element add and remove buttons
+       def setupAddAndRemoveElementButtons ()
+         @addRemoveElementButton = list_box items: ["", "+", "-"], width: 30
+
+         @addRemoveElementButton.change do
+           if @addRemoveElementButton.text == "+"
              prompt = ask ("Please enter a new child element.")
 
              if prompt != nil and @rootFlow != nil
@@ -110,11 +192,11 @@ module Maadi
                end
 
                #Reset the text
-               @addRemoveButton.text = "";
+               @addRemoveElementButton.text = "";
 
              end
 
-           elsif @addRemoveButton.text == "-"
+           elsif @addRemoveElementButton.text == "-"
 
              #create list of xml names
              i = 0
@@ -189,7 +271,7 @@ module Maadi
        end
 
        #Adds an xmlAttributeWrap
-       def addAttribute(xmlAttributeWrap)
+       def addXMLAttribute(xmlAttributeWrap)
          if xmlAttributeWrap.is_a(Maadi::UI::Xmlattributewrapper)
            @xmlAttributeWraps.push(xmlAttributeWrap)
          end
@@ -203,7 +285,8 @@ module Maadi
 
        #Hides the widget
        def hideSelf
-          @addRemoveButton.hide
+          @addRemoveElementButton.hide
+          @addRemoveAttributeButton.hide
           @check.hide
           @check.checked = false;
           @text.hide
@@ -222,7 +305,8 @@ module Maadi
        def showSelf
          @check.show
          @text.show
-         @addRemoveButton.show
+         @addRemoveElementButton.show
+         @addRemoveAttributeButton.show
        end
 
        def setFlow (flow)
@@ -233,7 +317,8 @@ module Maadi
         def teardown
           @check.remove
           @text.remove
-          @addRemoveButton.remove
+          @addRemoveElementButton.remove
+          @addRemoveAttributeButton.remove
 
           @xmlAttributeWraps.each do |child|
             child.teardown
