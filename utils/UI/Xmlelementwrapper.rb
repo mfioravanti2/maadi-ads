@@ -16,7 +16,7 @@ module Maadi
     class Xmlelementwrapper  < Shoes::Widget
 
         #Attributes
-       attr_accessor :xmlElement, :text, :button, :xmlAttributeWraps, :xmlElementWraps, :addRemoveElementButton, :addRemoveAttributeButton, :doc, :rootFlow
+       attr_accessor :xmlElement, :text, :xmlAttributeWraps, :xmlElementWraps, :addRemoveElementButton, :addRemoveAttributeButton, :doc, :rootFlow
 
        #The constructor
        #xmlElement - the Nokogiri representation of an XML element.
@@ -101,9 +101,10 @@ module Maadi
 
                #Create a wrapper and add it to the flow
                p @rootFlow.parent.to_s
-               @rootFlow.parent.append do
+               @rootFlow.parent.before(@check) do
                  #create a new class and add it
                  xmlAttrWrap = createXMLAttribute(node)
+
                  xmlAttrWrap.showSelf
                  @xmlAttributeWraps.push(xmlAttrWrap)
                end
