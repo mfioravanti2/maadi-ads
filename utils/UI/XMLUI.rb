@@ -127,8 +127,9 @@ module Maadi
     end
 
     #Root shoes app
-    Shoes.app :title => "Green Shoes XML Editor" do
+    Shoes.app :title => "Green Shoes XML Editor", :width=> 800, :height =>600 do
 
+      background whitesmoke
 
       #Open a file to start her up.
       @fXML = File.open("test.xml")
@@ -146,8 +147,6 @@ module Maadi
         @interface=xmlui({:xmlObj => @xmlObj})
 
       end
-
-      para 'Finished'
     end
 
   end

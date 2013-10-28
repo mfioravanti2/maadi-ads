@@ -109,7 +109,7 @@ module Maadi
                  @xmlAttributeWraps.push(xmlAttrWrap)
                end
                #Reset the text
-               @addRemoveAttributeButton.text = "";
+               @addRemoveAttributeButton.choose("");
              end
 
            elsif @addRemoveAttributeButton.text == "-"
@@ -156,7 +156,7 @@ module Maadi
                end
 
                #Reset the text
-               @addRemoveAttributeButton.text = "";
+               @addRemoveAttributeButton.choose("");
              end
            end
          end
@@ -193,7 +193,7 @@ module Maadi
                end
 
                #Reset the text
-               @addRemoveElementButton.text = "";
+               @addRemoveElementButton.choose("");
 
              end
 
@@ -238,6 +238,8 @@ module Maadi
                if childToRemove != nil
                 @xmlElementWraps.delete(childToRemove)
                end
+
+               @addRemoveElementButton.choose("");
              end
              end
          end

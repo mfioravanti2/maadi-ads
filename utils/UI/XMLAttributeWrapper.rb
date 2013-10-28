@@ -60,8 +60,12 @@ module Maadi
 
         #Deconstructor
         def teardown
+
+          #Remove the widgets then clear them away
           @text.remove
           @editLine.remove
+          @text.clear
+          @editLine.clear
 
         end
 
