@@ -8,9 +8,11 @@ dbfile = Maadi::Collector::Collector.factory('LogFile')
 dbsql.prepare
 dbfile.prepare
 
+#expert = Maadi::Expert::Expert.factory('ADSAxiomaticStack')
 expert = Maadi::Expert::Expert.factory('ADSAxiomaticQueue')
 expert.prepare
 
+#tests = %w(CREATE PUSH PEEK TOP BOTTOM)
 tests = %w(CREATE ENQUEUE PEEK FRONT BACK)
 
 tests.each do |test|

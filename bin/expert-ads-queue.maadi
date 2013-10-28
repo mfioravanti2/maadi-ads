@@ -1,9 +1,9 @@
 # setup the Expert for a Stack and configure the ratios accordingly
-set expert ADSQueue Queue-Exp
-#set expert ADSAxiomaticQueue Queue-Exp
+#set expert ADSQueue Queue-Exp
+set expert ADSAxiomaticQueue Queue-Exp
 
 set expert option CREATE_RATIO 0
-#set expert option ENQUEUEDEQUEUE_RATIO 4
+set expert option ENQUEUEDEQUEUE_RATIO 4
 set expert option ENQUEUE_RATIO 20
 set expert option DEQUEUE_RATIO 4
 set expert option SIZE_RATIO 4

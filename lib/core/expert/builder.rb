@@ -30,6 +30,55 @@ module Maadi
         @notes['BUILD-NAME'] = 'XML file which contains the build script'
       end
 
+      # extract a hash with information about the tests located within the file
+      # specified.
+      # return (Hash) key = test name, value = (Hash) { type = ###, source = ### }
+      def self.extract_tests(file)
+        tests = Hash.new
+
+        if File.exists?( "../lib/custom/expert/builders/#{file}.xml" )
+          xml_file = File.open( "../lib/custom/expert/builders/#{file}.xml" )
+          xml_doc = Nokogiri::XML( xml_file )
+          xml_file.close
+
+          nodes = xml_doc.xpath('//tests/test')
+          nodes.each do |node|
+            tests[ node['name'] ] = { 'type' => 'internal', 'source' => file }
+
+            if node.attributes.keys.include?('type') and node.attributes.keys.include?( 'source' )
+              tests[ node['name'] ]['type'] = node['type']
+              tests[ node['name'] ]['source'] = node['source']
+            end
+          end
+        end
+
+        return tests
+      end
+
+      # extract an XML node from a test file, if the node type is 'external', the function
+      # will attempt to extract the file from the location listed in the 'source' attribute
+      # return (Nokogiri::Node)
+      def self.extract_test(test,file)
+        node = nil
+
+        if File.exists?( "../lib/custom/expert/builders/#{file}.xml" )
+          xml_file = File.open( "../lib/custom/expert/builders/#{file}.xml" )
+          xml_doc = Nokogiri::XML( xml_file )
+          xml_file.close
+
+          node = xml_doc.at("//tests/test[@name='#{test}']")
+          if node != nil
+            if node.attributes.keys.include?('type') and node.attributes.keys.include?( 'source' )
+              if node['type'].downcase == 'external' and node['source'] != file
+                return extract_test( test, node['source'] )
+              end
+            end
+          end
+        end
+
+        return node
+      end
+
       # prepare will setup the execution environment.  No tests will be executed but all required
       # resources and services will be prepared to execution.
       # return (bool) true if all of the components are read.
@@ -37,37 +86,13 @@ module Maadi
         if File.exists?( "../lib/custom/expert/builders/#{@options['BUILD-NAME']}.xml" )
           Maadi::post_message(:More, "Builder (#{@type}) loading files")
 
-          fXML = File.open( "../lib/custom/expert/builders/#{@options['BUILD-NAME']}.xml" )
-          doc = Nokogiri::XML(fXML)
-          fXML.close
-
-          @test_nodes = doc.xpath('//tests/test')
-          @test_nodes.each do |test|
-            @tests[ test['name'] ] = test
-
-            if test.attributes.keys.include?('type') and test.attributes.keys.include?( 'source' )
-              if test['type'].downcase == 'external'
-                if File.exists?( "../lib/custom/expert/builders/#{test['source']}.xml" )
-                  eXML = File.open( "../lib/custom/expert/builders/#{test['source']}.xml" )
-                  ext = Nokogiri::XML( eXML )
-                  eXML.close
-
-                  ext_node = ext.at("//tests/test[@name='#{test['name']}']")
-                  if ext_node != nil
-                    @tests[ test['name'] ] = ext_node
-                  else
-                    Maadi::post_message(:Warn, "Builder (#{@type}) unable to locate test in #{test['name']} file #{test['source']}.xml")
-                    return false
-                  end
-                else
-                  Maadi::post_message(:Warn, "Builder (#{@type}) unable to access file #{test['source']}.xml for test #{test['name']}")
-                  return false
-                end
-              end
+          items = Builder.extract_tests( @options['BUILD-NAME'] )
+          items.each do |key, value|
+            node = Builder.extract_test( key, value['source'] )
+            if node != nil
+              @tests[ key ] = node
             end
           end
-          #puts @tests.inspect
-
         else
           Maadi::post_message(:Warn, "Builder (#{@type}) unable to access files")
           return false
@@ -94,15 +119,12 @@ module Maadi
           return procedure
         end
 
-        #puts "Looking for #{test}"
-        node = @tests[test].at("phases")
+        node = @tests[test].at('phases')
         if node != nil
-          #puts "Test is in HashMap"
-          phase = @tests[test].at("phases")['default']
+          phase = @tests[test].at('phases')['default']
           if procedure != nil
             phase = procedure.id
           end
-          #puts "Looking for phase #{phase}"
           phase_node = @tests[test].at("phases/phase[@name='#{phase}']")
           if phase_node != nil
             #puts "Building test with phase #{phase_node['name']}"
