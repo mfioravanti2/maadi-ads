@@ -1,0 +1,205 @@
+<?xml version="1.0" encoding="utf-8"?>
+<xs:schema attributeFormDefault="unqualified" elementFormDefault="qualified" xmlns:xs="http://www.w3.org/2001/XMLSchema">
+  <xs:complexType name="test-condition">
+    <xs:simpleContent>
+      <xs:extension base="xs:string">
+        <xs:attribute type="xs:string" name="name" use="required"/>
+        <xs:attribute type="xs:string" name="query" use="required"/>
+        <xs:attribute type="xs:string" name="item" use="required"/>
+        <xs:attribute type="xs:string" name="type" use="required"/>
+      </xs:extension>
+    </xs:simpleContent>
+  </xs:complexType>
+  <xs:complexType name="add-procedure">
+    <xs:simpleContent>
+      <xs:extension base="xs:string">
+        <xs:attribute type="xs:string" name="name" use="required"/>
+      </xs:extension>
+    </xs:simpleContent>
+  </xs:complexType>
+  <xs:complexType name="add-step">
+    <xs:simpleContent>
+      <xs:extension base="xs:string">
+        <xs:attribute type="xs:string" name="to_procedure" use="required"/>
+        <xs:attribute type="xs:string" name="name" use="required"/>
+        <xs:attribute type="xs:string" name="target" use="required"/>
+        <xs:attribute type="xs:string" name="look_for" use="required"/>
+        <xs:attribute type="xs:string" name="command" use="required"/>
+        <xs:attribute type="xs:string" name="on_failure" use="required"/>
+      </xs:extension>
+    </xs:simpleContent>
+  </xs:complexType>
+  <xs:complexType name="add-parameter">
+    <xs:simpleContent>
+      <xs:extension base="xs:string">
+        <xs:attribute type="xs:string" name="to_procedure" use="required"/>
+        <xs:attribute type="xs:string" name="to_step" use="required"/>
+        <xs:attribute type="xs:string" name="name" use="required"/>
+      </xs:extension>
+    </xs:simpleContent>
+  </xs:complexType>
+  <xs:complexType name="add-constraint">
+    <xs:sequence>
+      <xs:element name="constraint-parameter" maxOccurs="unbounded" minOccurs="1">
+        <xs:complexType mixed="true">
+          <xs:sequence>
+            <xs:element name="operator" maxOccurs="unbounded" minOccurs="0">
+              <xs:complexType>
+                <xs:simpleContent>
+                  <xs:extension base="xs:string">
+                    <xs:attribute type="xs:string" name="name" use="required"/>
+                    <xs:attribute type="xs:string" name="source" use="required"/>
+                    <xs:attribute type="xs:string" name="type" use="required"/>
+                    <xs:attribute type="xs:string" name="value" use="required"/>
+                  </xs:extension>
+                </xs:simpleContent>
+              </xs:complexType>
+            </xs:element>
+          </xs:sequence>
+          <xs:attribute type="xs:string" name="name" use="required"/>
+          <xs:attribute type="xs:string" name="source" use="required"/>
+          <xs:attribute type="xs:string" name="value" use="required"/>
+          <xs:attribute type="xs:string" name="type" use="required"/>
+        </xs:complexType>
+      </xs:element>
+    </xs:sequence>
+    <xs:attribute type="xs:string" name="to_procedure" use="optional"/>
+    <xs:attribute type="xs:string" name="to_step" use="optional"/>
+    <xs:attribute type="xs:string" name="to_parameter" use="optional"/>
+    <xs:attribute type="xs:string" name="type" use="optional"/>
+  </xs:complexType>
+  <xs:complexType name="modify-procedure">
+    <xs:simpleContent>
+      <xs:extension base="xs:string">
+        <xs:attribute type="xs:string" name="attribute" use="required"/>
+        <xs:attribute type="xs:string" name="value" use="required"/>
+      </xs:extension>
+    </xs:simpleContent>
+  </xs:complexType>
+  <xs:complexType name="modify-step">
+    <xs:simpleContent>
+      <xs:extension base="xs:string">
+        <xs:attribute type="xs:string" name="to_step" use="required"/>
+        <xs:attribute type="xs:string" name="attribute" use="required"/>
+        <xs:attribute type="xs:string" name="value" use="required"/>
+      </xs:extension>
+    </xs:simpleContent>
+  </xs:complexType>
+  <xs:complexType name="modify-model">
+    <xs:simpleContent>
+      <xs:extension base="xs:string">
+        <xs:attribute type="xs:string" name="attribute" use="required"/>
+        <xs:attribute type="xs:string" name="type" use="required"/>
+        <xs:attribute type="xs:string" name="operation" use="required"/>
+        <xs:attribute type="xs:string" name="value" use="required"/>
+      </xs:extension>
+    </xs:simpleContent>
+  </xs:complexType>
+  <xs:complexType name="next-route">
+    <xs:simpleContent>
+      <xs:extension base="xs:string">
+        <xs:attribute type="xs:string" name="name" use="required"/>
+      </xs:extension>
+    </xs:simpleContent>
+  </xs:complexType>
+  <xs:complexType name="validation-condition">
+    <xs:simpleContent>
+      <xs:extension base="xs:string">
+        <xs:attribute type="xs:string" name="type" use="required"/>
+        <xs:attribute type="xs:string" name="look_for" use="required"/>
+        <xs:attribute type="xs:string" name="objects" use="required"/>
+        <xs:attribute type="xs:string" name="keys" use="required"/>
+      </xs:extension>
+    </xs:simpleContent>
+  </xs:complexType>
+  <xs:element name="xml">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element name="tests">
+          <xs:complexType>
+            <xs:sequence>
+              <xs:element name="test" maxOccurs="unbounded" minOccurs="0">
+                <xs:complexType mixed="true">
+                  <xs:sequence>
+                    <xs:element name="conditions" maxOccurs="1" minOccurs="0">
+                      <xs:complexType>
+                        <xs:sequence>
+                          <xs:element name="condition" type="test-condition" maxOccurs="unbounded" minOccurs="0" />
+                        </xs:sequence>
+                      </xs:complexType>
+                    </xs:element>
+                    <xs:element name="phases" maxOccurs="1" minOccurs="0">
+                      <xs:complexType>
+                        <xs:sequence>
+                          <xs:element name="phase" maxOccurs="unbounded" minOccurs="1">
+                            <xs:complexType>
+                              <xs:sequence>
+                                <xs:element name="sequence" maxOccurs="unbounded" minOccurs="1">
+                                  <xs:complexType>
+                                    <xs:sequence>
+                                      <xs:element name="add-procedure" type="add-procedure" maxOccurs="1" minOccurs="0" />
+                                      <xs:element name="add-step" type="add-step" maxOccurs="unbounded" minOccurs="0" />
+                                      <xs:element name="add-parameter" type="add-parameter" maxOccurs="unbounded" minOccurs="0" />
+                                      <xs:element name="add-constraint" type="add-constraint" maxOccurs="unbounded" minOccurs="0" />
+                                      <xs:element name="modify-procedure" type="modify-procedure" maxOccurs="unbounded" minOccurs="0" />
+                                      <xs:element name="modify-step" type="modify-step" maxOccurs="unbounded" minOccurs="0" />
+                                      <xs:element name="modify-model" type="modify-model" maxOccurs="unbounded" minOccurs="0" />
+                                      <xs:element name="next-route" type="next-route" maxOccurs="1" minOccurs="0" />
+                                      <xs:element name="validate" maxOccurs="unbounded" minOccurs="0">
+                                        <xs:complexType>
+                                          <xs:sequence>
+                                            <xs:element name="conditions" maxOccurs="unbounded" minOccurs="0">
+                                              <xs:complexType mixed="true">
+                                                <xs:sequence>
+                                                  <xs:element name="condition" type="validation-condition" maxOccurs="unbounded" minOccurs="0" />
+                                                </xs:sequence>
+                                              </xs:complexType>
+                                            </xs:element>
+                                            <xs:element name="actions" maxOccurs="1" minOccurs="1">
+                                              <xs:complexType>
+                                                <xs:sequence>
+                                                  <xs:element name="action" maxOccurs="unbounded" minOccurs="0">
+                                                    <xs:complexType>
+                                                      <xs:sequence>
+                                                        <xs:element name="modify-procedure" type="modify-procedure" maxOccurs="unbounded" minOccurs="0" />
+                                                        <xs:element name="modify-step" type="modify-step" maxOccurs="unbounded" minOccurs="0" />
+                                                        <xs:element name="modify-model" type="modify-model" maxOccurs="unbounded" minOccurs="0" />
+                                                        <xs:element name="next-route" type="next-route" maxOccurs="1" minOccurs="0" />
+                                                      </xs:sequence>
+                                                      <xs:attribute type="xs:string" name="type" use="required"/>
+                                                    </xs:complexType>
+                                                  </xs:element>
+                                                </xs:sequence>
+                                              </xs:complexType>
+                                            </xs:element>
+                                          </xs:sequence>
+                                          <xs:attribute type="xs:string" name="type" use="required"/>
+                                        </xs:complexType>
+                                      </xs:element>
+                                    </xs:sequence>
+                                    <xs:attribute type="xs:int" name="id" use="required"/>
+                                    <xs:attribute type="xs:string" name="on_failure" use="required"/>
+                                  </xs:complexType>
+                                </xs:element>
+                              </xs:sequence>
+                              <xs:attribute type="xs:int" name="id" use="required"/>
+                              <xs:attribute type="xs:string" name="name" use="required"/>
+                            </xs:complexType>
+                          </xs:element>
+                        </xs:sequence>
+                        <xs:attribute type="xs:string" name="default" use="required"/>
+                      </xs:complexType>
+                    </xs:element>
+                  </xs:sequence>
+                  <xs:attribute type="xs:string" name="name" use="required"/>
+                  <xs:attribute type="xs:string" name="type" use="optional"/>
+                  <xs:attribute type="xs:string" name="source" use="optional"/>
+                </xs:complexType>
+              </xs:element>
+            </xs:sequence>
+          </xs:complexType>
+        </xs:element>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+</xs:schema>
