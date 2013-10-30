@@ -122,11 +122,14 @@ module Maadi
         @validateWithSchemaButton.click do
           errorCollection = ''
           schema.validate(@xmlObject).each do |error|
-            puts error
-            errorCollection = errorCollection + "\n" + error.to_s
+            errorLine = error.line
+            errorLineStr = errorLine.to_s
+            errorCollection = errorCollection + "\n" + error.to_s + " for line: " + errorLineStr
           end
           if errorCollection != ''
             alert errorCollection
+          else
+            alert 'XML Validation Complete.  No errors detected!'
           end
 
         end
