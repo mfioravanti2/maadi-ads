@@ -19,21 +19,33 @@
             <add-procedure name="PUSHPOP-NEW" />
           </sequence>
           <sequence id="1" on_failure="EXIT">
-            <add-step to_procedure="PUSHPOP-NEW" name="PUSH-WIP" target="application" look_for="COMPLETED" command="" on_failure="TERM-PROC" />
+            <add-step to_procedure="PUSHPOP-NEW" name="SIZE1-WIP" target="application" look_for="LVALUE" command="" on_failure="TERM-PROC" />
           </sequence>
           <sequence id="2" on_failure="EXIT">
-            <add-parameter to_procedure="PUSHPOP-NEW" to_step="PUSH-WIP" name="[RVALUE]" />
+            <add-step to_procedure="PUSHPOP-NEW" name="PUSH-WIP" target="application" look_for="COMPLETED" command="" on_failure="TERM-PROC" />
           </sequence>
           <sequence id="3" on_failure="EXIT">
+            <add-parameter to_procedure="PUSHPOP-NEW" to_step="PUSH-WIP" name="[RVALUE]" />
+          </sequence>
+          <sequence id="4" on_failure="EXIT">
             <add-constraint to_procedure="PUSHPOP-NEW" to_step="PUSH-WIP" to_parameter="[RVALUE]" type="RANGED-INTEGER" >
               <constraint-parameter name="min_range" source="SPECIFIED" value="0" type="INTEGER" />
               <constraint-parameter name="max_range" source="EXPERT" value="MAX_INTEGER" type="INTEGER" />
             </add-constraint>
           </sequence>
-          <sequence id="4" on_failure="EXIT">
+          <sequence id="5" on_failure="EXIT">
             <add-step to_procedure="PUSHPOP-NEW" name="POP-WIP" target="application" look_for="LVALUE" command="" on_failure="TERM-PROC" />
           </sequence>
-          <sequence id="5" on_failure="EXIT">
+          <sequence id="6" on_failure="EXIT">
+            <add-step to_procedure="PUSHPOP-NEW" name="SIZE2-WIP" target="application" look_for="LVALUE" command="" on_failure="TERM-PROC" />
+          </sequence>
+          <sequence id="6" on_failure="EXIT">
+            <add-comparison to_procedure="PUSHPOP-NEW" name="SIZES-WIP" relationship="EQUALS">
+              <compare-item step="SIZE1-WIP" />
+              <compare-item step="SIZE2-WIP" />
+             </add-comparison>
+          </sequence>
+          <sequence id="7" on_failure="EXIT">
             <modify-procedure attribute="name" value="PUSHPOP-LAST" />
             <next-route name="PUSHPOP-LAST" />
           </sequence>
@@ -51,6 +63,8 @@
                   <modify-procedure attribute="name" value="PUSHPOP" />
                   <modify-step to_step="PUSH-WIP" attribute="name" value="PUSH" />
                   <modify-step to_step="POP-WIP" attribute="name" value="POP" />
+                  <modify-step to_step="SIZE1-WIP" attribute="name" value="SIZE" />
+                  <modify-step to_step="SIZE2-WIP" attribute="name" value="SIZE" />
                 </action>
                 <action type="FAILURE">
                   <modify-procedure attribute="complete" value="done" />

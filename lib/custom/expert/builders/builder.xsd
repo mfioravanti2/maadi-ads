@@ -68,6 +68,18 @@
     <xs:attribute type="xs:string" name="to_parameter" use="optional"/>
     <xs:attribute type="xs:string" name="type" use="optional"/>
   </xs:complexType>
+  <xs:complexType name="add-comparison">
+    <xs:sequence>
+      <xs:element name="compare-item" maxOccurs="unbounded" minOccurs="2">
+        <xs:complexType mixed="true">
+          <xs:attribute type="xs:string" name="step" use="required"/>
+        </xs:complexType>
+      </xs:element>
+    </xs:sequence>
+    <xs:attribute type="xs:string" name="name" use="required"/>
+    <xs:attribute type="xs:string" name="to_procedure" use="required"/>
+    <xs:attribute type="xs:string" name="relationship" use="required"/>
+  </xs:complexType>
   <xs:complexType name="modify-procedure">
     <xs:simpleContent>
       <xs:extension base="xs:string">
@@ -141,6 +153,7 @@
                                       <xs:element name="add-step" type="add-step" maxOccurs="unbounded" minOccurs="0" />
                                       <xs:element name="add-parameter" type="add-parameter" maxOccurs="unbounded" minOccurs="0" />
                                       <xs:element name="add-constraint" type="add-constraint" maxOccurs="unbounded" minOccurs="0" />
+                                      <xs:element name="add-comparison" type="add-comparison" maxOccurs="unbounded" minOccurs="0" />
                                       <xs:element name="modify-procedure" type="modify-procedure" maxOccurs="unbounded" minOccurs="0" />
                                       <xs:element name="modify-step" type="modify-step" maxOccurs="unbounded" minOccurs="0" />
                                       <xs:element name="modify-model" type="modify-model" maxOccurs="unbounded" minOccurs="0" />
@@ -161,6 +174,10 @@
                                                   <xs:element name="action" maxOccurs="unbounded" minOccurs="0">
                                                     <xs:complexType>
                                                       <xs:sequence>
+                                                        <xs:element name="add-step" type="add-step" maxOccurs="unbounded" minOccurs="0" />
+                                                        <xs:element name="add-parameter" type="add-parameter" maxOccurs="unbounded" minOccurs="0" />
+                                                        <xs:element name="add-constraint" type="add-constraint" maxOccurs="unbounded" minOccurs="0" />
+                                                        <xs:element name="add-comparison" type="add-comparison" maxOccurs="unbounded" minOccurs="0" />
                                                         <xs:element name="modify-procedure" type="modify-procedure" maxOccurs="unbounded" minOccurs="0" />
                                                         <xs:element name="modify-step" type="modify-step" maxOccurs="unbounded" minOccurs="0" />
                                                         <xs:element name="modify-model" type="modify-model" maxOccurs="unbounded" minOccurs="0" />

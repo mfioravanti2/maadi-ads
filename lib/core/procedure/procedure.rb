@@ -9,6 +9,7 @@
 #          the specific items which should be monitored and returned as
 #          Test Results.
 
+require_relative 'comparison'
 require_relative 'step'
 
 module Maadi
@@ -21,12 +22,14 @@ module Maadi
       #                  otherwise it should just be the test case execution number
       # steps (Array of Step) is an array of Step objects, which denotes each individual step of the procedure.
       # parameters (Array of Parameter) is an array of Parameters which are used in the individual steps
-      attr_accessor :id, :key_id, :steps, :parameters
+      # parameters (Array of Comparison) is an array of Comparisons which are used in to compare the
+      attr_accessor :id, :key_id, :steps, :parameters, :comparisons
 
       def initialize(id)
         @id = id
         @key_id = -1
         @parameters = Array.new
+        @comparisons = Array.new
         @steps = Array.new
         @complete = false
         @is_bad = false
@@ -105,9 +108,16 @@ module Maadi
             end
           end
         end
+
+        @comparisons.each do |comparison|
+          puts "\tCOMPARE: #{comparison.id} with #{comparison.relationship}"
+          comparison.steps.each do |item|
+            puts "\t\tSTEP: #{item.id}"
+          end
+        end
       end
 
-      def Procedure::is_procedure?( procedure, with_id = '' )
+      def self.is_procedure?( procedure, with_id = '' )
         if procedure != nil
           if procedure.is_a?( Maadi::Procedure::Procedure )
             if with_id != ''

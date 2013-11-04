@@ -1,4 +1,6 @@
 require 'rubygems'
+require 'json'
+require 'open3'
 
 require_relative '../lib/custom/factories'
 
@@ -8,12 +10,12 @@ dbfile = Maadi::Collector::Collector.factory('LogFile')
 dbsql.prepare
 dbfile.prepare
 
-#expert = Maadi::Expert::Expert.factory('ADSAxiomaticStack')
-expert = Maadi::Expert::Expert.factory('ADSAxiomaticQueue')
+expert = Maadi::Expert::Expert.factory('ADSAxiomaticStack')
+#expert = Maadi::Expert::Expert.factory('ADSAxiomaticQueue')
 expert.prepare
 
 #tests = %w(CREATE PUSH PEEK TOP BOTTOM)
-tests = %w(CREATE ENQUEUE PEEK FRONT BACK)
+tests = %w(CREATE PUSH PUSHPOP)
 
 tests.each do |test|
   puts "\n\n**** NEXT PROCEDURE ****\n"
@@ -45,3 +47,16 @@ expert.teardown
 
 dbsql.teardown
 dbfile.teardown
+
+puts "Process ID #{Process.pid}"
+
+mem_cmd = 'D:/Code/C++/Monitor-SysMemory/Debug/Monitor-SysMemory.exe'
+json_text = ''
+Open3.popen3(mem_cmd) do |stdin, stdout, stderr, wait_thr|
+  json_text = stdout.read
+end
+puts json_text
+
+#json_text = `D:/Code/C++/Monitor-SysMemory/Debug/Monitor-SysMemory.exe`
+json_obj = JSON.parse( json_text )
+puts "Total Physical Memory #{json_obj['physical']['total']['size']} #{json_obj['physical']['total']['units']}"
