@@ -21,7 +21,7 @@ module Maadi
     class XMLUI < Shoes::Widget
 
       #Attributes
-      attr_accessor :elements, :xmlObject, :saveButton, :loadButton, :mainFlow, :first
+      attr_accessor :elements, :xmlObject, :saveButton, :loadButton, :schemaPathButton, :validateWithSchemaButton, :mainFlow, :first, :schema
 
       #The constructor.  Takes one argument
       #xmlObj - a root Nokogiri XML Object
@@ -42,6 +42,9 @@ module Maadi
       def setupButtons
         @saveButton = button 'SaveFile'
         @loadButton = button 'LoadFile'
+        @schemaPathButton = button 'Set Schema Path'
+        @validateWithSchemaButton = button 'Validate with Schema'
+        @validateWithSchemaButton.hide
 
         #Create a save button
         @saveButton.click do
@@ -87,6 +90,51 @@ module Maadi
             end
           end
         end
+
+        #Create a schema path button
+        @schemaPathButton.click do
+          p 'Asking to open a file'
+          #Ask the user for a file path.
+          filePath = ask_open_file
+
+          if filePath == nil
+            alert 'File not loaded:  no file selected.'
+          elsif !filePath.include?(".xsd")
+            alert 'File not loaded: not an xsd file.'
+          else
+            #see if the file exists
+
+            #Verify if the file exists
+            if !File.exists?(filePath)
+              alert 'File not loaded: file does not exist!'
+            else
+
+              #open the file and store the object
+              @schema = Nokogiri::XML::Schema(File.read(filePath))
+              #Show other button
+              @validateWithSchemaButton.show
+
+            end
+          end
+        end
+
+        #Check Schema button
+        @validateWithSchemaButton.click do
+          errorCollection = ''
+          schema.validate(@xmlObject).each do |error|
+            errorLine = error.line
+            errorLineStr = errorLine.to_s
+            errorCollection = errorCollection + "\n" + error.to_s + " for line: " + errorLineStr
+          end
+          if errorCollection != ''
+            alert errorCollection
+          else
+            alert 'XML Validation Complete.  No errors detected!'
+          end
+
+        end
+
+
       end
 
       #Creates the Internal UI.
