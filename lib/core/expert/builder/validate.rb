@@ -15,6 +15,7 @@ require_relative 'actions/addconstraint'
 require_relative 'actions/addcomparison'
 require_relative 'actions/modifyprocedure'
 require_relative 'actions/modifystep'
+require_relative 'actions/modifycomparison'
 require_relative 'actions/modifyparameter'
 require_relative 'actions/modifyconstraint'
 require_relative 'actions/modifymodel'
@@ -100,6 +101,8 @@ module Maadi
                 list.push ModifyProcedure.new( order )
               when 'modify-step'
                 list.push ModifyStep.new( order )
+              when 'modify-comparison'
+                list.push ModifyComparison.new( order )
               when 'modify-parameter'
                 list.push ModifyParameter.new( order )
               when 'modify-constraint'

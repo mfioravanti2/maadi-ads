@@ -96,6 +96,16 @@ module Maadi
         return nil
       end
 
+      def get_comparison( comparison )
+        @comparisons.each do |item|
+          if item.id == comparison
+            return item
+          end
+        end
+
+        return nil
+      end
+
       def show
         puts "\nPROCEDURE: #{@id} (Status: #{ ( is_complete? ) ? 'DONE' : 'WIP'}, #{ ( has_failed? ) ? 'FAILED' : 'SUCCESS'})."
 
