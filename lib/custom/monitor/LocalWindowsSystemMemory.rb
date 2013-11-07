@@ -2,22 +2,32 @@
 #          Florida Institute of Technology
 # Course : CSE5400 Special Topics - High Volume Automated Testing
 # Date   : 01/18/2013
-# File   : Example.rb
+# File   : LocalWindowsProcessModules.rb
 #
-# Summary: This is an Example (i.e. Toy) Monitor which can be
-#          used for testing or as a template
+# Summary: This is a Local Windows System Memory Monitor
 
 require_relative 'factory'
 require_relative '../../core/helpers'
 
+class Array
+  def integer_sum
+    sum = 0
+    self.map{|x| sum += x.to_i}
+    return sum
+  end
+end
+
 module Maadi
   module Monitor
-    class Example < Monitor
+    class LocalWindowsProcessModules < Monitor
 
       def initialize
-        super('Example')
+        super('LocalWindowsProcessModules')
       end
 
+      def is_ok?
+        return true
+      end
       def prepare
         begin
 
@@ -69,6 +79,7 @@ module Maadi
       def teardown
         super
       end
+
     end
   end
 end

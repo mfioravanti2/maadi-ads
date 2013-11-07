@@ -55,8 +55,17 @@ json_text = ''
 Open3.popen3(mem_cmd) do |stdin, stdout, stderr, wait_thr|
   json_text = stdout.read
 end
-puts json_text
-
-#json_text = `D:/Code/C++/Monitor-SysMemory/Debug/Monitor-SysMemory.exe`
+#puts json_text
 json_obj = JSON.parse( json_text )
 puts "Total Physical Memory #{json_obj['physical']['total']['size']} #{json_obj['physical']['total']['units']}"
+
+mem_cmd = "D:/Code/C++/Monitor-Process/Debug/Monitor-Process.exe -pid=#{Process.pid}"
+json_text = ''
+Open3.popen3(mem_cmd) do |stdin, stdout, stderr, wait_thr|
+  json_text = stdout.read
+end
+json_text.gsub!( /\\/, '/' )
+#puts json_obj
+json_obj = JSON.parse( json_text )
+puts "Process Name=#{json_obj['name']} PID=#{json_obj['pid']}"
+
