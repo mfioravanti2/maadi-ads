@@ -11,12 +11,13 @@
 module Maadi
   module Procedure
     class Comparison
-      attr_accessor :id, :steps, :relationship
+      attr_accessor :id, :steps, :relationship, :key_id
 
       def initialize(id, steps, relationship)
         @id = id
         @steps = steps
         @relationship = relationship
+        @key_id = -1
 
         if @steps == nil
           @steps = Array.new

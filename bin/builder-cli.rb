@@ -15,7 +15,7 @@ expert = Maadi::Expert::Expert.factory('ADSAxiomaticStack')
 expert.prepare
 
 #tests = %w(CREATE PUSH PEEK TOP BOTTOM)
-tests = %w(CREATE PUSH PUSHPOP)
+tests = %w(CREATE PUSH PUSHPOP PUSH PUSHPOP PUSH PUSHPOP)
 
 tests.each do |test|
   puts "\n\n**** NEXT PROCEDURE ****\n"
@@ -35,10 +35,10 @@ tests.each do |test|
   end
 
   procedure.show
-  dbsql.log_procedure( procedure )
-  dbfile.log_procedure( procedure )
   procedure = expert.procedure( test, procedure )
   procedure.show
+
+  dbsql.log_procedure( procedure )
   dbfile.log_procedure( procedure )
   end
 end

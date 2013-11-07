@@ -99,6 +99,16 @@ module Maadi
                       )
 
           @db.execute( tbl_def )
+
+          tbl_def = %q( CREATE TABLE IF NOT EXISTS tblComparisons (
+                         cID integer primary key,
+                         pID integer,
+                         sID1 integer,
+                         sID2 integer,
+                         cRelationship varchar(255))
+                      )
+
+          @db.execute( tbl_def )
         end
 
         tables = @db.execute('SELECT name FROM sqlite_master WHERE type="table" AND name="tblResults" ORDER BY name')
@@ -134,6 +144,14 @@ module Maadi
                                 D.dStep As qStep, D.dStepId As qStepId, D.dStatus As qStatus, D.dType As qType, D.dData As qData
                          FROM tblResults As R, tblResultData As D
                          WHERE D.rID = R.rID
+                      )
+
+          @db.execute( tbl_def )
+
+          tbl_def = %q( CREATE VIEW IF NOT EXISTS qryComparisons AS
+                         SELECT R.rTestId As qTestId, R.rProc As qProc, R.rProcId As qProcId, C.cRelationship As qRelationship
+                         FROM tblComparisons As C, tblResults As R, tblResultData As D1, tblResultData As D2
+                         WHERE C.pID = R.rProcID AND C.sID1 = D1.dStepId AND C.sID2 = D2.dStepId
                       )
 
           @db.execute( tbl_def )
@@ -267,6 +285,29 @@ module Maadi
                     if parameter.key_id == -1
                       parameter.key_id = paId
                     end
+                  end
+                end
+              end
+
+              procedure.comparisons.each do |comparison|
+                is_ok = false
+                cpId = -1
+
+                begin
+                  stm = @db.prepare( 'INSERT INTO tblComparisons ( pID, sID1, sID2, cRelationship ) VALUES (?, ?, ?, ?)')
+                  stm.bind_params( prId, comparison.steps[0].key_id, comparison.steps[1].key_id, comparison.relationship )
+                  rs = stm.execute
+                  cpId = @db.last_insert_row_id.to_s
+                  stm.close
+                  is_ok = true
+                rescue ::SQLite3::Exception => e
+                  Maadi::post_message(:Warn, "Repository (#{@type}:#{@instance_name}) encountered an INSERT Comparison error (#{e.message}).")
+                  return
+                end
+
+                if is_ok && cpId != -1
+                  if comparison.key_id == -1
+                    comparison.key_id = cpId
                   end
                 end
               end

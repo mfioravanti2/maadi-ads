@@ -72,6 +72,13 @@ module Maadi
                 f.puts "\tPARAMETER\t#{parameter.key_id}\t#{parameter.label}\t#{parameter.value.to_s}\t#{parameter.constraint.to_s}"
               end
             end
+
+            procedure.comparisons.each do |comparison|
+              f.puts "\tCOMPARE\t#{comparison.id}\t#{comparison.relationship}"
+              comparison.steps.each do |item|
+                f.puts "\t\tSTEP\t#{item.id}\t#{item.key_id}"
+              end
+            end
           end
         end
       end
