@@ -724,10 +724,12 @@ module Maadi
       end
 
       # obtain a list of the procedures which have resultant numeric values which differ by epsilon value
+      # the comparison is performed horizontally, e.g. across the results (between applications)
       # type (String) data types to compare, should be items such as INTEGER, FLOAT, etc.
       #               TEXT should not be used with this function, procedure_ids_by_compare should be used.
+      # epsilon (String) epsilon values to be used in the result comparison
       # return (Array of String) contains a list of procedure ids which are different
-      def procedure_ids_by_delta( type, epsilon )
+      def pids_from_delta_data_by_horizontal( type, epsilon )
         procedures = Array.new
 
         if @db != nil
@@ -752,10 +754,47 @@ module Maadi
         return procedures
       end
 
+      # obtain a list of the procedures which have resultant numeric values which differ by epsilon value
+      # the comparison is performed vertically, e.g. within the same procedure (between steps)
+      # type (String) data types to compare, should be items such as INTEGER, FLOAT, etc.
+      #               TEXT should not be used with this function, procedure_ids_by_compare should be used.
+      # epsilon (String) epsilon values to be used in the result comparison
+      # relationship (String) type of comparison to perform.
+      # return (Array of String) contains a list of procedure ids which are different
+      def pids_from_delta_data_by_vertical( type, epsilon, relationship )
+        procedures = Array.new
+
+        if @db != nil
+          is_ok = false
+
+          begin
+            if relationship.downcase == 'EQUALS'
+              stm = @db.prepare( "SELECT DISTINCT qProcId FROM qryComparisons WHERE qRelationship = 'EQUALS' AND qType1 = ? AND qType2 = ? AND ABS( qData1 - qData2 ) > ?" )
+            else
+              stm = @db.prepare( "SELECT DISTINCT qProcId FROM qryComparisons WHERE qRelationship != 'EQUALS' AND qType1 = ? AND qType2 = ? AND ABS( qData1 - qData2 ) < ?" )
+            end
+            stm.bind_params( type.to_s, type.to_s, epsilon )
+            rs = stm.execute
+
+            rs.each do |row|
+              procedures.push row['qProcId']
+            end
+
+            stm.close
+            is_ok = true
+          rescue ::SQLite3::Exception => e
+            Maadi::post_message(:Warn, "Repository (#{@type}:#{@instance_name}) encountered an SELECT Procedure IDs by Data Difference (Epsilon Compare) error (#{e.message}).")
+          end
+        end
+
+        return procedures
+      end
+
       # obtain a list of the procedures which have status codes that do not match within the repository
+      # the comparison is performed horizontally, e.g. across the results (between applications)
       # type (String) data types to compare.
       # return (Array of String) contains a list of procedure ids which are different
-      def procedure_ids_by_compare( type )
+     def pids_from_data_by_horizontal( type )
         procedures = Array.new
 
         if @db != nil
@@ -773,6 +812,49 @@ module Maadi
 
             rs.each do |row|
               procedures.push row['R1.qProcId']
+            end
+
+            stm.close
+            is_ok = true
+          rescue ::SQLite3::Exception => e
+            Maadi::post_message(:Warn, "Repository (#{@type}:#{@instance_name}) encountered an SELECT Procedure IDs by Dta Difference (Explicit Compare) error (#{e.message}).")
+          end
+        end
+
+        return procedures
+      end
+
+      # obtain a list of the procedures which have status codes that do not match within the repository
+      # the comparison is performed vertically, e.g. within the same procedure (between steps)
+      # type (String) data types to compare.
+      # relationship (String) type of comparison to perform.
+      # return (Array of String) contains a list of procedure ids which are different
+      def pids_from_data_by_vertical( type, relationship )
+        procedures = Array.new
+
+        if @db != nil
+          is_ok = false
+
+          begin
+            if type.upcase != 'TEXT'
+              if relationship.downcase == 'EQUALS'
+                stm = @db.prepare( "SELECT DISTINCT qProcId FROM qryComparisons WHERE qRelationship = 'EQUALS' AND qType1 = ? AND qType2 = ? AND qData1 != qData2" )
+              else
+                stm = @db.prepare( "SELECT DISTINCT qProcId FROM qryComparisons WHERE qRelationship != 'EQUALS' AND qType1 = ? AND qType2 = ? AND qData1 == qData2" )
+              end
+            else
+              if relationship.downcase == 'EQUALS'
+                stm = @db.prepare( "SELECT DISTINCT qProcId FROM qryComparisons WHERE qRelationship = 'EQUALS' AND qType1 = ? AND qType1 = ? AND qData1 NOT LIKE qData1" )
+              else
+                stm = @db.prepare( "SELECT DISTINCT qProcId FROM qryComparisons WHERE qRelationship != 'EQUALS' AND qType1 = ? AND qType1 = ? AND qData1 LIKE qData1" )
+              end
+            end
+
+            stm.bind_params( type.to_s, type.to_s )
+            rs = stm.execute
+
+            rs.each do |row|
+              procedures.push row['qProcId']
             end
 
             stm.close

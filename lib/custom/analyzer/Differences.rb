@@ -20,6 +20,16 @@ module Maadi
         @options['INTEGER_EPSILON'] = 0
         @options['FLOAT_EPSILON'] = 0.5
         @options['TEXT_EPSILON'] = 'EXACT'
+
+        @notes['INTEGER_EPSILON'] = 'Epsilon value between two INTEGERS which the values are considered the same'
+        @notes['FLOAT_EPSILON'] = 'Epsilon value between two FLOATS which the values are considered the same'
+        @notes['TEXT_EPSILON'] = 'Epsilon value between two TEXT strings which the values are considered the same'
+
+        @options['USE_VERTICAL'] = 'TRUE'
+        @options['USE_HORIZONTAL'] = 'TRUE'
+
+        @notes['USE_VERTICAL'] = 'Perform a Vertical Comparison (compare results, SAME application DIFFERENT steps)'
+        @notes['USE_HORIZONTAL'] = 'Perform a Horizontal Comparison (compare results, DIFFERENT applications, SAME steps)'
       end
 
       def analyze
@@ -27,22 +37,45 @@ module Maadi
           @repositories.each do |repository|
             Maadi::post_message(:Info, "Analyzer (#{@type}:#{@instance_name}) checking (#{repository.to_s}) for results")
 
-            types = repository.types
-            types.each do |type|
-              list = Array.new
-              if @options["#{type.upcase}_EPSILON"] != 'EXACT'
-                list = repository.procedure_ids_by_delta( type, @options["#{type.upcase}_EPSILON"] )
-              else
-                list = repository.procedure_ids_by_compare( type )
+            if @options['USE_HORIZONTAL'] == 'TRUE'
+              types = repository.types
+              types.each do |type|
+                list = Array.new
+                if @options["#{type.upcase}_EPSILON"] != 'EXACT'
+                  list = repository.pids_from_delta_data_by_horizontal( type, @options["#{type.upcase}_EPSILON"] )
+                else
+                  list = repository.pids_from_data_by_horizontal( type )
+                end
+
+                puts
+                puts "PIDs that have results which differ between applications (with type = #{type})"
+
+                if list.length > 0
+                  puts "\tIDs: #{list.join(', ')}"
+                else
+                  puts "\tNo Procedural result differences found."
+                end
               end
+            end
 
-              puts
-              puts "Procedures that have results which differ between applications (with type = #{type})"
+            if @options['USE_VERTICAL'] == 'TRUE'
+              types = repository.types
+              types.each do |type|
+                list = Array.new
+                if @options["#{type.upcase}_EPSILON"] != 'EXACT'
+                  list = repository.pids_from_delta_data_by_vertical( type, @options["#{type.upcase}_EPSILON"], 'EQUALS' )
+                else
+                  list = repository.pids_from_data_by_vertical( type, 'EQUALS' )
+                end
 
-              if list.length > 0
-                puts "\tIDs: #{list.join(', ')}"
-              else
-                puts "\tNo Procedural result differences found."
+                puts
+                puts "PIDs that have results which differ between steps (with type = #{type})"
+
+                if list.length > 0
+                  puts "\tIDs: #{list.join(', ')}"
+                else
+                  puts "\tNo Procedural result differences found."
+                end
               end
             end
 

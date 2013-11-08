@@ -123,17 +123,40 @@ module Maadi
       end
 
       # obtain a list of the procedures which have resultant numeric values which differ by epsilon value
+      # the comparison is performed horizontally, e.g. across the results (between applications)
       # type (String) data types to compare, should be items such as INTEGER, FLOAT, etc.
       #               TEXT should not be used with this function, procedure_ids_by_compare should be used.
+      # epsilon (String) epsilon values to be used in the result comparison
       # return (Array of String) contains a list of procedure ids which are different
-      def procedure_ids_by_delta( type, epsilon )
+      def pids_from_delta_data_by_horizontal( type, epsilon )
+        return Array.new
+      end
+
+      # obtain a list of the procedures which have resultant numeric values which differ by epsilon value
+      # the comparison is performed vertically, e.g. within the same procedure (between steps)
+      # type (String) data types to compare, should be items such as INTEGER, FLOAT, etc.
+      #               TEXT should not be used with this function, procedure_ids_by_compare should be used.
+      # epsilon (String) epsilon values to be used in the result comparison
+      # relationship (String) type of comparison to perform.
+      # return (Array of String) contains a list of procedure ids which are different
+      def pids_from_delta_data_by_vertical( type, epsilon, relationship )
         return Array.new
       end
 
       # obtain a list of the procedures which have status codes that do not match within the repository
+      # the comparison is performed horizontally, e.g. across the results (between applications)
       # type (String) data types to compare.
       # return (Array of String) contains a list of procedure ids which are different
-      def procedure_ids_by_compare( type )
+      def pids_from_data_by_horizontal( type )
+        return Array.new
+      end
+
+      # obtain a list of the procedures which have status codes that do not match within the repository
+      # the comparison is performed vertically, e.g. within the same procedure (between steps)
+      # type (String) data types to compare.
+      # relationship (String) type of comparison to perform.
+      # return (Array of String) contains a list of procedure ids which are different
+      def pids_from_data_by_vertical( type, relationship )
         return Array.new
       end
 
