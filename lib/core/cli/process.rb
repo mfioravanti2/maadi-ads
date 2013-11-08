@@ -71,7 +71,12 @@ module Maadi
             f.puts "set controller option #{$controller.instance_name} #{option} #{$controller.get_option(option)}"
           end
 
-          f.puts "set analyzer #{$analyzer.type} #{$analyzer.instance_name}" if $analyzer != nil
+          $analyzers.each do |analyzer|
+            f.puts "set analyzer #{analyzer.type} #{analyzer.instance_name}"
+            analyzer.options.each do |option|
+              f.puts "set collector option #{analyzer.instance_name} #{option} #{analyzer.get_option(option)}"
+            end
+          end
         end
         post_message(:Info, "#{name} saved")
       end

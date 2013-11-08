@@ -74,7 +74,7 @@ module Maadi
           end
         when 'analyzer'
           # check to see if an Analyzer has been instantiated.
-          return ( $analyzer != nil ) ? ( 'using ' + $analyzer.to_s ) : '<unspecified analyzer>'
+          return ( $analyzers.length > 0 ) ? ( 'using ' + $analyzers.join(', ') ) : '<unspecified analyzers(s)>'
         when 'manager'
           # check to see if the Manager preconditions have been met.
           # (i.e. all of the necessary objects are available to instantiate an Manager object)
@@ -86,8 +86,8 @@ module Maadi
             if $controller == nil
               needs.push 'Controller'
             end
-            if $analyzer == nil
-              needs.push 'Analyzer'
+            if $analyzers.length == 0
+              needs.push 'Analyzer(s)'
             end
 
             return "Need #{needs.sort.join(', ')}"
@@ -147,11 +147,11 @@ module Maadi
             show_options( 'Tasker', tasker, tasker.options )
           end
         when 'analyzer'
-          if $analyzer != nil
-            show_options( 'Analyzer', $analyzer, $analyzer.options )
+          $analyzers.each do |analyzer|
+            show_options( 'Analyzer', analyzer, analyzer.options )
           end
         when 'manager'
-          if $analyzer != nil
+          if $manager != nil
             show_options( 'Manager', $manager, $manager.options )
           end
         else
@@ -172,7 +172,7 @@ module Maadi
       printf "[*]\tApplication(s) : " + item_status('application') + "\n"
       printf "[*]\tTasker(s)      : " + item_status('tasker') + "\n"
       printf "[*]\tController     : " + item_status('controller') + "\n"
-      printf "[*]\tAnalyzer       : " + item_status('analyzer') + "\n"
+      printf "[*]\tAnalyzers      : " + item_status('analyzer') + "\n"
       printf "[*]\tManager        : " + item_status('manager') + "\n"
     end
 

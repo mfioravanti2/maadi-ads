@@ -81,11 +81,15 @@ module Maadi
             end
           end
         when 'analyzer'
-          Maadi::post_message( :Less, "Analyzer #{$analyzer.type} (#{$analyzer.to_s}) has been removed")
-          $analyzer = nil
+          $analyzers.each do |analyzer|
+            if ( analyzer.type == value ) || ( analyzer.instance_name == value )
+              $analyzers.delete( analyzer )
+              Maadi::post_message( :Less, "Analyzer #{analyzer.type} (#{analyzer.to_s}) has been removed")
 
-          # If the Analyzer has been reset, then the Manager needs to be re-initialized
-          $manager = nil
+              # Any of the Analyzers have been reset, then the Manager needs to be re-initialized
+              $manager = nil
+            end
+          end
         else
           Maadi::post_message(:Warn, "Incorrect usage, #{type} is an unrecognized option")
       end

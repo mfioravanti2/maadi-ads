@@ -74,9 +74,11 @@ module Maadi
             end
           end
         when 'analyzer'
-          if $analyzer != nil
-            $analyzer.set_option( option, value )
-            Maadi::post_message(:Warn, "Analyzer (#{$analyzer.to_s}) option #{option} set to #{value}")
+          $analyzers.each do |analyzer|
+            if analyzer.instance_name == instance_name
+              analyzer.set_option( option, value )
+              Maadi::post_message(:Warn, "Analyzer (#{analyzer.to_s}) option #{option} set to #{value}")
+            end
           end
         when 'manager'
           if $manager != nil
@@ -215,9 +217,13 @@ module Maadi
             $manager = nil
           end
         when 'analyzer'
-          $analyzer = Analyzer::Analyzer.factory( ( value == 'default' ) ? 'Example' : value )
-          if instance_name != 'none'
-            $analyzer.instance_name = instance_name
+          analyzer = Analyzer::Analyzer.factory( ( value == 'default' ) ? 'Example' : value )
+          if analyzer != nil
+            if instance_name != 'none'
+              analyzer.instance_name = instance_name
+            end
+
+            $analyzers.push analyzer
           end
 
           # If the Analyzer has been reset, then the Manager needs to be re-initialized

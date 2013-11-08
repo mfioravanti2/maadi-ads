@@ -18,12 +18,12 @@ module Maadi
       # collector (Collector) is an object that will be used to store the test procedures and results
       # runs (Integer) is the number of runs that will be executed.
       # analyzer (Analyzer) is an object that analyze the results which are stored in the collector
-      def initialize( collectors, controller, analyzer )
+      def initialize( collectors, controller, analyzers )
         super('Manager')
         @instance_name = 'Manager'
 
         @collectors = collectors
-        @analyzer = analyzer
+        @analyzers = analyzers
 
         t = Time.now
         @test_id = "HiVAT-#{t.strftime('%Y%m%d%H%M%S')}"
@@ -76,19 +76,18 @@ module Maadi
 
       # perform the post test analysis and generate the test report.
       def report
-        @analyzer.report( @collectors )
+        $analyzers.each do |analyzer|
+          analyzer.report( @collectors )
+        end
       end
 
       # teardown will remove all of the resources and services that were created specifically for this test.
       def teardown
         @controller.teardown
         @collectors.each { |collector| collector.teardown }
+        @analyzers.each { |analyzer| analyzer.teardown }
         @is_prepared = false
         Maadi::post_message(:Less, 'Manager is NO longer ready')
-      end
-
-      def report_name
-
       end
 
       def self.is_manager?( manager )

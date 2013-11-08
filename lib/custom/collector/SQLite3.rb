@@ -149,7 +149,9 @@ module Maadi
           @db.execute( tbl_def )
 
           tbl_def = %q( CREATE VIEW IF NOT EXISTS qryComparisons AS
-                         SELECT R.rTestId As qTestId, R.rProc As qProc, R.rProcId As qProcId, C.cRelationship As qRelationship
+                         SELECT R.rTestId As qTestId, R.rProc As qProc, R.rProcId As qProcId, C.cRelationship As qRelationship,
+                                D1.dStep As qStep1, D1.dStepId As qStepId1, D1.dStatus As qStatus1, D1.dType As qType1, D1.dData As qData1,
+                                D2.dStep As qStep2, D2.dStepId As qStepId2, D2.dStatus As qStatus2, D2.dType As qType2, D2.dData As qData2
                          FROM tblComparisons As C, tblResults As R, tblResultData As D1, tblResultData As D2
                          WHERE C.pID = R.rProcID AND C.sID1 = D1.dStepId AND C.sID2 = D2.dStepId
                       )

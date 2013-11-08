@@ -29,8 +29,8 @@ module Maadi
       end
 
       if $manager == nil
-        if ( $collectors.length > 0 ) && ( $controller != nil ) && ( $analyzer != nil )
-          $manager = Maadi::Manager::Manager.new( $collectors, $controller, $analyzer )
+        if ( $collectors.length > 0 ) && ( $controller != nil ) && ( $analyzers.length > 0 != nil )
+          $manager = Maadi::Manager::Manager.new( $collectors, $controller, $analyzers )
         end
       end
     end

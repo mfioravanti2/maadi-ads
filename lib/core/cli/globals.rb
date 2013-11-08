@@ -15,7 +15,7 @@ module Maadi
     $expert = nil
     $organizer = nil
     $generator = nil
-    $analyzer = nil
+    $analyzers = Array.new
     $monitors = Array.new
     $taskers = Array.new
     $scheduler = nil

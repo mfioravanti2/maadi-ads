@@ -15,7 +15,7 @@ module Maadi
     class Differences < Analyzer
 
       def initialize
-        super('Comparison')
+        super('Differences')
 
         @options['INTEGER_EPSILON'] = 0
         @options['FLOAT_EPSILON'] = 0.5
@@ -25,7 +25,7 @@ module Maadi
       def analyze
         if @repositories.length > 0
           @repositories.each do |repository|
-            Maadi::post_message(:Info, "Analyzer checking (#{repository.to_s}) for results")
+            Maadi::post_message(:Info, "Analyzer (#{@type}:#{@instance_name}) checking (#{repository.to_s}) for results")
 
             types = repository.types
             types.each do |type|
