@@ -117,8 +117,17 @@ module Maadi
       end
 
       # obtain a list of the procedures which have status codes that do not match within the repository
+      # the comparison is performed horizontally, e.g. across the results (between applications)
       # return (Array of String) contains a list of procedure ids which do not match
-      def procedure_ids_by_mismatch
+      def pids_from_status_mismatch_by_horizontal
+        return Array.new
+      end
+
+      # obtain a list of the procedures which have status codes that do not match within the repository
+      # the comparison is performed vertically, e.g. within the same procedure (between steps)
+      # relationship (String) type of comparison to perform.
+      # return (Array of String) contains a list of procedure ids which do not match
+     def pids_from_status_mismatch_by_vertical( relationship )
         return Array.new
       end
 

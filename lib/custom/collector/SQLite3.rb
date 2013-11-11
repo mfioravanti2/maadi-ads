@@ -698,8 +698,9 @@ module Maadi
       end
 
       # obtain a list of the procedures which have status codes that do not match within the repository
+      # the comparison is performed horizontally, e.g. across the results (between applications)
       # return (Array of String) contains a list of procedure ids which do not match
-      def procedure_ids_by_mismatch
+      def pids_from_status_mismatch_by_horizontal
         procedures = Array.new
 
         if @db != nil
@@ -711,6 +712,37 @@ module Maadi
 
             rs.each do |row|
               procedures.push row['R1.qProcId']
+            end
+
+            stm.close
+            is_ok = true
+          rescue ::SQLite3::Exception => e
+            Maadi::post_message(:Warn, "Repository (#{@type}:#{@instance_name}) encountered an SELECT Procedure IDs by Mismatched Status Code error (#{e.message}).")
+          end
+        end
+
+        return procedures
+      end
+
+      # obtain a list of the procedures which have status codes that do not match within the repository
+      # the comparison is performed vertically, e.g. within the same procedure (between steps)
+      # return (Array of String) contains a list of procedure ids which do not match
+      def pids_from_status_mismatch_by_vertical( relationship )
+        procedures = Array.new
+
+        if @db != nil
+          is_ok = false
+
+          begin
+            if relationship.downcase == 'EQUALS'
+              stm = @db.prepare( "SELECT DISTINCT qProcId FROM qryComparisons WHERE qRelationship = 'EQUALS' AND qStatus1 != qStatus2" )
+            else
+              stm = @db.prepare( "SELECT DISTINCT qProcId FROM qryComparisons WHERE qRelationship != 'EQUALS' AND qStatus1 = qStatus2" )
+            end
+            rs = stm.execute
+
+            rs.each do |row|
+              procedures.push row['qProcId']
             end
 
             stm.close

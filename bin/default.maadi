@@ -22,6 +22,6 @@ load app-ads-stack.maadi
 #load app-ads-queue.maadi
 
 set scheduler FIFO Queue
-set analyzer Comparison Comp
-set analyzer Differences Diff
+set analyzer DataComparison ResultDiff
+set analyzer StatusComparison StatDiff
 

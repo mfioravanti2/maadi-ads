@@ -12,10 +12,10 @@ require_relative '../../core/helpers'
 
 module Maadi
   module Analyzer
-    class Differences < Analyzer
+    class DataComparison < Analyzer
 
       def initialize
-        super('Differences')
+        super('DataComparison')
 
         @options['INTEGER_EPSILON'] = 0
         @options['FLOAT_EPSILON'] = 0.5
@@ -79,6 +79,7 @@ module Maadi
               end
             end
 
+            puts
           end
         end
       end
