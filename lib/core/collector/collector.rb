@@ -72,8 +72,8 @@ module Maadi
       # application (Application) application that the test procedure was executed against
       # procedure (Procedure) test procedure that was executed
       # results (Results) test results from executing the procedure against the application under test
-      def log_results( application, procedure, results )
-        if Maadi::Application::Application::is_application?( application ) and Maadi::Procedure::Procedure::is_procedure?( procedure ) and Maadi::Procedure::Results::is_results?( results )
+      def log_results( executable, procedure, results )
+        if Maadi::Generic::Executable.is_executable?( executable ) and Maadi::Procedure::Procedure::is_procedure?( procedure ) and Maadi::Procedure::Results::is_results?( results )
 
         end
       end

@@ -49,27 +49,13 @@ module Maadi
       end
 
       def supports_procedure?( procedure )
-        if procedure != nil
-          if procedure.is_a?( Maadi::Procedure::Procedure )
-            procedure.steps.each do | step |
-              if step.target == execution_target || step.target == default_target
-                unless supports_step?( step )
-                  return false
-                end
+        if Maadi::Procedure::Procedure.is_procedure?( procedure )
+          procedure.steps.each do | step |
+            if ( step.target == execution_target ) || ( step.target == default_target )
+              if supports_step?( step )
+                return true
               end
             end
-
-            return true
-          end
-        end
-
-        return false
-      end
-
-      def supports_step?( step )
-        if step != nil
-          if step.is_a?( Maadi::Procedure::Step )
-            return true
           end
         end
 

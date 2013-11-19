@@ -87,11 +87,11 @@ module Maadi
       # application (Application) application that the test procedure was executed against
       # procedure (Procedure) test procedure that was executed
       # results (Results) test results from executing the procedure against the application under test
-      def log_results( application, procedure, results )
-        if Maadi::Application::Application::is_application?( application ) and Maadi::Procedure::Procedure::is_procedure?( procedure ) and Maadi::Procedure::Results::is_results?( results )
+      def log_results( executable, procedure, results )
+        if Maadi::Generic::Executable.is_executable?( executable ) and Maadi::Procedure::Procedure::is_procedure?( procedure ) and Maadi::Procedure::Results::is_results?( results )
           t = Time.now
           File.open( @options['FILENAME'], 'a') do |f|
-            f.puts "#{t.strftime('%Y%m%d%H%M%S')}\tRESULTS\t#{results.key_id}\t#{results.source}\t#{application.to_s}\t#{procedure.to_s}\t#{procedure.key_id}\t#{results.to_s}"
+            f.puts "#{t.strftime('%Y%m%d%H%M%S')}\tRESULTS\t#{results.key_id}\t#{results.source}\t#{executable.to_s}\t#{procedure.to_s}\t#{procedure.key_id}\t#{results.to_s}"
 
             results.results.each do |result|
               f.puts "\tRESULT\t#{result.key_id}\t#{result.step_key}\t#{result.step_name}\t#{result.target}\t#{result.status}\t#{result.type}\t#{result.data.to_s}"

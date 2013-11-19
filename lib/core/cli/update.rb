@@ -20,8 +20,8 @@ module Maadi
       end
 
       if $controller == nil
-        if ( $scheduler != nil ) && ( $generator != nil ) && ( $applications.length > 0 ) && ( $collectors.length > 0 )
-          $controller = Maadi::Controller::Controller.new( $scheduler, $generator, $applications, $collectors, $runs )
+        if ( $scheduler != nil ) && ( $generator != nil ) && ( $applications.length > 0 ) && ( $collectors.length > 0 ) && ( $monitors != nil )
+          $controller = Maadi::Controller::Controller.new( $scheduler, $generator, $applications, $collectors, $monitors, $runs )
 
           # if the Controller was remove, then the Manager will need to be re-initialized.
           $manager = nil

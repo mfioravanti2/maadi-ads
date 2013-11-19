@@ -9,6 +9,7 @@
 #          execution schedule before executing the procedures.
 
 require_relative '../generic/generic'
+require_relative '../monitor/monitor'
 require_relative '../procedure/procedure'
 require_relative '../procedure/result'
 require_relative '../helpers'
@@ -20,6 +21,7 @@ module Maadi
       def initialize(type)
         super(type)
         @procedures = Array.new
+        @monitors = Array.new
         @ready = false
         @logged = false
         @done = false
@@ -31,8 +33,10 @@ module Maadi
       # return N/A
       def add_procedure( procedure )
         if procedure != nil
-          @procedures.push( procedure )
-          @ready = false
+          if Maadi::Procedure::Procedure.is_procedure?( procedure )
+            @procedures.push( procedure )
+            @ready = false
+          end
         end
       end
 
@@ -47,8 +51,38 @@ module Maadi
         @name = 'Schedule ID'
         @ready = true
 
+        if @monitors.length > 0
+          count = 1
+          @procedures.each do |procedure|
+            @monitors.each do |monitor|
+              points_to_use = monitor.use_points(count)
+
+              if points_to_use.length > 0
+                points_to_use.each do |point|
+                  monitor.include_point( point, procedure )
+                end
+              end
+            end
+
+            count += 1
+          end
+
+        end
+
         Maadi::post_message(:More, "Scheduler (#{@type}) is ready")
         super
+      end
+
+      def use_monitors( monitors )
+        if monitors != nil
+          if monitors.is_a?( Array )
+            monitors.each do |monitor|
+              if Maadi::Monitor::Monitor.is_monitor?(monitor)
+                @monitors.push( monitor )
+              end
+            end
+          end
+        end
       end
 
       # log the assembled schedule in the Collector
@@ -107,12 +141,15 @@ module Maadi
                 collectors.each do |collector|
                   collector.log_results( application, procedure, results )
                 end
-              else
-                msg = "Application (#{application.type}:#{application.instance_name}) encountered an unsupported procedure (#{procedure.id})."
+              end
+            end
 
-                Maadi::post_message(:Warn, msg)
+            @monitors.each do | monitor |
+              if monitor.supports_procedure?( procedure )
+                results = monitor.execute( run, procedure )
+
                 collectors.each do |collector|
-                  collector.log_message( :Warn, msg )
+                  collector.log_results( monitor, procedure, results )
                 end
               end
             end

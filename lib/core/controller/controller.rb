@@ -24,7 +24,7 @@ module Maadi
       # applications is an array of applications (class Application) that the test procedures will be executed against
       # collector (class Collector) is an object that will record the results of the execution of the test procedures
       # runs (Integer) is the number of runs that will be executed.
-      def initialize( scheduler, generator, applications, collectors, runs )
+      def initialize( scheduler, generator, applications, collectors, monitors, runs )
         super('Controller')
         @instance_name = 'Controller'
 
@@ -32,6 +32,7 @@ module Maadi
         @generator = generator
         @applications = applications
         @collectors = collectors
+        @monitors = monitors
         @runs = runs
 
         @prng = nil
@@ -51,7 +52,7 @@ module Maadi
         @ready = false
 
         if ( @applications != nil ) && ( @collectors != nil )
-          if Maadi::Scheduler::Scheduler::is_scheduler?( @scheduler ) && Maadi::Generator::Generator::is_generator?( @generator ) && @applications.is_a?(Array) && @collectors.is_a?(Array)
+          if Maadi::Scheduler::Scheduler::is_scheduler?( @scheduler ) && Maadi::Generator::Generator::is_generator?( @generator ) && @applications.is_a?(Array) && @collectors.is_a?(Array) && @monitors.is_a?(Array)
             if ( @applications.length > 0 ) && ( @collectors.length > 0 )
 
               Maadi::post_message(:Info, "Controller is setting the PRNG seed (#{@options['RANDSEED']})")
@@ -85,16 +86,34 @@ module Maadi
                 Maadi::post_message(:Info, "Controller has completed configuring Application (#{application.type}:#{application.instance_name})")
               end
 
+              @monitors.each do |monitor|
+                Maadi::post_message(:Info, "Controller is configuring Monitor (#{monitor.type}:#{monitor.instance_name})")
+
+                unless monitor.is_ready?
+                  monitor.prepare
+
+                  unless monitor.is_ready?
+                    return @ready
+                  end
+
+                  @collectors.each do |collector|
+                    collector.log_options( monitor )
+                  end
+                end
+                Maadi::post_message(:Info, "Controller has completed configuring Monitor (#{monitor.type}:#{monitor.instance_name})")
+              end
+
               Maadi::post_message(:Info, 'Controller is collecting procedures from Generator')
               failures = 0
               while @scheduler.procedure_count < @runs
                 procedure = @generator.next_test
-                if procedure != nil
+                if Maadi::Procedure::Procedure.is_procedure?( procedure )
                   if procedure.has_failed?
                     failures += 1
 
                     if @options['SHOWFAILS'].downcase == 'true'
                       Maadi::post_message(:Warn, "Procedure FAILED: #{procedure.id}")
+                      procedure.show
                     end
                   else
                     @scheduler.add_procedure( procedure )
@@ -112,6 +131,7 @@ module Maadi
               Maadi::post_message(:Info, 'Controller has completed collecting procedures from Generator')
 
               unless @scheduler.is_ready?
+                @scheduler.use_monitors( @monitors )
                 @scheduler.prepare
 
                 unless @scheduler.is_ready?
@@ -165,6 +185,8 @@ module Maadi
         @generator.teardown
 
         @applications.each { |application| application.teardown }
+
+        @monitors.each { |monitor| monitor.teardown }
 
         # do NOT teardown the collectors!   This will be done by another subsystem!
         # @collectors.teardown

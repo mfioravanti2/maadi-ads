@@ -322,8 +322,8 @@ module Maadi
       # application (Application) application that the test procedure was executed against
       # procedure (Procedure) test procedure that was executed
       # results (Results) test results from executing the procedure against the application under test
-      def log_results( application, procedure, results )
-        if Maadi::Application::Application::is_application?( application ) and Maadi::Procedure::Procedure::is_procedure?( procedure ) and Maadi::Procedure::Results::is_results?( results )
+      def log_results( executable, procedure, results )
+        if Maadi::Generic::Executable.is_executable?( executable ) and Maadi::Procedure::Procedure::is_procedure?( procedure ) and Maadi::Procedure::Results::is_results?( results )
           t = Time.now
           log_time = "#{t.strftime('%Y/%m/%d %H:%M:%S')}"
 
@@ -333,7 +333,7 @@ module Maadi
 
             begin
               stm = @db.prepare( 'INSERT INTO tblResults (rTestId, rTime, rApp, rProc, rProcId) VALUES (?, ?, ?, ?, ?)')
-              stm.bind_params( procedure.key_id, log_time, application.to_s, procedure.to_s, procedure.key_id )
+              stm.bind_params( procedure.key_id, log_time, executable.to_s, procedure.to_s, procedure.key_id )
               rs = stm.execute
               rId = @db.last_insert_row_id.to_s
               stm.close

@@ -15,7 +15,8 @@ load expert-ads-stack.maadi
 #load expert-ads-queue.maadi
 
 set organizer RandomSelection RS-Organizer
-set monitor Example ExMon
+set monitor LocalWindowsSystemMemory LocSysMem
+set monitor option LocSysMem MONITOR-PATH D:/code/c++/monitor-sysmemory/debug/
 
 # Load the MySQL applications and configuration
 load app-ads-stack.maadi

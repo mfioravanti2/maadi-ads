@@ -103,10 +103,10 @@ module Maadi
       if options.length > 0
         Maadi::post_message(:Info, "#{type} (#{item.to_s}) Current Options")
 
-        printf( "%15s %25s %s\n", '    Option    ', 'Value    ', 'Notes')
-        printf( "%15s %25s %s\n", '==============', '=============', '=============')
+        printf( "%25s %35s %s\n", '    Option    ', 'Value    ', 'Notes')
+        printf( "%25s %35s %s\n", '==============', '=============', '=============')
         options.each do |option|
-          printf( "%15s %25s %s\n", option, item.get_option(option), item.get_notes(option) )
+          printf( "%25s %35s %s\n", option, item.get_option(option), item.get_notes(option) )
         end
         puts
       end
